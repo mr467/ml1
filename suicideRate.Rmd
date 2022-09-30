@@ -11,6 +11,12 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## R Markdown
 
+```{r, include=FALSE}
+library(lubridate)
+library(dplyr)
+```
+
+
 This is the file for the analysis and report for the machine learning module 1
 at the HSLU. 
 
