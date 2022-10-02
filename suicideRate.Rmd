@@ -1,6 +1,6 @@
 ---
 title: "SuicideRate_MachineLearning1"
-author: "Marco Rieder, Nuria Piller und Milica Pajkic"
+author: "Milica Pajkic, Nuria Piller und Marco Rieder"
 date: "`r Sys.Date()`"
 output: html_document
 ---
@@ -9,29 +9,25 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+## Suicide Rates in Finland, an analysis based on various factors
+
 
 ```{r, include=FALSE}
 library(lubridate)
 library(dplyr)
+library(readr)
+library(data.table)
 ```
 
 
-This is the file for the analysis and report for the machine learning module 1
-at the HSLU. 
+Suicide is a sensible topic and needs to be addressed in an empathical way. 
+Behind each number and each case, is a story. 
+This paper is analysing data from the statistical office of Finland. Trying to
+find evidence what factors are statisticly related is one of the goals. The main
+data source is this dataset
 
-Topic suicide rates 
-
-```{r cars}
-summary(cars)
+```{r dataset suicides by monthly data betweend 1971 till 2021}
+d.suicides_monthly <- read_csv("023_12z6_2020m12_20221002-205810.csv")
+summary(d.suicides_monthly)
 ```
 
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
