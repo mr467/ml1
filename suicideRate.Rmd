@@ -27,7 +27,31 @@ find evidence what factors are statisticly related is one of the goals. The main
 data source is this dataset
 
 ```{r dataset suicides by monthly data betweend 1971 till 2021}
+
+# data import
 d.suicides_monthly <- read_csv("023_12z6_2020m12_20221002-205810.csv")
+d.bancrupcy <- read_csv("001_11fb_2022m02_20221004-204725.csv")
+d.employment <- read_csv("001_115b_2020_20221004-232300.csv")
+
+# Summary statistic of the imported files
+
 summary(d.suicides_monthly)
+summary(d.bancrupcy)
+summary(d.employment)
+
+
+```
+Merge data together for analyzing each parameter
+
+```{r}
+d.suicide_bancrupcy <- left_join(x=d.suicides_monthly, y= d.bancrupcy, by= "Month")
+
+#remove rows without bankruptcy data (Before 1986)
+d.suicide_bancrupcy <- na.omit(d.suicide_bancrupcy)
+
+plot(d.suicide_bancrupcy$`Females Deaths`,d.suicide_bancrupcy$`Bankruptcies instigated, number of employees`)
+
+plot(d.suicide_bancrupcy$`Males Deaths`,d.suicide_bancrupcy$`Bankruptcies instigated, number of employees`)
+
 ```
 
