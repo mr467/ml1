@@ -4,5 +4,5 @@ Authors: Milica, Nuria and Marco
 Initial setup: 30.09.2022
 
 Updates: 
-5.10.2022: Added data set to import with data about employment status, joined monthly suicide data with bancrupcy data.
+5.10.2022: Added data set to import with data about employment status, joined monthly suicide data with bankruptcy data.
 

@@ -24,9 +24,8 @@ library(data.table)
 
 Suicide is a sensible topic and needs to be addressed in an empathical way. 
 Behind each number and each case, is a story. 
-This paper is analysing data from the statistical office of Finland. Trying to
-find evidence what factors are  is one of the goals. The main
-data source is this dataset
+This paper is analysing data from the statistical office of Finland. The final 
+dataset is merged from various datasets covering economical, social and other factors. Most datasets have a montly resolution
 
 ```{r dataset suicides by monthly data betweend 1971 till 2021}
 # data import
@@ -34,7 +33,7 @@ d.suicides_monthly <- read_csv("023_12z6_2020m12_20221002-205810.csv")
 d.bankruptcy <- read_csv("001_11fb_2022m02_20221004-204725.csv")
 d.employment <- read_csv("001_115b_2020_20221004-232300.csv")
 d.costOfLviing <- read_csv("001_11xl_2022m08_20221007-084802.csv")
-d.businessTrips <- read_csv("111_13q6_2022m04_20221012-204025.csv")
+d.tripsAbroad <- read_csv("111_13q6_2022m04_20221012-204025.csv")
 d.averageEarningQ <- read_csv("001_11zu_2022q2_20221012-201102.csv")
 d.unemploymentDuration <- read_csv("12ta_2022M08_20221012-204522.csv")
 
@@ -67,12 +66,17 @@ plot(d.suicide_costOfLiving$`Males Deaths`,d.suicide_costOfLiving$`Point figure`
 
 ```{r}
 #merge multiple datasets into one major (resolution monthly data)
+#Merging by month for the bankruptcy, costofliving(indexed), duration of 
+#unemployment and amount of TripsAbroad
 
 
 d.suicide_merged  <-  left_join(d.suicides_monthly, d.bankruptcy, by='Month') %>%
                 left_join(., d.costOfLviing, by='Month') %>%
                             left_join(.,d.unemploymentDuration, by='Month') %>%
-                            left_join(.,d.businessTrips, by= 'Month')
-  
+                            left_join(.,d.tripsAbroad, by= 'Month') 
+
+#add total of suicides by adding male and female suicide
+
+d.suicide_merged$Total_deaths <- d.suicide_merged$`Males Deaths`+d.suicide_merged$`Females Deaths`
 ```
 
