@@ -11,7 +11,7 @@
 
 <meta name="author" content="Milica Pajkic, Nuria Piller und Marco Rieder" />
 
-<meta name="date" content="2022-10-15" />
+<meta name="date" content="2022-10-20" />
 
 <title>SuicideRate_MachineLearning1</title>
 
@@ -365,14 +365,24 @@ pre code {
 
 <h1 class="title toc-ignore">SuicideRate_MachineLearning1</h1>
 <h4 class="author">Milica Pajkic, Nuria Piller und Marco Rieder</h4>
-<h4 class="date">2022-10-15</h4>
+<h4 class="date">2022-10-20</h4>
 
 </div>
 
+<div id="TOC">
+<ul>
+<li><a href="#introduction" id="toc-introduction">Introduction</a></li>
+<li><a href="#methodes" id="toc-methodes">Methodes</a>
+<ul>
+<li><a href="#model-glm-poisson" id="toc-model-glm-poisson">Model GLM
+Poisson</a></li>
+<li><a href="#model-neural-networks" id="toc-model-neural-networks">Model Neural Networks</a></li>
+</ul></li>
+</ul>
+</div>
 
-<p>#Titel</p>
-<div id="suicide-rates-in-finland-an-analysis-based-on-various-factors" class="section level2">
-<h2>Suicide Rates in Finland, an analysis based on various factors</h2>
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
 <p>Suicide is a sensible topic and needs to be addressed in an
 empathical way. Behind each number and each case, is a story. This paper
 is analysing data from the statistical office of Finland. The final
@@ -472,6 +482,15 @@ d.suicide_merged  &lt;-  left_join(d.suicides_monthly, d.bankruptcy, by=&#39;Mon
 #add total of suicides by adding male and female suicide
 
 d.suicide_merged$Total_deaths &lt;- d.suicide_merged$`Males Deaths`+d.suicide_merged$`Females Deaths`</code></pre>
+</div>
+<div id="methodes" class="section level1">
+<h1>Methodes</h1>
+<div id="model-glm-poisson" class="section level2">
+<h2>Model GLM Poisson</h2>
+</div>
+<div id="model-neural-networks" class="section level2">
+<h2>Model Neural Networks</h2>
+</div>
 </div>
 
 

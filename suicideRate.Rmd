@@ -2,16 +2,18 @@
 title: "SuicideRate_MachineLearning1"
 author: "Milica Pajkic, Nuria Piller und Marco Rieder"
 date: "`r Sys.Date()`"
-output: html_document
+output:
+  html_document:
+    toc: true
+    toc_depth: 3
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-#Titel
 
-## Suicide Rates in Finland, an analysis based on various factors
+# Introduction
 
 
 ```{r, include=FALSE}
@@ -80,3 +82,9 @@ d.suicide_merged  <-  left_join(d.suicides_monthly, d.bankruptcy, by='Month') %>
 d.suicide_merged$Total_deaths <- d.suicide_merged$`Males Deaths`+d.suicide_merged$`Females Deaths`
 ```
 
+
+# Methodes
+
+## Model GLM Poisson
+
+## Model Neural Networks 
