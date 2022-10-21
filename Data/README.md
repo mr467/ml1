@@ -11,6 +11,6 @@ In this folder, you find the datasets we use for our project.
 -   trips_abroad.csv
 -   unemployment_duration.csv
 
-##### *All our data sets are created with data from  [StatisticsFinland](https://stat.fi/en/statistics/ksyyt).*
+##### *All our data sets have been created with data from  [StatisticsFinland](https://stat.fi/en/statistics/ksyyt).*
 
 ##### 
