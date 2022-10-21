@@ -1,5 +1,5 @@
 ---
-title: "SuicideRate_MachineLearning1"
+title: "Suicide Rates in Finland - Exploration of Correlations"
 author: "Milica Pajkic, Nuria Piller und Marco Rieder"
 date: "`r Sys.Date()`"
 output:
@@ -26,7 +26,21 @@ library(data.table)
 library(tidyverse)
 ```
 
-Suicide is a sensible topic and needs to be addressed in an empathical way. Behind each number and each case, is a story. This paper is analysing data from the statistical office of Finland. The final dataset is merged from various datasets covering economical, social and other factors. Most datasets have a monthly resolution
+Suicide is a complicated topic. And it is still a taboo in modern society. But not only does society struggle with understanding suicidal behavior - also scientists do so.
+
+Studying suicide as a quantitative phenomenon can be especially paradoxical: Suicide is not frequent, and therefore it is hard to model.
+
+> Can we ever explain suicidal behavior? I once humorously argued that the reason why we fail to prevent completed suicide is that the behavior is so rare. If it occurred much more frequently, then we would be more successful in predicting it and preventing it.
+
+*David Lester, 2010 in his essay about [Qualitative Research in Suicidology](https://www.researchgate.net/profile/David-Lester-3/publication/308062847_Qualitative_research_in_suicidology_Thoughts_on_Hjelmeland_and_Knizek's_'Why_we_need_qualitative_research_in_suicidology'/links/5c102283a6fdcc494fed8e69/Qualitative-research-in-suicidology-Thoughts-on-Hjelmeland-and-Knizeks-Why-we-need-qualitative-research-in-suicidology.pdf)*
+
+Lester therefore argues that it will be impossible to understand, why people kill themselves. Only a qualitative approach may be able to grasp why a specific person committed suicide.
+
+Still, quantitative methods go hand in hand with qualitative methods to approach the topic of suicide, including a broad range of disciplines from clinical psychology to social sciences to literature.
+
+In this project, we will take a look at the suicide rates of Finland. Why Finland? Scandinavian countries are believed to have higher suicide rates than other European countries. Even though this belief [might not be statistically justified](https://nordics.info/show/artikel/is-suicide-more-common-in-the-nordics), it was enough to made us take a look at the [statistic page of Finland](https://www.stat.fi/index_en.html) and discover, that they have plenty of open source data we can use for our project.
+
+Suicide is a sensible topic and needs to be addressed in an empathetic way. Behind each number and each case, is a story. This paper is analysing data from the statistical office of Finland. The final dataset is merged from various datasets covering economical, social and other factors. Most datasets have a monthly resolution
 
 ```{r load datasets, message=FALSE, warning=FALSE}
 # data import
@@ -155,8 +169,11 @@ This plot shows a similar pattern like the plot with the total population number
 
 We now know that the suicide rates in Finland changed a lot since the 70ties - they were rising until the 90ties, and then decreasing. In the following chapters, we will use statistical methods and additional variables to explore eventual correlations with other factors.
 
-# Methods
+\
 
-## Model GLM Poisson
+# 
 
-## Model Neural Networks
+### Content coming soon:
+
+### 
+*-- a Generalised Linear Model with family set to Poisson  -- a Generalised Linear Model with family set to Binomial  -- a Generalised Additive Model  -- a Neural Network  -- a Support Vector Machine  - solve an optimization problem*
