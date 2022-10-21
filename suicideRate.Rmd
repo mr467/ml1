@@ -9,82 +9,154 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(
+	echo = FALSE,
+	message = FALSE,
+	warning = FALSE
+)
 ```
 
-
-# Introduction
-
+# 1. Introduction
 
 ```{r, include=FALSE}
 library(lubridate)
 library(dplyr)
 library(readr)
 library(data.table)
+library(tidyverse)
 ```
 
+Suicide is a sensible topic and needs to be addressed in an empathical way. Behind each number and each case, is a story. This paper is analysing data from the statistical office of Finland. The final dataset is merged from various datasets covering economical, social and other factors. Most datasets have a monthly resolution
 
-Suicide is a sensible topic and needs to be addressed in an empathical way. 
-Behind each number and each case, is a story. 
-This paper is analysing data from the statistical office of Finland. The final 
-dataset is merged from various datasets covering economical, social and other factors. Most datasets have a montly resolution
-
-```{r dataset suicides by monthly data betweend 1971 till 2021}
+```{r load datasets, message=FALSE, warning=FALSE}
 # data import
-d.suicides_monthly <- read_csv("suicides_monthly.csv")
-d.bankruptcy <- read_csv("bankruptcy.csv")
-d.employment <- read_csv("employment.csv")
-d.livingcosts <- read_csv("livingcosts.csv")
-d.trips_abroad <- read_csv("trips_abroad.csv")
-d.average_earnings <- read_csv("average_earnings.csv")
-d.unemployment_duration <- read_csv("unemployment_duration.csv")
+d.suicides_monthly <- read_csv("Data/suicides_monthly.csv") # suicides per month 1971 - 2021
+d.bankruptcy <- read_csv("Data/bankruptcy.csv") # bankruptcies per month 1986 - 2020
+d.employment <- read_csv("Data/employment.csv") # Yearly Employment statistics 1987 - 2000
+d.livingcosts <- read_csv("Data/livingcosts.csv") #living costs per month 1951- Aug 2022
+d.trips_abroad <- read_csv("Data/trips_abroad.csv") #trips abroad per month 2012 - April 2022
+d.average_earnings <- read_csv("Data/average_earnings.csv") # average earnings by 1/4 year 2000 - 2021
+d.unemployment_duration <- read_csv("Data/unemployment_duration.csv") # unemployment duration per month 2006 - Aug 2022
 
-```
-Merge data together for analyzing each parameter
-
-```{r}
-d.suicide_bankruptcy <- left_join(x=d.suicides_monthly, y= d.bankruptcy, by= "Month")
-
-#remove rows without bankruptcy data (Before 1986)
-d.suicide_bankruptcy <- na.omit(d.suicide_bankruptcy)
-
-plot(d.suicide_bankruptcy$`Females Deaths`,d.suicide_bankruptcy$`Bankruptcies instigated, number of employees`)
-
-plot(d.suicide_bankruptcy$`Males Deaths`,d.suicide_bankruptcy$`Bankruptcies instigated, number of employees`)
 
 ```
 
-```{r}
+Merge data
 
-d.suicide_livingcosts <- left_join(x=d.suicides_monthly, y= d.livingcosts by= "Month")
+```{r Merge data and create plots}
 
-#remove rows without bankruptcy data (Before 1986)
-d.suicide_livingcosts <- na.omit(d.suicide_livingcosts)
+#remove columns with redundant information
+d.suicides_monthly$`Underlying cause of death (time series classification)` <- NULL
 
-plot(x = d.suicide_livingcosts$`Females Deaths`, y = d.suicide_livingcosts$`Point figure`)
-plot(d.suicide_livingcosts$`Males Deaths`,d.suicide_livingcosts$`Point figure`)
+#add total of suicides by adding male and female suicide
 
-```
+d.suicides_monthly$Total_deaths <- d.suicides_monthly$`Males Deaths`+d.suicides_monthly$`Females Deaths`
 
-```{r}
+
 #merge multiple datasets into one major (resolution monthly data)
 #Merging by month for the bankruptcy, costofliving(indexed), duration of 
 #unemployment and amount of TripsAbroad
 
 
-d.suicide_merged  <-  left_join(d.suicides_monthly, d.bankruptcy, by='Month') %>%
-                left_join(., d.suicide_livingcosts, by='Month') %>%
-                            left_join(.,d.unemployment_duration, by='Month') %>%
-                            left_join(.,d.trips_abroad, by= 'Month') 
+d.s_month <- list(d.suicides_monthly, d.bankruptcy, d.livingcosts, d.unemployment_duration, d.trips_abroad ) %>% reduce(full_join, by= "Month")
 
-#add total of suicides by adding male and female suicide
 
-d.suicide_merged$Total_deaths <- d.suicide_merged$`Males Deaths`+d.suicide_merged$`Females Deaths`
+ # Plots - erst später mit Kontext - zuerst nur deskriptive Statistiken
+# plot(d.suicide_bankruptcy$`Females Deaths`,d.suicide_bankruptcy$`Bankruptcies instigated, number of employees`)
+
+# plot(d.suicide_bankruptcy$`Males Deaths`,d.suicide_bankruptcy$`Bankruptcies instigated, number of employees`)
+# 
+# plot(x = d.suicide_livingcosts$`Females Deaths`, y = d.suicide_livingcosts$`Point figure`)
+# plot(d.suicide_livingcosts$`Males Deaths`,d.suicide_livingcosts$`Point figure`)
+
+
+
 ```
 
+# 2. Descriptive Statistics
 
-# Methodes
+For the first part of our analysis, we want to answer to questions: 1. Did the relative number of suicides increase, considering population increases? 2. How does suicide relate to Gender and Age?
+
+For this, we will do some basic descriptive statistics. First, we work with a data table indicating the number of suicides per year and by gender 1971 - 2020.
+
+```{r Load data suicides per year and by gender 1971 - 2020}
+
+suicide_1971_2020_gender <- read_delim("Data/suicide_1971-2020_gender.csv", 
+     delim = ";", escape_double = FALSE, col_types = cols(Year = col_integer(), 
+         Total = col_integer(), Males = col_integer(), 
+         Females = col_integer()), trim_ws = TRUE)
+
+```
+
+We will visualize the data in a graph:
+
+```{r Visualization suicides per year and by gender 1971 - 2020}
+
+library(ggplot2)
+
+ggplot(data=suicide_1971_2020_gender, aes(Year)) +
+  geom_line(aes(y=Total, colour = "Total")) +
+  geom_line(aes(y=Males, colour = "Male")) +
+  geom_line(aes(y=Females, colour = "Female"))
+ 
+
+```
+
+This graph already displays a lot of important information:
+
+-   Around 1990, there was a peak in suicides. Before the peak, the numbers were increasing, and after the peak, they are decreasing.
+
+-   In every point at time, the number of males were significantly higher than the number of females, who committed suicide.
+
+Let us check how the population evolved during this period:
+
+```{r Load and visualize data of poulation growth}
+
+population_and_population_increase_by_sex_1950_2022 <- read_delim("Data/population_and_population_increase_by_sex_1950-2022.csv", 
+    delim = ";", escape_double = FALSE, col_types = cols(Year = col_integer(), 
+        `Total Population` = col_integer(), 
+        `Males Population` = col_integer(), 
+        `Females Population` = col_integer(), 
+        `Total increase of Population` = col_integer(), 
+        `ncrease of Population Males` = col_integer(), 
+        `ncrease of Population Females` = col_integer(), 
+        `Increase of Population Males` = col_integer(), 
+        `Increase of Population Females` = col_integer()), 
+    trim_ws = TRUE)
+
+ggplot(data=population_and_population_increase_by_sex_1950_2022, aes(Year))+
+  geom_line(aes(y=`Total Population`, colour = "Total")) +
+  geom_line(aes(y=`Males Population`, colour = "Male")) +
+  geom_line(aes(y=`Females Population`, colour = "Female"))
+
+
+
+
+```
+
+We can see that the population is growing in Finnland. We therefore create another graph which shows the number of suicides per 100 000 inhabitants and compare if the trend looks similar.
+
+```{r Create dataframe and visualize suicide rate/100 000 inhabitants}
+
+
+suicide_rate <- list(population_and_population_increase_by_sex_1950_2022, suicide_1971_2020_gender ) %>% reduce(left_join, by= "Year")
+
+
+suicide_rate <- suicide_rate %>% 
+  mutate(`Cases per 100 000` = suicide_rate$Total / suicide_rate$`Total Population` * 100000)
+
+
+ggplot(data=suicide_rate, aes(Year))+
+   geom_line(aes(y=`Cases per 100 000`))
+ 
+```
+
+This plot shows a similar pattern like the plot with the total population numbers. Hence we assume that the fluctuations of the numbers are not determined by fluctuations of the population, but by other factors.
+
+We now know that the suicide rates in Finland changed a lot since the 70ties - they were rising until the 90ties, and then decreasing. In the following chapters, we will use statistical methods and additional variables to explore eventual correlations with other factors.
+
+# Methods
 
 ## Model GLM Poisson
 
-## Model Neural Networks 
+## Model Neural Networks
