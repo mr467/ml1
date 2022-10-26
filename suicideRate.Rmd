@@ -1,78 +1,177 @@
 ---
-title: "SuicideRate_MachineLearning1"
+title: "Suicide Rates in Finland - Exploration of Correlations"
 author: "Milica Pajkic, Nuria Piller und Marco Rieder"
 date: "`r Sys.Date()`"
-output: html_document
+output:
+  html_document:
+    toc: true
+    toc_depth: 3
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(
+	echo = FALSE,
+	message = FALSE,
+	warning = FALSE
+)
 ```
 
-#Titel
-
-## Suicide Rates in Finland, an analysis based on various factors
-
+# 1. Introduction
 
 ```{r, include=FALSE}
 library(lubridate)
 library(dplyr)
 library(readr)
 library(data.table)
+library(tidyverse)
 ```
 
+Suicide is a complicated topic. And it is still a taboo in modern society. But not only does society struggle with understanding suicidal behavior - also scientists do so.
 
-Suicide is a sensible topic and needs to be addressed in an empathical way. 
-Behind each number and each case, is a story. 
-This paper is analysing data from the statistical office of Finland. Trying to
-find evidence what factors are  is one of the goals. The main
-data source is this dataset
+Studying suicide as a quantitative phenomenon can be especially paradoxical: Suicide is not frequent, and therefore it is hard to model.
 
-```{r dataset suicides by monthly data betweend 1971 till 2021}
+> ...in order to prevent suicide more effectively, we must increase the suicide rate. Only then will we be able to reduce the rate!
+
+*David Lester, 1974, quoted in his essay about [Qualitative Research in Suicidology](https://www.researchgate.net/profile/David-Lester-3/publication/308062847_Qualitative_research_in_suicidology_Thoughts_on_Hjelmeland_and_Knizek's_'Why_we_need_qualitative_research_in_suicidology'/links/5c102283a6fdcc494fed8e69/Qualitative-research-in-suicidology-Thoughts-on-Hjelmeland-and-Knizeks-Why-we-need-qualitative-research-in-suicidology.pdf) (2010)*
+
+Still, quantitative methods do what they can with what they have. [They go hand in hand with qualitative methods](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5598439/) to approach the topic of suicide, including a broad range of disciplines from clinical psychology to social sciences to literature.
+
+In this project, we will take a look at the suicide rates of Finland. Why Finland? Scandinavian countries are believed to have higher suicide rates than other European countries. Even though this belief [might not be statistically justified](https://nordics.info/show/artikel/is-suicide-more-common-in-the-nordics), it was enough to made us take a look at the [statistic page of Finland](https://www.stat.fi/index_en.html) and discover, that they have plenty of open source data we can use for our project.
+
+Suicide is a sensible topic and needs to be addressed in an empathetic way. Behind each number and each case, is a story. This paper is analysing data from the statistical office of Finland. The final dataset is merged from various datasets covering economical, social and other factors. Most datasets have a monthly resolution
+
+```{r load datasets, message=FALSE, warning=FALSE}
 # data import
-d.suicides_monthly <- read_csv("023_12z6_2020m12_20221002-205810.csv")
-d.bankruptcy <- read_csv("001_11fb_2022m02_20221004-204725.csv")
-d.employment <- read_csv("001_115b_2020_20221004-232300.csv")
-d.costOfLviing <- read_csv("001_11xl_2022m08_20221007-084802.csv")
-d.businessTrips <- read_csv("111_13q6_2022m04_20221012-204025.csv")
-d.averageEarningQ <- read_csv("001_11zu_2022q2_20221012-201102.csv")
-d.unemploymentDuration <- read_csv("12ta_2022M08_20221012-204522.csv")
+d.suicides_monthly <- read_csv("Data/suicides_monthly.csv") # suicides per month 1971 - 2021
+d.bankruptcy <- read_csv("Data/bankruptcy.csv") # bankruptcies per month 1986 - 2020
+d.employment <- read_csv("Data/employment.csv") # Yearly Employment statistics 1987 - 2000
+d.livingcosts <- read_csv("Data/livingcosts.csv") #living costs per month 1951- Aug 2022
+d.trips_abroad <- read_csv("Data/trips_abroad.csv") #trips abroad per month 2012 - April 2022
+d.average_earnings <- read_csv("Data/average_earnings.csv") # average earnings by 1/4 year 2000 - 2021
+d.unemployment_duration <- read_csv("Data/unemployment_duration.csv") # unemployment duration per month 2006 - Aug 2022
 
-```
-Merge data together for analyzing each parameter
-
-```{r}
-d.suicide_bankruptcy <- left_join(x=d.suicides_monthly, y= d.bankruptcy, by= "Month")
-
-#remove rows without bankruptcy data (Before 1986)
-d.suicide_bankruptcy <- na.omit(d.suicide_bankruptcy)
-
-plot(d.suicide_bankruptcy$`Females Deaths`,d.suicide_bankruptcy$`Bankruptcies instigated, number of employees`)
-
-plot(d.suicide_bankruptcy$`Males Deaths`,d.suicide_bankruptcy$`Bankruptcies instigated, number of employees`)
 
 ```
 
-```{r}
+Merge data
 
-d.suicide_costOfLiving <- left_join(x=d.suicides_monthly, y= d.costOfLviing, by= "Month")
+```{r Merge data and create plots}
 
-#remove rows without bankruptcy data (Before 1986)
-d.suicide_costOfLiving <- na.omit(d.suicide_costOfLiving)
+#remove columns with redundant information
+d.suicides_monthly$`Underlying cause of death (time series classification)` <- NULL
 
-plot(x = d.suicide_costOfLiving$`Females Deaths`, y = d.suicide_costOfLiving$`Point figure`)
-plot(d.suicide_costOfLiving$`Males Deaths`,d.suicide_costOfLiving$`Point figure`)
+#add total of suicides by adding male and female suicide
 
-```
+d.suicides_monthly$Total_deaths <- d.suicides_monthly$`Males Deaths`+d.suicides_monthly$`Females Deaths`
 
-```{r}
+
 #merge multiple datasets into one major (resolution monthly data)
+#Merging by month for the bankruptcy, costofliving(indexed), duration of 
+#unemployment and amount of TripsAbroad
 
 
-d.suicide_merged  <-  left_join(d.suicides_monthly, d.bankruptcy, by='Month') %>%
-                left_join(., d.costOfLviing, by='Month') %>%
-                            left_join(.,d.unemploymentDuration, by='Month') %>%
-                            left_join(.,d.businessTrips, by= 'Month')
-  
+d.s_month <- list(d.suicides_monthly, d.bankruptcy, d.livingcosts, d.unemployment_duration, d.trips_abroad ) %>% reduce(full_join, by= "Month")
+
+
+ # Plots - erst später mit Kontext - zuerst nur deskriptive Statistiken
+# plot(d.suicide_bankruptcy$`Females Deaths`,d.suicide_bankruptcy$`Bankruptcies instigated, number of employees`)
+
+# plot(d.suicide_bankruptcy$`Males Deaths`,d.suicide_bankruptcy$`Bankruptcies instigated, number of employees`)
+# 
+# plot(x = d.suicide_livingcosts$`Females Deaths`, y = d.suicide_livingcosts$`Point figure`)
+# plot(d.suicide_livingcosts$`Males Deaths`,d.suicide_livingcosts$`Point figure`)
+
+
+
 ```
 
+# 2. Descriptive Statistics
+
+For the first part of our analysis, we want to answer to questions: 1. Did the relative number of suicides increase, considering population increases? 2. How does suicide relate to Gender and Age?
+
+For this, we will do some basic descriptive statistics. First, we work with a data table indicating the number of suicides per year and by gender 1971 - 2020.
+
+```{r Load data suicides per year and by gender 1971 - 2020}
+
+suicide_1971_2020_gender <- read_delim("Data/suicide_1971-2020_gender.csv", 
+     delim = ";", escape_double = FALSE, col_types = cols(Year = col_integer(), 
+         Total = col_integer(), Males = col_integer(), 
+         Females = col_integer()), trim_ws = TRUE)
+
+```
+
+We will visualize the data in a graph:
+
+```{r Visualization suicides per year and by gender 1971 - 2020}
+
+library(ggplot2)
+
+ggplot(data=suicide_1971_2020_gender, aes(Year)) +
+  geom_line(aes(y=Total, colour = "Total")) +
+  geom_line(aes(y=Males, colour = "Male")) +
+  geom_line(aes(y=Females, colour = "Female"))
+ 
+
+```
+
+This graph already displays a lot of important information:
+
+-   Around 1990, there was a peak in suicides. Before the peak, the numbers were increasing, and after the peak, they are decreasing.
+
+-   In every point at time, the number of males were significantly higher than the number of females, who committed suicide.
+
+Let us check how the population evolved during this period:
+
+```{r Load and visualize data of poulation growth}
+
+population_and_population_increase_by_sex_1950_2022 <- read_delim("Data/population_and_population_increase_by_sex_1950-2022.csv", 
+    delim = ";", escape_double = FALSE, col_types = cols(Year = col_integer(), 
+        `Total Population` = col_integer(), 
+        `Males Population` = col_integer(), 
+        `Females Population` = col_integer(), 
+        `Total increase of Population` = col_integer(), 
+        `ncrease of Population Males` = col_integer(), 
+        `ncrease of Population Females` = col_integer(), 
+        `Increase of Population Males` = col_integer(), 
+        `Increase of Population Females` = col_integer()), 
+    trim_ws = TRUE)
+
+ggplot(data=population_and_population_increase_by_sex_1950_2022, aes(Year))+
+  geom_line(aes(y=`Total Population`, colour = "Total")) +
+  geom_line(aes(y=`Males Population`, colour = "Male")) +
+  geom_line(aes(y=`Females Population`, colour = "Female"))
+
+
+
+
+```
+
+We can see that the population is growing in Finnland. We therefore create another graph which shows the number of suicides per 100 000 inhabitants and compare if the trend looks similar.
+
+```{r Create dataframe and visualize suicide rate/100 000 inhabitants}
+
+
+suicide_rate <- list(population_and_population_increase_by_sex_1950_2022, suicide_1971_2020_gender ) %>% reduce(left_join, by= "Year")
+
+
+suicide_rate <- suicide_rate %>% 
+  mutate(`Cases per 100 000` = suicide_rate$Total / suicide_rate$`Total Population` * 100000)
+
+
+ggplot(data=suicide_rate, aes(Year))+
+   geom_line(aes(y=`Cases per 100 000`))
+ 
+```
+
+This plot shows a similar pattern like the plot with the total population numbers. Hence we assume that the fluctuations of the numbers are not determined by fluctuations of the population, but by other factors.
+
+We now know that the suicide rates in Finland changed a lot since the 70ties - they were rising until the 90ties, and then decreasing. In the following chapters, we will use statistical methods and additional variables to explore eventual correlations with other factors.
+
+\
+
+# 
+
+### Content coming soon:
+
+### 
+*-- a Generalised Linear Model with family set to Poisson  -- a Generalised Linear Model with family set to Binomial  -- a Generalised Additive Model  -- a Neural Network  -- a Support Vector Machine  - solve an optimization problem*
