@@ -4,6 +4,9 @@ Authors: Milica, Nuria and Marco
 Initial setup: 30.09.2022
 
 Updates: 
+<<<<<<< HEAD
+5.10.2022: Added data set to import with data about employment status, joined monthly suicide data with bancrupcy data.
+=======
 5.10.2022: Added data set to import with data about employment status, joined monthly suicide data with bankruptcy data.
 
 
@@ -52,3 +55,4 @@ Also, if you followed tutorials or referenced a certain material that might help
 This is just a way to show your appreciation and also to help others get a first hand copy of the project.
 
 #### Source: https://www.freecodecamp.org/news/how-to-write-a-good-readme-file/
+>>>>>>> f195a99f079d2847c444d2883784f88da3eba144
