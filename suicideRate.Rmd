@@ -174,4 +174,22 @@ We now know that the suicide rates in Finland changed a lot since the 70ties - t
 ### Content coming soon:
 
 ### 
-*-- a Generalised Linear Model with family set to Poisson  -- a Generalised Linear Model with family set to Binomial  -- a Generalised Additive Model  -- a Neural Network  -- a Support Vector Machine  - solve an optimization problem*
+
+-   *-- a Generalised Linear Model with family set to Poisson*
+
+-   *-- a Generalised Linear Model with family set to Binomial*
+
+-   *-- a Generalised Additive Model -- a Neural Network*
+
+-   *-- a Support Vector Machine*
+
+## Kapitel Mili
+
+```{r test mili}
+
+
+sdfsdfdsf
+dsfdsf
+```
+
+dsfdsf
