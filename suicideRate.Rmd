@@ -188,8 +188,6 @@ We now know that the suicide rates in Finland changed a lot since the 70ties - t
 ```{r test mili}
 
 
-sdfsdfdsf
-dsfdsf
 ```
 
 dsfdsf
