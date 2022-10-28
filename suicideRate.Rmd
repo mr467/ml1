@@ -50,6 +50,8 @@ d.trips_abroad <- read_csv("Data/trips_abroad.csv") #trips abroad per month 2012
 d.average_earnings <- read_csv("Data/average_earnings.csv") # average earnings by 1/4 year 2000 - 2021
 d.unemployment_duration <- read_csv("Data/unemployment_duration.csv") # unemployment duration per month 2006 - Aug 2022
 
+d.consumer_confidence <- read_csv("Data/consumer_Confidence.csv") # Confidence and outlook of people according to their own but also the country, how is their situation and what are they expecting. 
+
 
 ```
 
@@ -70,7 +72,7 @@ d.suicides_monthly$Total_deaths <- d.suicides_monthly$`Males Deaths`+d.suicides_
 #unemployment and amount of TripsAbroad
 
 
-d.s_month <- list(d.suicides_monthly, d.bankruptcy, d.livingcosts, d.unemployment_duration, d.trips_abroad ) %>% reduce(full_join, by= "Month")
+d.s_month <- list(d.suicides_monthly, d.bankruptcy, d.livingcosts, d.unemployment_duration, d.trips_abroad, d.consumer_confidence) %>% reduce(full_join, by= "Month")
 
 
  # Plots - erst später mit Kontext - zuerst nur deskriptive Statistiken
@@ -195,3 +197,9 @@ We now know that the suicide rates in Finland changed a lot since the 70ties - t
 
 dsfdsf
 >>>>>>> 5fd972314ae21e9596220335fc7e08dff6b6d2c7
+
+
+```{r Poisson Model}
+
+```
+
