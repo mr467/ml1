@@ -110,8 +110,6 @@ We will visualize the data in a graph:
 
 ```{r Visualization suicides per year and by gender 1971 - 2020}
 
-library(ggplot2)
-
 ggplot(data=suicide_1971_2020_gender, aes(Year)) +
   geom_line(aes(y=Total, colour = "Total")) +
   geom_line(aes(y=Males, colour = "Male")) +
@@ -195,6 +193,25 @@ suicide_yearly_age_gender_1998_2020 <- read_delim("Data/suicide_yearly_age_gende
         `95 -` = col_integer(), Males = col_integer(), 
         Females = col_integer()), trim_ws = TRUE)
 View(suicide_yearly_age_gender_1998_2020)
+```
+
+```{r}
+
+ggplot(data=suicide_yearly_age_gender_1998_2020, aes(Year)) +
+  geom_line(aes(y=`Okt 14`, colour = "0 - 14")) +
+  geom_line(aes(y=`15 - 19`, colour = "15 - 19")) +
+  geom_line(aes(y=`20 - 24`, colour = "20 - 24")) +
+  geom_line(aes(y=`25 - 29`, colour = "25 - 29")) +
+  geom_line(aes(y=`30 - 34`, colour = "30 - 34"))
+# 
+# `15 - 19`
+# `25 - 29`
+# `35 - 39`
+# `45 - 49`
+# `55 - 59`
+# `65 - 69`
+# `75 - 79`
+# `85 - 89`
 ```
 
 \
