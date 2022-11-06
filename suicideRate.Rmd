@@ -34,11 +34,11 @@ Studying suicide as a quantitative phenomenon can be especially paradoxical: Sui
 
 *David Lester, 1974, quoted in his essay about [Qualitative Research in Suicidology](https://www.researchgate.net/profile/David-Lester-3/publication/308062847_Qualitative_research_in_suicidology_Thoughts_on_Hjelmeland_and_Knizek's_'Why_we_need_qualitative_research_in_suicidology'/links/5c102283a6fdcc494fed8e69/Qualitative-research-in-suicidology-Thoughts-on-Hjelmeland-and-Knizeks-Why-we-need-qualitative-research-in-suicidology.pdf) (2010)*
 
-Still, quantitative methods do what they can with what they have. [They go hand in hand with qualitative methods](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5598439/) to approach the topic of suicide, including a broad range of disciplines from clinical psychology to social sciences to literature.
+Still, quantitative methods do what they can with what they have. [They go hand in hand with qualitative methods](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5598439/) to approach the topic of suicide, including a broad range of disciplines from clinical psychology to social sciences to literature. The complexity of examining suicide in a quantitative matter is what made us curious about it.
 
 In this project, we will take a look at the suicide rates of Finland. Why Finland? Scandinavian countries are believed to have higher suicide rates than other European countries. Even though this belief [might not be statistically justified](https://nordics.info/show/artikel/is-suicide-more-common-in-the-nordics), it was enough to made us take a look at the [statistic page of Finland](https://www.stat.fi/index_en.html) and discover, that they have plenty of open source data we can use for our project.
 
-Suicide is a sensible topic and needs to be addressed in an empathetic way. Behind each number and each case, is a story. This paper is analysing data from the statistical office of Finland. The final dataset is merged from various datasets covering economical, social and other factors. Most datasets have a monthly resolution
+Suicide is a sensible topic and needs to be addressed in an empathetic way. Behind each number and each case, is a story.
 
 ```{r load datasets, message=FALSE, warning=FALSE}
 # data import
@@ -89,9 +89,13 @@ d.s_month <- list(d.suicides_monthly, d.bankruptcy, d.livingcosts, d.unemploymen
 
 # 2. Descriptive Statistics
 
-For the first part of our analysis, we want to answer to questions: 1. Did the relative number of suicides increase, considering population increases? 2. How does suicide relate to Gender and Age?
+In order to be able to design models which actually make sense, we need some context about the topic itself. Hence, we start with very general descriptive statistics to get a broad overview about the topic. In this chapter, we want to answer to questions:
 
-For this, we will do some basic descriptive statistics. First, we work with a data table indicating the number of suicides per year and by gender 1971 - 2020.
+1.  Did the relative number of suicides increase, considering population increases?
+
+2.  How does suicide relate to Gender and Age?
+
+We work with the following data table indicating the number of suicides per year and by gender 1971 - 2020.
 
 ```{r Load data suicides per year and by gender 1971 - 2020}
 
@@ -148,7 +152,7 @@ ggplot(data=population_and_population_increase_by_sex_1950_2022, aes(Year))+
 
 ```
 
-We can see that the population is growing in Finnland. We therefore create another graph which shows the number of suicides per 100 000 inhabitants and compare if the trend looks similar.
+We can see that the population is growing in Finland. We therefore create another graph which shows the number of suicides per 100 000 inhabitants and compare if the trend looks similar.
 
 ```{r Create dataframe and visualize suicide rate/100 000 inhabitants}
 
@@ -169,6 +173,8 @@ This plot shows a similar pattern like the plot with the total population number
 
 We now know that the suicide rates in Finland changed a lot since the 70ties - they were rising until the 90ties, and then decreasing. In the following chapters, we will use statistical methods and additional variables to explore eventual correlations with other factors.
 
+# 3. Linear Model
+
 \
 
 # 
@@ -176,10 +182,8 @@ We now know that the suicide rates in Finland changed a lot since the 70ties - t
 ### Content coming soon:
 
 ### 
-HEAD
-*-- a Generalised Linear Model with family set to Poisson -- a Generalised Linear Model with family set to Binomial -- a Generalised Additive Model -- a Neural Network -- a Support Vector Machine - solve an optimization problem*
-=======
--   *-- a Generalised Linear Model with family set to Poisson*
+
+HEAD *-- a Generalised Linear Model with family set to Poisson -- a Generalised Linear Model with family set to Binomial -- a Generalised Additive Model -- a Neural Network -- a Support Vector Machine - solve an optimization problem* ======= - *-- a Generalised Linear Model with family set to Poisson*
 
 -   *-- a Generalised Linear Model with family set to Binomial*
 
@@ -194,9 +198,6 @@ HEAD
 
 ```
 
-
-
 ```{r Poisson Model}
 
 ```
-
