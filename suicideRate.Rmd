@@ -171,9 +171,31 @@ ggplot(data=suicide_rate, aes(Year))+
 
 This plot shows a similar pattern like the plot with the total population numbers. Hence we assume that the fluctuations of the numbers are not determined by fluctuations of the population, but by other factors.
 
-We now know that the suicide rates in Finland changed a lot since the 70ties - they were rising until the 90ties, and then decreasing. In the following chapters, we will use statistical methods and additional variables to explore eventual correlations with other factors.
+We now know that the suicide rates in Finland changed a lot since the 70ties - they were rising until the 90ties, and then decreasing. In the following chapters, we will use statistical methods and additional variables to explore eventual correlations.
 
-# 3. Linear Model
+# 3. *Who* is committing suicide? Linear Model with the variables Age and Gender
+
+We first start with a linear regression model. What we want to know: Is there a specific gender and age spectrum, in which the suicide cases appear more frequent? And if so - how do these correlations evolve over time?
+
+To analyse this question, we use a data set indicating the gender of the suicide cases between 1998 and 2020. What is more, the cases are clustered in age groups by 10 years. This is the only data set we found which provides age related information about the cases, which is the reason why we go with that.
+
+```{r Import Dataset Agegroups and Gender 1998 - 2020, message=FALSE, warning=FALSE, include=FALSE}
+library(readr)
+suicide_yearly_age_gender_1998_2020 <- read_delim("Data/suicide_yearly_age_gender_1998-2020.csv", 
+    delim = ";", escape_double = FALSE, col_types = cols(Year = col_date(format = "%Y"), 
+        Total = col_integer(), `Okt 14` = col_integer(), 
+        `15 - 19` = col_integer(), `20 - 24` = col_integer(), 
+        `25 - 29` = col_integer(), `30 - 34` = col_integer(), 
+        `35 - 39` = col_integer(), `40 - 44` = col_integer(), 
+        `45 - 49` = col_integer(), `50 - 54` = col_integer(), 
+        `55 - 59` = col_integer(), `60 - 64` = col_integer(), 
+        `65 - 69` = col_integer(), `70 - 74` = col_integer(), 
+        `75 - 79` = col_integer(), `80 - 84` = col_integer(), 
+        `85 - 89` = col_integer(), `90 - 94` = col_integer(), 
+        `95 -` = col_integer(), Males = col_integer(), 
+        Females = col_integer()), trim_ws = TRUE)
+View(suicide_yearly_age_gender_1998_2020)
+```
 
 \
 
