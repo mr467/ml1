@@ -171,6 +171,11 @@ This plot shows a similar pattern like the plot with the total population number
 
 We now know that the suicide rates in Finland changed a lot since the 70ties - they were rising until the 90ties, and then decreasing. In the following chapters, we will use statistical methods and additional variables to explore eventual correlations.
 
+### 2.2 Other possible explanation for suicide / context of the population at the time
+
+```{}
+```
+
 # 3. *Who* is committing suicide? Linear Model with the variables Age and Gender
 
 We first start with a linear regression model. What we want to know: Is there a specific gender and age spectrum, in which the suicide cases appear more frequent? And if so - how do these correlations evolve over time?
