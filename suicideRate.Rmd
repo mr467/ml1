@@ -173,6 +173,8 @@ We now know that the suicide rates in Finland changed a lot since the 70ties - t
 
 ### 2.2 Other possible explanation for suicide / context of the population at the time
 
+#### Living costs
+
 ```{r living costs}
 
 livingcosts <- read_delim("Data/livingcosts.csv", 
@@ -199,7 +201,101 @@ sc_lc1 <- ggplot(data=livingcosts_right, aes(x=TIME, y=livingcosts_right$point_f
 sc_lc1
 ```
 
-We see that around 1970+ there has been high rise in living costs. We should further consider **unemployment** at the same time.
+We see that around 1970+ there has been high rise in living costs. We should further consider **unemployment** at the same time. \
+[**What we can look at is maybe the percentage of living cost rise to the previous year.**]{.underline}
+
+#### Employment
+
+```{r}
+employment <- read_delim("Data/employment.csv", 
+     delim = ",")
+names(employment)
+```
+
+#### Unemployment
+
+```{r}
+unemployment <- read_delim("Data/unemployment_duration.csv", 
+     delim = ",")
+
+unemployment_right <- unemployment %>% separate(Month, c("Year", "Month"), sep = "M")
+unemployment_right
+
+unemployment_right$TIME <- lubridate::ymd(paste0(unemployment_right$Year,unemployment_right$Month,"01")) 
+unemployment_right
+
+typeof(unemployment_right$`Unemployed jobseekers on calculation date (number) Total`)
+
+#Rename the Variables
+rename(unemployment_right, Total = `Unemployed jobseekers on calculation date (number) Total`)
+```
+
+Now let's plot the data on unemployment. Because the data is categorically, we are going to do a bar plot
+
+```{r}
+#total
+p<-ggplot(data=unemployment_right, aes(x=TIME, y=unemployment_right$`Unemployed jobseekers on calculation date (number) Total`)) +
+  geom_bar(stat="identity")
+p
+
+
+#more than 2 years unemployed
+p1<-ggplot(data=unemployment_right, aes(x=TIME, y=unemployment_right$`Unemployed jobseekers on calculation date (number) 2-3 years`)) +
+  geom_bar(stat="identity")
+p1
+
+```
+
+#### Bankruptcy
+
+```{r}
+bankruptcy <- read_delim("Data/bankruptcy.csv", 
+     delim = ",")
+
+bankruptcy_right <- bankruptcy %>% separate(Month, c("Year", "Month"), sep = "M")
+bankruptcy_right
+
+bankruptcy_right$TIME <- lubridate::ymd(paste0(bankruptcy_right$Year,bankruptcy_right$Month,"01")) 
+bankruptcy_right
+bankruptcy_right %>% glimpse()
+```
+
+```{r}
+bank_p <- ggplot(data=bankruptcy_right, aes(x=TIME, y=bankruptcy_right$`Bankruptcies instigated, number of employees`)) +
+  geom_line()
+bank_p
+
+bank_p1<-ggplot(data=bankruptcy_right, aes(x=TIME, y=bankruptcy_right$`Bankruptcies instigated, number of employees`)) +
+  geom_bar(stat="identity")
+bank_p1
+```
+
+We see a high rise between 1990 and 1997
+
+One thing we could look at is the **difference** to the previous year/month
+
+```{r make an difference column}
+#bankruptcy_right %>%
+  #arrange(TIME, `Bankruptcies instigated, number of employees`) %>%
+  #group_by(TIME) %>%
+  #mutate(diff = `Bankruptcies instigated, number of employees` - 
+        #   lag(`Bankruptcies instigated, number of employees`))
+bankruptcy_diff <- diff(bankruptcy_right$`Bankruptcies instigated, number of employees`)
+bankruptcy_diff <- c(NA, bankruptcy_diff)
+bankruptcy_right$difference <- bankruptcy_diff
+```
+
+```{r plot the diff}
+bank_diff_p1<-ggplot(data=bankruptcy_right, aes(x=TIME, y=difference)) +
+  geom_bar(stat="identity")
+bank_diff_p1
+summary(bankruptcy_right$difference)
+```
+
+```{r}
+ggplot(bankruptcy_right, aes(x=TIME, y=difference)) + 
+  geom_bar(stat = "identity", width=60)
+```
 
 # 3. *Who* is committing suicide? Linear Model with the variables Age and Gender
 
@@ -263,7 +359,6 @@ HEAD *-- a Generalised Linear Model with family set to Poisson -- a Generalised 
 ## Kapitel Mili
 
 ```{r test mili}
-
 
 ```
 
