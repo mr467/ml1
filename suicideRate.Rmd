@@ -173,8 +173,33 @@ We now know that the suicide rates in Finland changed a lot since the 70ties - t
 
 ### 2.2 Other possible explanation for suicide / context of the population at the time
 
-```{}
+```{r living costs}
+
+livingcosts <- read_delim("Data/livingcosts.csv", 
+     delim = ",", escape_double = FALSE, col_types = cols(Year_Month = col_character(), 
+         PointFigure = col_integer()), trim_ws = TRUE)
+#I need to split the string Year and Month
+
+livingcosts_right <- livingcosts %>% separate(Month, c("Year", "Month"), sep = "M")
+livingcosts_right
+typeof(livingcosts_right$`Point figure`)
+livingcosts_right$point_figure_n <- as.numeric(livingcosts_right$`Point figure`)
 ```
+
+```{r livingcosts_right plot}
+
+#livingcosts_right$TIME <- format(as.Date(paste(livingcosts_right$Month, livingcosts_right$Year), format="%m%>"), "%m-%y")
+
+livingcosts_right$TIME <- lubridate::ymd(paste0(livingcosts_right$Year,livingcosts_right$Month,"01")) 
+
+#sc_lc <- plot(livingcosts_right$TIME, livingcosts_right$`Point figure`)
+
+sc_lc1 <- ggplot(data=livingcosts_right, aes(x=TIME, y=livingcosts_right$point_figure_n)) +
+  geom_line()
+sc_lc1
+```
+
+We see that around 1970+ there has been high rise in living costs. We should further consider **unemployment** at the same time.
 
 # 3. *Who* is committing suicide? Linear Model with the variables Age and Gender
 
