@@ -201,7 +201,7 @@ sc_lc1 <- ggplot(data=livingcosts_right, aes(x=TIME, y=livingcosts_right$point_f
 sc_lc1
 ```
 
-We see that around 1970+ there has been high rise in living costs. We should further consider **unemployment** at the same time. \
+We see that around 1970+ there has been high rise in living costs. We should further consider **unemployment** at the same time.\
 [**What we can look at is maybe the percentage of living cost rise to the previous year.**]{.underline}
 
 #### Employment
