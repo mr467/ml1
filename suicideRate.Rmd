@@ -210,6 +210,7 @@ We see that around 1970+ there has been high rise in living costs. We should fur
 employment <- read_delim("Data/employment.csv", 
      delim = ",")
 names(employment)
+view(employment)
 ```
 
 #### Unemployment
@@ -297,7 +298,9 @@ ggplot(bankruptcy_right, aes(x=TIME, y=difference)) +
   geom_bar(stat = "identity", width=60)
 ```
 
-# 3. *Who* is committing suicide? Linear Model with the variables Age and Gender
+# 3. Modelling
+
+## 3.1*Who* is committing suicide? Linear Model with the variables Age and Gender
 
 We first start with a linear regression model. What we want to know: Is there a specific gender and age spectrum, in which the suicide cases appear more frequent? And if so - how do these correlations evolve over time?
 
@@ -340,28 +343,31 @@ ggplot(data=suicide_yearly_age_gender_1998_2020, aes(Year)) +
 # `85 - 89`
 ```
 
-#  GLM Binomial Regression
+## 3.2 GLM Binomial Regression
 
-# 
+### Q: How does the economic side of life (bankruptcy, living costs and unemployment) have an effect before the implementation and after the implementation of the suicide prevention programm in 1992. 
 
-### Content coming soon:
+With a binomial regression we have a dichotom variable. That means, 0 to 1.
+
+```{r firstly we will be doing a subdataset, where the gender variable will be transformed}
+suicide_1970_years_gender <- read_delim("Data/suicide_1971-2020_gender.csv", 
+     delim = ";", escape_double = FALSE, col_types = cols(Year = col_integer(), 
+         Total = col_integer(), Males = col_integer(), 
+         Females = col_integer()), trim_ws = TRUE)
+```
+
+```{r}
+names(suicide_1970_years_gender)
+suicide_1970_years_gender$gender <- 0
+
+```
+
+## 3.3 GLM Poisson
+
+## 3.4 GAM Neural 
+
+## 3.5 Network Support 
+
+## 3.6 Vector Machine
 
 ### 
-
-HEAD *-- a Generalised Linear Model with family set to Poisson -- a Generalised Linear Model with family set to Binomial -- a Generalised Additive Model -- a Neural Network -- a Support Vector Machine - solve an optimization problem* ======= - *-- a Generalised Linear Model with family set to Poisson*
-
--   *-- a Generalised Linear Model with family set to Binomial*
-
--   *-- a Generalised Additive Model -- a Neural Network*
-
--   *-- a Support Vector Machine*
-
-## Kapitel Mili
-
-```{r test mili}
-
-```
-
-```{r Poisson Model}
-
-```
