@@ -1,0 +1,84 @@
+---
+title: "Suicide Rates in Finland - Exploration of Correlations"
+author: "Milica Pajkic, Nuria Piller und Marco Rieder"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: true
+    toc_depth: 3
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+	echo = FALSE,
+	message = FALSE,
+	warning = FALSE
+)
+```
+
+# 1. Introduction
+
+```{r, include=FALSE}
+library(lubridate)
+library(dplyr)
+library(readr)
+library(data.table)
+library(tidyverse)
+```
+
+```{r}
+library(readr)
+ess9 <- read_delim("/Users/milicapajkic/Desktop/ESS9.csv/ESS9.csv", delim = ",")
+```
+
+```{r message=TRUE, paged.print=TRUE}
+unique(ess9$name)
+unique(ess9$gndr)
+unique(ess9$cntry)
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+ess9_de <- subset(ess9, cntry == "DE", select =dweight:domain)
+ess9_ch <- subset(ess9, cntry == "CH", select =dweight:domain)
+ess9_at <- subset(ess9, cntry == "AT", select =dweight:domain)
+```
+
+# Descriptive Statistics
+
+```{r}
+ggplot(data=suicide_1971_2020_gender, aes(Year)) +
+  geom_line(aes(y=Total, colour = "Total")) +
+  geom_line(aes(y=Males, colour = "Male")) +
+  geom_line(aes(y=Females, colour = "Female"))
+```
+
+```{r}
+typeof(unemployment_right$`Unemployed jobseekers on calculation date (number) Total`)
+
+#Rename the Variables
+rename(unemployment_right, Total = `Unemployed jobseekers on calculation date (number) Total`)
+```
+
+# Models
+
+## 1. Linear Model
+
+How much politics are you watching = DV\
+education level by years = IV\
+happy with government = IV\
+Gender = IV\
+Age = IV
+
+```{r overview of the data points that we want to see}
+summary(ess9_de$nwspol)
+sum(is.na(ess9_de$nwspol))
+
+```
+
+```{r}
+
+```
