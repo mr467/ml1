@@ -1,6 +1,6 @@
 ---
-title: "Suicide Rates in Finland - Exploration of Correlations"
-author: "Milica Pajkic, Nuria Piller und Marco Rieder"
+title: "European Survey - What is the political sentiment in Germany Before Covid?"
+author: "Milica Pajkic and Marco Rieder"
 date: "`r Sys.Date()`"
 output:
   html_document:
@@ -37,10 +37,6 @@ unique(ess9$gndr)
 unique(ess9$cntry)
 ```
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
-
 ```{r}
 ess9_de <- subset(ess9, cntry == "DE", select =dweight:domain)
 ess9_ch <- subset(ess9, cntry == "CH", select =dweight:domain)
@@ -50,17 +46,17 @@ ess9_at <- subset(ess9, cntry == "AT", select =dweight:domain)
 # Descriptive Statistics
 
 ```{r}
-ggplot(data=suicide_1971_2020_gender, aes(Year)) +
-  geom_line(aes(y=Total, colour = "Total")) +
-  geom_line(aes(y=Males, colour = "Male")) +
-  geom_line(aes(y=Females, colour = "Female"))
+#ggplot(data=suicide_1971_2020_gender, aes(Year)) +
+ # geom_line(aes(y=Total, colour = "Total")) +
+  #geom_line(aes(y=Males, colour = "Male")) +
+  #geom_line(aes(y=Females, colour = "Female"))
 ```
 
 ```{r}
-typeof(unemployment_right$`Unemployed jobseekers on calculation date (number) Total`)
+#typeof(unemployment_right$`Unemployed jobseekers on calculation date (number) Total`)
 
 #Rename the Variables
-rename(unemployment_right, Total = `Unemployed jobseekers on calculation date (number) Total`)
+#rename(unemployment_right, Total = `Unemployed jobseekers on calculation date (number) Total`)
 ```
 
 # Models
@@ -76,7 +72,6 @@ Age = IV
 ```{r overview of the data points that we want to see}
 summary(ess9_de$nwspol)
 sum(is.na(ess9_de$nwspol))
-
 ```
 
 ```{r}
