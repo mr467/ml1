@@ -69,13 +69,6 @@ ggplot(ess9_de, aes(nwspol, 1)) +
 boxplot(ess9_de$nwspol, outline=FALSE)
 ```
 
-```{r}
-#typeof(unemployment_right$`Unemployed jobseekers on calculation date (number) Total`)
-
-#Rename the Variables
-#rename(unemployment_right, Total = `Unemployed jobseekers on calculation date (number) Total`)
-```
-
 ### **Was muss man alles für eine deskriptive Analyse machen?**
 
 ```{r lineare Regression}
