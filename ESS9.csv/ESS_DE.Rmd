@@ -94,7 +94,7 @@ summary(lm_news.1)
 ## 3.2 GLM Poisson
 
 ```{r}
-# Setting NA values correct for the used parameters replace with na function from naniar package
+# Setting NA values correct for the used parameters replace with NA replace function from naniar package
 
 ess9_poisson <- ess9 %>%
   replace_with_na(replace = list(nwspol =
@@ -106,17 +106,18 @@ ess9_poisson <- ess9 %>%
                                  agea = 999
                                  ))
 
-#testing if change has worked and how many na we have - for three examples
+#testing if change has worked and how many NA we have - for four examples
 
 sum(is.na(ess9_poisson$nwspol))
 sum(is.na(ess9_poisson$eduyrs))
 sum(is.na(ess9_poisson$stfgov))
 sum(is.na(ess9_poisson$agea))
 
+# drop NA for the columns used for the poisson model
 ess9_poisson <- ess9_poisson %>% drop_na((c(nwspol,eduyrs, stfgov, stfdem, gndr, agea)))
 
 
-
+# fit the model and use 5 parameter
 glmP_news <- glm(nwspol ~ eduyrs + stfgov + stfdem + gndr + agea,
                  family = "poisson", ## we specify the distribution!
                  data = ess9_poisson)
