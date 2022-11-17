@@ -28,7 +28,8 @@ library(tidyverse)
 
 ```{r}
 library(readr)
-ess9 <- read_delim("/Users/milicapajkic/Desktop/ESS9.csv/ESS9.csv", delim = ",")
+ess9 <- read_csv("../ESS9.csv")
+
 ```
 
 ```{r message=TRUE, paged.print=TRUE}
@@ -88,6 +89,11 @@ Age = IV
 ```
 
 ## 3.2 GLM Poisson 
+
+```{r}
+
+```
+
 
 ## 3.3 GLM Binominal 
 
