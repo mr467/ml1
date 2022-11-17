@@ -19,12 +19,14 @@ knitr::opts_chunk$set(
 # Getting the Data and installing libraries
 
 ```{r, include=FALSE}
+if (!require("naniar")) install.packages("naniar", dependencies=TRUE)
 library(lubridate)
 library(multcomp)
 library(dplyr)
 library(readr)
 library(data.table)
 library(tidyverse)
+library(naniar)
 ```
 
 ```{r}
@@ -75,6 +77,31 @@ summary(ess9_de$eduade3)
 sum(is.na(ess9_de$eduade3))
 ```
 
+```{r recode Variable resp. clean}
+#NEWS Politics time recoded
+ess9_de$nwspol_na <- ess9_de$nwspol
+ess9_de["nwspol_na"][ess9_de["nwspol_na"] >= 7777] <- NA
+#Educationlevel  recoding
+ess9_de$eduade3.na <- ess9_de$eduade3
+ess9_de["eduade3.na"][ess9_de["eduade3.na"] >= 5555] <- NA
+#Added "Other" also under NA bc we cannot explain what other is
+
+#recode the age variable
+ess9_de$agea.na <- ess9_de$agea
+ess9_de["agea.na"][ess9_de["agea.na"] >= 140] <- NA
+```
+
+```{r checking}
+summary(ess9_de$nwspol)
+summary(ess9_de$nwspol_na)
+sum(is.na(ess9_de$nwspol_na))
+summary(ess9_de$eduade3)
+summary(ess9_de$eduade3.na)
+
+summary(ess9_de$agea)
+summary(ess9_de$agea.na)
+```
+
 # 3. Models
 
 ## 3.1 Linear Model
@@ -86,23 +113,22 @@ Gender = IV\
 Age = IV
 
 ```{r linear Regression}
-lm_news.1 <- lm(nwspol ~ eduade3, data = ess9_de)
+lm_news.1 <- lm(nwspol_na ~ eduade3.na, data = ess9_de)
 summary(lm_news.1)
+```
+
+```{r}
+
 ```
 
 ## 3.2 GLM Poisson
 
-<<<<<<< HEAD
-=======
 ```{r}
 glmP_news <- glm(nwspol ~ edu,
 family = "poisson", ## we specify the distribution!
 data = ess9_ch)
 ```
 
-
-<<<<<<< HEAD:ESS9.csv/ESS_DE.Rmd
->>>>>>> d4e3b5d27daeeeaf1eee2631bb49aa6ce4ecc5e0
 ## 3.3 GLM Binominal
 
 ```{r}
@@ -113,14 +139,11 @@ data = ess9_ch)
 
 # 3.3 GLM Binominal
 
-
 ```{r}
 
 ```
 
-
-## 3.3 GLM Binominal 
->>>>>>> d33abb64bd4520b2c184cf8af74b866bfe227af9:ESS9.csv/rfile/ESS_DE.Rmd
+## 3.3 GLM Binominal
 
 ## 3.4 GAM
 
