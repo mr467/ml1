@@ -94,9 +94,20 @@ summary(lm_news.1)
 
 ## 3.2 GLM Poisson
 
+<<<<<<< Updated upstream
 <<<<<<< HEAD:ESS9.csv/ESS_DE.Rmd
 ## 3.3 GLM Binominal
 =======
+=======
+```{r}
+glmP_news <- glm(nwspol ~ edu,
+family = "poisson", ## we specify the distribution!
+data = ess9_ch)
+```
+
+# 3.3 GLM Binominal
+
+>>>>>>> Stashed changes
 ```{r}
 
 ```
