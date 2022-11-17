@@ -16,10 +16,11 @@ knitr::opts_chunk$set(
 )
 ```
 
-# 1. Introduction
+# Getting the Data
 
 ```{r, include=FALSE}
 library(lubridate)
+library(multcomp)
 library(dplyr)
 library(readr)
 library(data.table)
@@ -28,7 +29,7 @@ library(tidyverse)
 
 ```{r}
 library(readr)
-ess9 <- read_delim("/Users/milicapajkic/Desktop/ESS9.csv/ESS9.csv", delim = ",")
+ess9 <- read_delim("ESS9.csv", delim = ",")
 ```
 
 ```{r message=TRUE, paged.print=TRUE}
@@ -37,11 +38,13 @@ unique(ess9$gndr)
 unique(ess9$cntry)
 ```
 
-```{r}
+```{r making subsets of the whole dataset to only german speaking countries}
 ess9_de <- subset(ess9, cntry == "DE", select =dweight:domain)
 ess9_ch <- subset(ess9, cntry == "CH", select =dweight:domain)
 ess9_at <- subset(ess9, cntry == "AT", select =dweight:domain)
 ```
+
+# 1. Introduction
 
 # 2. Descriptive Statistics
 
@@ -73,6 +76,14 @@ boxplot(ess9_de$nwspol, outline=FALSE)
 #rename(unemployment_right, Total = `Unemployed jobseekers on calculation date (number) Total`)
 ```
 
+### **Was muss man alles für eine deskriptive Analyse machen?**
+
+```{r lineare Regression}
+typeof(ess9_de$eduade3)
+summary(ess9_de$eduade3)
+sum(is.na(ess9_de$eduade3))
+```
+
 # 3. Models
 
 ## 3.1 Linear Model
@@ -84,15 +95,16 @@ Gender = IV\
 Age = IV
 
 ```{r linear Regression}
-
+lm_news.1 <- lm(nwspol ~ eduade3, data = ess9_de)
+summary(lm_news.1)
 ```
 
-## 3.2 GLM Poisson 
+## 3.2 GLM Poisson
 
-## 3.3 GLM Binominal 
+## 3.3 GLM Binominal
 
-## 3.4 GAM 
+## 3.4 GAM
 
-## 3.5 Neural Network 
+## 3.5 Neural Network
 
 ## 3.6 Support Vector Machine
