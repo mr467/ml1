@@ -371,3 +371,53 @@ suicide_1970_years_gender$gender <- 0
 ## 3.6 Vector Machine
 
 ### 
+<<<<<<< HEAD
+=======
+HEAD
+*-- a Generalised Linear Model with family set to Poisson -- a Generalised Linear Model with family set to Binomial -- a Generalised Additive Model -- a Neural Network -- a Support Vector Machine - solve an optimization problem*
+=======
+-   *-- a Generalised Linear Model with family set to Poisson*
+
+-   *-- a Generalised Linear Model with family set to Binomial*
+
+-   *-- a Generalised Additive Model -- a Neural Network*
+
+-   *-- a Support Vector Machine*
+
+## Kapitel Mili
+
+```{r test mili}
+
+
+```
+
+## Poisson model
+
+```{r Poisson Model}
+
+# Add column with factor for season(based on "Month" Column) to use it with the Poisson Model (as in the smoker example)
+getSeason <- function(input.date){
+  numeric.date <- 100*month(input.date)+day(input.date)
+  ## input Seasons upper limits in the form MMDD in the "break =" option:
+  cuts <- base::cut(numeric.date, breaks = c(0,319,0620,0921,1220,1231)) 
+  # rename the resulting groups (could've been done within cut(...levels=) if "Winter" wasn't double
+  levels(cuts) <- c("Winter","Spring","Summer","Fall","Winter")
+  return(cuts)
+}
+
+#remove M in Month column and bring it to standard format
+d.s_month$Month <- gsub("[^0-9.-]", "", d.s_month$Month)
+d.s_month$Month <- as.Date(paste0(as.character(d.s_month$Month),
+                                         '01'), format='%Y%m%d')
+
+d.s_month$Season <- getSeason(d.s_month$Month)
+
+# first model run, probably have to adjust data and re-run it.
+glm.suicide <- glm(Total_deaths ~ "Season",
+family = "poisson", ## we specify the distribution!
+data = d.s_month)
+
+d.suicide_merged
+```
+
+>>>>>>> c8407db (Started with GLM Poisson, changed date format from 1950M01 to 01-01-1950 and added new column with seasonal info)

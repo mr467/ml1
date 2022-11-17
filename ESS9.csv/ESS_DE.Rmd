@@ -28,11 +28,11 @@ library(tidyverse)
 ```
 
 ```{r}
-library(readr)
-ess9 <- read_delim("ESS9.csv", delim = ",")
-```
 
-```{r message=TRUE, paged.print=TRUE}
+ess9 <- read_delim("ESS9.csv", delim = ",")
+
+ess9 <- read_csv("../ESS9.csv")
+
 unique(ess9$name)
 unique(ess9$gndr)
 unique(ess9$cntry)
@@ -94,7 +94,16 @@ summary(lm_news.1)
 
 ## 3.2 GLM Poisson
 
+<<<<<<< HEAD:ESS9.csv/ESS_DE.Rmd
 ## 3.3 GLM Binominal
+=======
+```{r}
+
+```
+
+
+## 3.3 GLM Binominal 
+>>>>>>> d33abb64bd4520b2c184cf8af74b866bfe227af9:ESS9.csv/rfile/ESS_DE.Rmd
 
 ## 3.4 GAM
 
