@@ -93,9 +93,34 @@ summary(lm_news.1)
 ## 3.2 GLM Poisson
 
 ```{r}
-glmP_news <- glm(nwspol ~ edu,
-family = "poisson", ## we specify the distribution!
-data = ess9_ch)
+glmP_news <- glm(nwspol ~ eduyrs + stfgov + stfdem + gndr + agea,
+                 family = "poisson", ## we specify the distribution!
+                 data = ess9)
+
+summary(glmP_news)
+
+
+set.seed(2)
+sim.data.ess9.Poisson <- simulate(glmP_news)
+##
+NROW(sim.data.ess9.Poisson)
+head(sim.data.ess9.Poisson)
+
+
+ggplot(mapping = aes(y = sim.data.ess9.Poisson$sim_1,
+                     x = as.factor(ess9$gndr))) +
+  geom_boxplot() +
+  geom_hline(yintercept = 0) +
+  ylab("simulated media consumption \n(assuming Poisson dist)") +
+  xlab("Gender")
+```
+
+
+```{r}
+glmQ_news <- glm(nwspol ~ eduyrs + stfgov + stfdem + gndr + agea,
+                 family = "quasipoisson", ## we specify the distribution!
+                 data = ess9)
+summary(glmQ_news)
 ```
 
 
