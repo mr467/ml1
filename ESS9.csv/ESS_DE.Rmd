@@ -16,7 +16,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# Getting the Data
+# Getting the Data and installing libraries
 
 ```{r, include=FALSE}
 library(lubridate)
@@ -29,9 +29,7 @@ library(tidyverse)
 
 ```{r}
 
-ess9 <- read_delim("ESS9.csv", delim = ",")
-
-ess9 <- read_csv("../ESS9.csv")
+ess9 <- read_csv("ESS9.csv")
 
 unique(ess9$name)
 unique(ess9$gndr)
@@ -93,6 +91,13 @@ summary(lm_news.1)
 ```
 
 ## 3.2 GLM Poisson
+
+```{r}
+glmP_news <- glm(nwspol ~ edu,
+family = "poisson", ## we specify the distribution!
+data = ess9_ch)
+```
+
 
 <<<<<<< HEAD:ESS9.csv/ESS_DE.Rmd
 ## 3.3 GLM Binominal
