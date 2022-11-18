@@ -26,6 +26,11 @@ library(readr)
 library(data.table)
 library(tidyverse)
 library(naniar)
+library(neuralnet)
+library(nnet)
+library(caret)
+library(gamlss.add)
+library(ggplot2)
 ```
 
 ```{r}
@@ -86,6 +91,7 @@ happy with government = IV\
 Gender = IV\
 Age = IV
 
+
 ```{r linear Regression}
 lm_news.1 <- lm(nwspol ~ eduade3, data = ess9_de)
 summary(lm_news.1)
@@ -98,12 +104,14 @@ summary(lm_news.1)
 
 ess9_poisson <- ess9 %>%
   replace_with_na(replace = list(nwspol =
-                                   c(6666,7777,8888,9999),
+                                   c(6666, 7777, 8888, 9999),
                                  eduyrs = c(77, 88, 99),
+                                 stfeco = c(77, 88, 99),
                                  stfgov = c(77, 88, 99),
                                  stfdem = c(77, 88, 99),
                                  gndr = 9,
-                                 agea = 999
+                                 agea = 999,
+                                 rlgdgr = c(77, 88, 99)
                                  ))
 
 #testing if change has worked and how many NA we have - for four examples
@@ -114,11 +122,12 @@ sum(is.na(ess9_poisson$stfgov))
 sum(is.na(ess9_poisson$agea))
 
 # drop NA for the columns used for the poisson model
-ess9_poisson <- ess9_poisson %>% drop_na((c(nwspol,eduyrs, stfgov, stfdem, gndr, agea)))
+ess9_poisson <- ess9_poisson %>% drop_na((c(
+  nwspol,eduyrs, stfeco, stfgov, stfdem, gndr, agea, rlgdgr)))
 
 
 # fit the model and use 5 parameter
-glmP_news <- glm(nwspol ~ eduyrs + stfgov + stfdem + gndr + agea,
+glmP_news <- glm(nwspol ~ eduyrs + stfeco + stfgov + stfdem + gndr + agea + rlgdgr,
                  family = "poisson", ## we specify the distribution!
                  data = ess9_poisson)
 
@@ -139,13 +148,18 @@ ggplot(mapping = aes(y = sim.data.ess9.Poisson$sim_1,
   ylab("simulated media consumption \n(assuming Poisson dist)") +
   xlab("Gender")
 ```
+### 3.2.1 GLM Quasi-Poisson
 
 
 ```{r}
-glmQ_news <- glm(nwspol ~ eduyrs + stfgov + stfdem + gndr + agea,
+
+glmQ_news <- glm(nwspol ~ eduyrs + stfeco + stfgov + stfdem + gndr + agea + rlgdgr,
                  family = "quasipoisson", ## we specify the distribution!
                  data = ess9)
 summary(glmQ_news)
+
+
+
 ```
 
 
@@ -163,5 +177,50 @@ summary(glmQ_news)
 ## 3.4 GAM
 
 ## 3.5 Neural Network
+
+```{r message=FALSE, warning=FALSE}
+max <- apply(ess9, 2, max)
+min <- apply(ess9, 2, min)
+```
+
+
+```{r message=FALSE, warning=FALSE}
+str(ess9)
+#ess9_scaled <- as.data.frame(scale(ess9, center = min, scale = max - min))
+
+test_ess9 <-scale(ess9, center = min, scale = max - min)
+
+
+set.seed(42)
+tuGrid <- expand.grid(.layer1=c(1:4), .layer2=c(0,2), .layer3=c(0))
+
+trCtrl <- trainControl(
+  method = 'repeatedcv', 
+  number = 5, 
+  repeats = 10, 
+  returnResamp = 'final'
+)
+
+models <- train(
+  x = ess9 %>% dplyr::select(-nwspol),
+  y = ess9_scaled %>% pull(nwspol),
+  method = 'neuralnet', metric = 'RMSE', 
+  linear.output = TRUE,
+  # be careful, does only work on x!
+  preProcess = c('center', 'scale'),
+  tuneGrid = tuGrid,
+  trControl = trCtrl
+)
+```
+
+```{r}
+plot(models)
+```
+and extract the best model
+
+```{r}
+plot(models$finalModel)
+```
+
 
 ## 3.6 Support Vector Machine
