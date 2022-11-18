@@ -118,7 +118,8 @@ summary(lm_news.1)
 ```
 
 ```{r}
-
+lm_news.2 <- lm(nwspol_na ~ eduade3.na + agea.na, data = ess9_de)
+summary(lm_news.2)
 ```
 
 ## 3.2 GLM Poisson
