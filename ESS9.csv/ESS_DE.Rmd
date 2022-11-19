@@ -50,11 +50,14 @@ ess9_at <- subset(ess9, cntry == "AT", select =dweight:domain)
 
 # 1. Introduction
 
+The European Social Survey (ESS) is a large scale survey conducted in over 38 countries within Europe. Focusing on public attitudes and values and changes within time. This paper is evaluating the ninth version of the survey (ESS9) form 2018.
+
+
 # 2. Descriptive Statistics
 
 ```{r }
-summary(ess9_de$nwspol)
-sum(is.na(ess9_de$nwspol))
+summary(ess9_poisson$nwspol)
+sum(is.na(ess9_poisson$nwspol))
 ```
 
 ```{r echo=FALSE}
@@ -99,19 +102,25 @@ summary(lm_news.1)
 
 ## 3.2 GLM Poisson
 
+The media consumption in minutes is count data, therefore the GLM Poisson model can be used and indicate how the 
+
 ```{r}
 # Setting NA values correct for the used parameters replace with NA replace function from naniar package
 
 ess9_poisson <- ess9 %>%
   replace_with_na(replace = list(nwspol =
                                    c(6666, 7777, 8888, 9999),
+                                 polintr = c(7,8,9),
+                                 eisced = c(77,88,99),
                                  eduyrs = c(77, 88, 99),
                                  stfeco = c(77, 88, 99),
                                  stfgov = c(77, 88, 99),
                                  stfdem = c(77, 88, 99),
                                  gndr = 9,
                                  agea = 999,
-                                 rlgdgr = c(77, 88, 99)
+                                 rlgdgr = c(77, 88, 99),
+                                 netustm = c(6666, 7777, 8888, 9999),
+                                 ggchld = c(6,7,8,9)
                                  ))
 
 #testing if change has worked and how many NA we have - for four examples
@@ -121,26 +130,45 @@ sum(is.na(ess9_poisson$eduyrs))
 sum(is.na(ess9_poisson$stfgov))
 sum(is.na(ess9_poisson$agea))
 
+
+
 # drop NA for the columns used for the poisson model
 ess9_poisson <- ess9_poisson %>% drop_na((c(
-  nwspol,eduyrs, stfeco, stfgov, stfdem, gndr, agea, rlgdgr)))
+  nwspol,eduyrs, stfeco, stfgov, stfdem, gndr, agea, rlgdgr, polintr)))
+
+
+
+ggplot(data = ess9_poisson,
+mapping = aes(y = nwspol,
+x = eduyrs)) +
+geom_hline(yintercept = 0) + ## to highlight the lower bound of the data
+geom_boxplot()
+
 
 
 # fit the model and use 5 parameter
-glmP_news <- glm(nwspol ~ eduyrs + stfeco + stfgov + stfdem + gndr + agea + rlgdgr,
+glmP_news <- glm(nwspol ~ polintr + eduyrs + netusoft + stfeco + stfgov +
+                   stfdem + gndr + agea + rlgdgr,
                  family = "poisson", ## we specify the distribution!
                  data = ess9_poisson)
 
 summary(glmP_news)
+```
 
+Now we simulate with our model the average media consumption for Females and Males.
+```{r}
 
-set.seed(2)
+#simulate the news consumption in minutes value from the model for the two gender
+
+set.seed(2) # for reproducibility
+#simulate the data from glm poisson
 sim.data.ess9.Poisson <- simulate(glmP_news)
 ##
+
 NROW(sim.data.ess9.Poisson)
 head(sim.data.ess9.Poisson)
 
-
+#plot data as bar plot, with gender as factor to get two groups to compare, without factoring only one plot would show.
 ggplot(mapping = aes(y = sim.data.ess9.Poisson$sim_1,
                      x = as.factor(ess9_poisson$gndr))) +
   geom_boxplot() +
@@ -176,6 +204,28 @@ summary(glmQ_news)
 
 ## 3.4 GAM
 
+```{r}
+
+#ploting news consumption and highest level of education (standardized)
+ggplot(data = ess9_poisson ,mapping = aes(y = nwspol ,
+                                  x = as.factor (eisced))) +
+  geom_boxplot()
+
+
+ggplot(data = ess9_poisson ,mapping = aes(y = nwspol ,
+                                  x = as.factor (ggchld))) +
+  geom_boxplot()
+
+
+
+ggplot(data = ess9_poisson ,mapping = aes(y = nwspol ,
+                                  x =  (agea))) +
+  geom_point()+
+  geom_smooth()
+
+```
+
+
 ## 3.5 Neural Network
 
 ```{r message=FALSE, warning=FALSE}
@@ -185,10 +235,8 @@ min <- apply(ess9, 2, min)
 
 
 ```{r message=FALSE, warning=FALSE}
-str(ess9)
 #ess9_scaled <- as.data.frame(scale(ess9, center = min, scale = max - min))
 
-test_ess9 <-scale(ess9, center = min, scale = max - min)
 
 
 set.seed(42)
@@ -203,7 +251,7 @@ trCtrl <- trainControl(
 
 models <- train(
   x = ess9 %>% dplyr::select(-nwspol),
-  y = ess9_scaled %>% pull(nwspol),
+  y = ess9 %>% pull(nwspol),
   method = 'neuralnet', metric = 'RMSE', 
   linear.output = TRUE,
   # be careful, does only work on x!
