@@ -69,10 +69,6 @@ ggplot(ess9_de, aes(nwspol, 1)) +
   xlim(c(0, 200))
 ```
 
-```{r}
-
-```
-
 ### **Was muss man alles für eine deskriptive Analyse machen?**
 
 ```{r lineare Regression}
@@ -98,6 +94,10 @@ ess9_de["eduade3.na"][ess9_de["eduade3.na"] >= 5555] <- NA
 ess9_de$agea.na <- ess9_de$agea
 ess9_de["agea.na"][ess9_de["agea.na"] >= 140] <- NA
 
+#record the gender variable
+ess9_de$gndr.na <- ess9_de$gndr
+ess9_de["gndr.na"][ess9_de["gndr.na"] >= 9] <- NA
+ess9_de$gndr.fac <- factor(ess9_de$gndr.na)
 ```
 
 ```{r checking}
@@ -110,6 +110,9 @@ summary(as.factor(ess9_de$eduade3.na))
 
 summary(ess9_de$agea)
 summary(ess9_de$agea.na)
+
+summary(ess9_de$gndr.fac)
+sum(is.na(ess9_de$gndr.na))
 ```
 
 ```{r}
@@ -117,8 +120,22 @@ boxplot(ess9_de$nwspol_na, outline = FALSE)
 ```
 
 ```{r}
-plot(ess9_de$nwspol_na ~ ess9_de$eduade3.na)
+ggplot(ess9_de, aes(eduade3.na, nwspol_na)) + 
+  geom_point() +
+  ylim(0, 500)
 ```
+
+```{r}
+ggplot(ess9_de, aes(agea.na, nwspol_na)) + 
+  geom_point() +
+  ylim(0, 500)
+```
+
+```{r}
+boxplot(ess9_de$nwspol_na, ess9_de$gndr.fac, outline = FALSE)
+```
+
+### wieso ist gender = 2 so komisch?
 
 ##### Binomial Model
 
@@ -157,8 +174,22 @@ summary(lm_news.1)
 ```
 
 ```{r}
+coef(lm_news.1)
+```
+
+```{r}
+plot(nwspol_na ~ eduade3.na, data = ess9_de, main = "Minutes spent on Political News")
+abline(lm_news.1)
+```
+
+```{r}
 lm_news.2 <- lm(nwspol_na ~ eduade3.na + agea.na, data = ess9_de)
 summary(lm_news.2)
+```
+
+```{r}
+lm_news.3 <- lm(nwspol_na ~ eduade3.na + agea.na + gndr.fac, data = ess9_de)
+summary(lm_news.3)
 ```
 
 ## 3.2 GLM Poisson
