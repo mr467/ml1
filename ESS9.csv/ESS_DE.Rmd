@@ -164,18 +164,20 @@ summary(ess9_de$vote)
 #1 = yes
 #2 = no
 #elligible
-ess9_de$vote_na <- ess9_de$nwspol
+ess9_de$vote_na <- ess9_de$vote
 ess9_de["vote_na"][ess9_de["vote_na"] >= 4] <- NA
 summary(ess9_de$vote_na)
-typeof(ess9_de$vote)
-
+summary(as.factor(ess9_de$vote.na))
 ```
 
 ```{r}
-ess9_de$pstplonl_f <- as.factor(ifelse(ess9_de$pstplonl <2, 'Y', 'Nein'))
-is.na(ess9_de$pstplonl_f)[8] <- TRUE
-summary(ess9_de$pstplonl_f)
-typeof(ess9_de$pstplonl_f)
+ess9_de$postonline <- factor(ess9_de$pstplonl)
+ess9_de$postonline<-ifelse(ess9_de$postonline==1,1,0)
+#ess9_de["pstplonl.na"][ess9_de["pstplonl.na"] > 2] <- NA
+summary(ess9_de$postonline)
+summary(as.factor(ess9_de$postonline))
+ess9_de$postonline <- as.integer(ess9_de$postonline)
+typeof(ess9_de$postonline)
 ```
 
 # 3. Models
