@@ -61,6 +61,7 @@ sum(is.na(ess9_de$nwspol))
 summary(ess9_de$gndr)
 sum(is.na(ess9_de$gndr))
 typeof(ess9_de$nwspol)
+
 ```
 
 ```{r}
@@ -75,6 +76,7 @@ ggplot(ess9_de, aes(nwspol, 1)) +
 typeof(ess9_de$eduade3)
 summary(ess9_de$eduade3)
 sum(is.na(ess9_de$eduade3))
+
 ```
 
 #### Cleaning of the data
@@ -98,6 +100,19 @@ ess9_de["agea.na"][ess9_de["agea.na"] >= 140] <- NA
 ess9_de$gndr.na <- ess9_de$gndr
 ess9_de["gndr.na"][ess9_de["gndr.na"] >= 9] <- NA
 ess9_de$gndr.fac <- factor(ess9_de$gndr.na)
+
+#clean the satisfaction with government
+ess9_de$stfdem.na <- ess9_de$stfdem
+ess9_de["stfdem.na"][ess9_de["stfdem.na"] > 10] <- NA
+
+#clean Boycott certain products
+ess9_de$bctprd.na <- ess9_de$bctprd
+ess9_de["bctprd.na"][ess9_de["bctprd.na"] > 2] <- NA
+ess9_de$boycott.fac <- factor(ess9_de$bctprd.na)
+
+#clean left-right scale
+ess9_de$polscale.na <- ess9_de$lrscale
+ess9_de["polscale.na"][ess9_de["polscale.na"] > 10] <- NA
 ```
 
 ```{r checking}
@@ -113,6 +128,11 @@ summary(ess9_de$agea.na)
 
 summary(ess9_de$gndr.fac)
 sum(is.na(ess9_de$gndr.na))
+summary(as.factor(ess9_de$stfdem.na))
+sum(is.na(ess9_de$stfdem.na))
+sum(is.na(ess9_de$bctprd.na))
+
+sum(is.na(ess9_de$polscale.na))
 ```
 
 ```{r}
@@ -178,13 +198,51 @@ coef(lm_news.1)
 ```
 
 ```{r}
+summary(lm_news.1)$coefficients
+```
+
+```{r}
+confint(lm_news.1)
+```
+
+```{r}
 plot(nwspol_na ~ eduade3.na, data = ess9_de, main = "Minutes spent on Political News")
 abline(lm_news.1)
+```
+
+```{r fitted values}
+fit_lm_news.1 <- fitted(lm_news.1)
+str(fit_lm_news.1)
+head(fit_lm_news.1)
+```
+
+```{r fitted values plot lm1}
+plot(nwspol_na ~ eduade3.na, data = ess9_de, 
+     main = "Minutes spent on Political News", 
+     col = "darkgrey")
+points(fit_lm_news.1 ~ eduade3.na, 
+       col = "purple", 
+       pch = 19, 
+       data = ess9_de)
+abline(lm_news.1, col = "black")
 ```
 
 ```{r}
 lm_news.2 <- lm(nwspol_na ~ eduade3.na + agea.na, data = ess9_de)
 summary(lm_news.2)
+```
+
+```{r}
+coef(lm_news.2)
+```
+
+```{r}
+summary(lm_news.2)$coefficients
+```
+
+```{r}
+plot(nwspol_na ~ eduade3.na + agea.na, data = ess9_de, main = "Minutes spent on Political News")
+abline(lm_news.2)
 ```
 
 ```{r}
