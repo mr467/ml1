@@ -262,6 +262,8 @@ data = ess9_ch)
 
 ## 3.3 GLM Binominal
 
+### maybe change the "direction" of yes/no to higher number = yes
+
 ```{r clean data}
 #y = posted online
 summary(as.factor(ess9_de$postonline))
@@ -271,6 +273,44 @@ summary(ess9_de$agea.na)
 ess9_de$polint <- ess9_de$polintr
 ess9_de["polint"][ess9_de["polint"] > 4] <- NA
 summary(as.factor(ess9_de$polint))
+#x3 pol system allows (1 till 3 = no)
+ess9_de$gov.allows <- ess9_de$psppsgva
+ess9_de["gov.allows"][ess9_de["gov.allows"] > 5] <- NA
+summary(as.factor(ess9_de$gov.allows))
+#trust in parliament (0-5 = no at all)
+ess9_de$trustparl <- ess9_de$trstprl
+ess9_de["trustparl"][ess9_de["trustparl"] > 10] <- NA
+summary(as.factor(ess9_de$trustparl))
+#political scale (0-5 = left)
+summary(as.factor(ess9_de$polscale.na))
+```
+
+```{r subset of dataframe because of differen NA}
+ess9_binary <- ess9_de[, c("postonline", "agea.na", "polint", "gov.allows", "trustparl", "polscale.na")]
+ess9_binary.na <- ess9_binary[complete.cases(ess9_binary),]
+```
+
+```{r EDA}
+ggplot(data = ess9_binary.na,
+       mapping = aes(y = postonline,
+                     x = agea.na))+
+  geom_point()
+```
+
+```{r glm model for binary data}
+glm_pol.0 <- glm(postonline ~ agea.na, data = ess9_binary.na,
+                 family = "binomial")
+summary(glm_pol.0)
+```
+
+```{r}
+fitted(glm_pol.0) %>% round(digits = 2)
+```
+
+```{r}
+fitted_glm.pol.0.disc <- ifelse(fitted(glm_pol.0) < 0.5, n = 0, y = 1)
+d.obs.fit.glm.pol.0 <- data.frame(obs = ess9_binary.na$postonline, 
+                                  fitted = fitted_glm.pol.0.disc)
 ```
 
 ## 3.4 GAM
