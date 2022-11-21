@@ -31,10 +31,11 @@ library(nnet)
 library(caret)
 library(gamlss.add)
 library(ggplot2)
+library(mgcv)
+
 ```
 
 ```{r}
-
 ess9 <- read_csv("ESS9.csv")
 
 unique(ess9$name)
@@ -52,12 +53,19 @@ ess9_at <- subset(ess9, cntry == "AT", select =dweight:domain)
 
 The European Social Survey (ESS) is a large scale survey conducted in over 38 countries within Europe. Focusing on public attitudes and values and changes within time. This paper is evaluating the ninth version of the survey (ESS9) form 2018.
 
+## 1.1 Selection of parameters
+
+The survey is really comprehensive and consists out of 572 variables. Some of them are related to others and only answered by a subset of participants. 
+
+## 1.2 Goal
 
 # 2. Descriptive Statistics
 
+First 
+
 ```{r }
-summary(ess9_poisson$nwspol)
-sum(is.na(ess9_poisson$nwspol))
+summary(ess9$nwspol)
+sum(is.na(ess9$nwspol))
 ```
 
 ```{r echo=FALSE}
@@ -120,7 +128,12 @@ ess9_poisson <- ess9 %>%
                                  agea = 999,
                                  rlgdgr = c(77, 88, 99),
                                  netustm = c(6666, 7777, 8888, 9999),
-                                 ggchld = c(6,7,8,9)
+                                 netusoft = c(7,8,9),
+                                 ggchld = c(6,7,8,9),
+                                 psppsgva = c(7,8,9),
+                                 grspnum = c(666666666,777777777,888888888,999999999)
+
+
                                  ))
 
 #testing if change has worked and how many NA we have - for four examples
@@ -130,19 +143,20 @@ sum(is.na(ess9_poisson$eduyrs))
 sum(is.na(ess9_poisson$stfgov))
 sum(is.na(ess9_poisson$agea))
 
+# defining subset for study and models
+ess9_factor <- c("nwspol", "polintr", "eisced", "eduyrs","stfeco", "stfgov", "stfdem", "gndr", "agea","rlgdgr", "netustm", "netusoft", "ggchld", "psppsgva", "grspnum")
 
+#subsetting the dataset with the defined parameters
+ess9_poisson <- ess9_poisson[ess9_factor]
 
 # drop NA for the columns used for the poisson model
-ess9_poisson <- ess9_poisson %>% drop_na((c(
-  nwspol,eduyrs, stfeco, stfgov, stfdem, gndr, agea, rlgdgr, polintr)))
+ess9_poisson <- ess9_poisson %>% drop_na((ess9_factor))
 
 
 
-ggplot(data = ess9_poisson,
-mapping = aes(y = nwspol,
-x = eduyrs)) +
-geom_hline(yintercept = 0) + ## to highlight the lower bound of the data
-geom_boxplot()
+ggplot(data = ess9_poisson, mapping = aes(y = nwspol,x = as.factor(gndr))) +
+  geom_hline(yintercept = 0) + ## to highlight the lower bound of the data
+  geom_boxplot()
 
 
 
@@ -156,7 +170,7 @@ summary(glmP_news)
 ```
 
 Now we simulate with our model the average media consumption for Females and Males.
-```{r}
+```{r poisson}
 
 #simulate the news consumption in minutes value from the model for the two gender
 
@@ -179,7 +193,7 @@ ggplot(mapping = aes(y = sim.data.ess9.Poisson$sim_1,
 ### 3.2.1 GLM Quasi-Poisson
 
 
-```{r}
+```{r quasipoisson}
 
 glmQ_news <- glm(nwspol ~ eduyrs + stfeco + stfgov + stfdem + gndr + agea + rlgdgr,
                  family = "quasipoisson", ## we specify the distribution!
@@ -204,41 +218,115 @@ summary(glmQ_news)
 
 ## 3.4 GAM
 
-```{r}
+```{r GAM}
+
+# Multi plots for News Consumption
+
+pairs((nwspol) ~ . , data = ess9_poisson, pch = ".", upper.panel = panel.smooth)
+
 
 #ploting news consumption and highest level of education (standardized)
 ggplot(data = ess9_poisson ,mapping = aes(y = nwspol ,
                                   x = as.factor (eisced))) +
   geom_boxplot()
 
-
+# ploting news and if there are grand childern 
 ggplot(data = ess9_poisson ,mapping = aes(y = nwspol ,
                                   x = as.factor (ggchld))) +
   geom_boxplot()
 
 
-
+# ploting news and age of participants
 ggplot(data = ess9_poisson ,mapping = aes(y = nwspol ,
                                   x =  (agea))) +
   geom_point()+
   geom_smooth()
+
+#plotting news and education
+
+ggplot(data = ess9_poisson ,mapping = aes(y = nwspol ,
+                                  x =  (eduyrs))) +
+  geom_point()+
+  geom_smooth()
+
+
+ggplot(data = ess9_poisson ,mapping = aes(y = nwspol ,
+                                  x =  (grspnum))) +
+  geom_point()+
+  geom_smooth()
+
+# ess9_gam <- gam((nwspol) ~ s(eduyrs, k= 1) + s(gndr, k= 1) + s(agea, k= 1) +
+#                   s(netustm, k= 1) + s(grspnum, k= 1),
+#                 data = ess9_poisson)
+
 
 ```
 
 
 ## 3.5 Neural Network
 
-```{r message=FALSE, warning=FALSE}
-max <- apply(ess9, 2, max)
-min <- apply(ess9, 2, min)
+
+```{r}
+str(ess9_poisson)
 ```
 
 
+### Prepare for Training
+
+```{r}
+set.seed(123)
+indices <- createDataPartition(ess9_poisson$nwspol, p = 0.8, list = FALSE)
+train <- ess9_poisson %>% slice(indices)
+test <- ess9_poisson %>% slice(-indices)
+boxplot(train$nwspol, test$nwspol, ess9_poisson %>% sample_frac(0.2) %>% pull(nwspol))
+```
+
+And this time we will also scale the data (by hand for educational purposes)
+
+```{r}
+max <- apply(ess9_poisson, 2, max)
+min <- apply(ess9_poisson, 2, min)
+ess9_poisson_scaled <- as.data.frame(scale(ess9_poisson, center = min, scale = max - min))
+train_scaled <- ess9_poisson_scaled %>% slice(indices)
+test_scaled <- ess9_poisson_scaled %>% slice(-indices)
+```
+
+### Fit the Network
+
+```{r}
+set.seed(42)
+cereal_net = neuralnet(nwspol ~ polintr + eisced + eduyrs + stfeco + stfdem + gndr + agea + rlgdgr + netusoft + ggchld + psppsgva + grspnum, train_scaled, hidden = 3 , linear.output = TRUE)
+plot(cereal_net)
+```
+### Predict the test set
+
+```{r}
+pred <- compute(cereal_net, test %>% select(-nwspol))
+pred$net.result
+```
+So what went wrong here? Obviously we also need to use the scaled data to make predictions and then scale back to real nwspol values
+
+```{r}
+pred_scaled <- compute(cereal_net, test_scaled %>% select(-nwspol))
+pred <- pred_scaled$net.result * (max(ess9_poisson$nwspol) - min(ess9_poisson$nwspol)) + min(ess9_poisson$nwspol)
+pred
+```
+
+
+```{r}
+plot(test$nwspol, pred, col='blue', pch=16, ylab = "predicted nwspol NN", xlab = "real nwspol")
+abline(0,1)
+```
+And calculate the RMSE
+```{r}
+sqrt(mean((test$nwspol - pred)^2))
+```
+
+### Redo with `caret` and Cross Validation
+
+In principle we cannot be sure that we were not simply "lucky" with the train/test split above, so the proper way to run this would be via `caret` using k-fold Cross Validation. And also as we use `caret` anyway let's also run some hyperparameter tuning:
+
 ```{r message=FALSE, warning=FALSE}
-#ess9_scaled <- as.data.frame(scale(ess9, center = min, scale = max - min))
-
-
-
 set.seed(42)
 tuGrid <- expand.grid(.layer1=c(1:4), .layer2=c(0,2), .layer3=c(0))
 
@@ -250,8 +338,8 @@ trCtrl <- trainControl(
 )
 
 models <- train(
-  x = ess9 %>% dplyr::select(-nwspol),
-  y = ess9 %>% pull(nwspol),
+  x = ess9_poisson %>% select(-nwspol),
+  y = ess9_poisson_scaled %>% pull(nwspol),
   method = 'neuralnet', metric = 'RMSE', 
   linear.output = TRUE,
   # be careful, does only work on x!
@@ -270,5 +358,47 @@ and extract the best model
 plot(models$finalModel)
 ```
 
+```{r message=FALSE, warning=FALSE}
+#ess9_scaled <- as.data.frame(scale(ess9, center = min, scale = max - min))
+
+set.seed(42)
+tuGrid <- expand.grid(.layer1=c(1:4), .layer2=c(0,2), .layer3=c(0))
+
+trCtrl <- trainControl(
+  method = 'repeatedcv', 
+  number = 5, 
+  repeats = 10, 
+  returnResamp = 'final'
+)
+
+models <- train(
+  x = ess9_poisson %>% select(-nwspol),
+  y = ess9_poisson_scaled %>% pull(nwspol),
+  method = 'neuralnet', metric = 'RMSE', 
+  linear.output = TRUE,
+  # be careful, does only work on x!
+  preProcess = c('center', 'scale'),
+  tuneGrid = tuGrid,
+  trControl = trCtrl
+)
+```
+
+```{r}
+plot(models)
+```
+and extract the best model
+
+```{r}
+plot(models$finalModel)
+```
+
+```{r}
+
+ess9_NN <- nnet(nwspol ~ ., data = ess9_poisson, size=15, maxit=100, range=0.1, decay=5e-4)
+
+
+
+
+```
 
 ## 3.6 Support Vector Machine
