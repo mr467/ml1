@@ -106,6 +106,7 @@ summary(ess9_de$nwspol_na)
 sum(is.na(ess9_de$nwspol_na))
 summary(ess9_de$eduade3)
 summary(ess9_de$eduade3.na)
+summary(as.factor(ess9_de$eduade3.na))
 
 summary(ess9_de$agea)
 summary(ess9_de$agea.na)
@@ -113,6 +114,10 @@ summary(ess9_de$agea.na)
 
 ```{r}
 boxplot(ess9_de$nwspol_na, outline = FALSE)
+```
+
+```{r}
+plot(ess9_de$nwspol_na ~ ess9_de$eduade3.na)
 ```
 
 ##### Binomial Model
