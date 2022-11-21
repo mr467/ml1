@@ -308,9 +308,21 @@ fitted(glm_pol.0) %>% round(digits = 2)
 ```
 
 ```{r}
-fitted_glm.pol.0.disc <- ifelse(fitted(glm_pol.0) < 0.5, n = 0, y = 1)
+fitted_glm.pol.0.disc <- ifelse(fitted(glm_pol.0) < 0.5, 
+                                yes = 0, no = 1)
+head(fitted_glm.pol.0.disc)
+```
+
+```{)}
 d.obs.fit.glm.pol.0 <- data.frame(obs = ess9_binary.na$postonline, 
                                   fitted = fitted_glm.pol.0.disc)
+table(d.obs.fit.glm.pol.0)
+```
+
+```{r binary regression with more than 1 predictor}
+glm_pol.1 <- glm(postonline ~ agea.na + polint, data = ess9_binary.na,
+                 family = "binomial")
+summary(glm_pol.1)
 ```
 
 ## 3.4 GAM
