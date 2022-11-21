@@ -48,6 +48,10 @@ ess9_at <- subset(ess9, cntry == "AT", select =dweight:domain)
 
 # 2. Descriptive Statistics
 
+```{r}
+glimpse(ess9_de)
+```
+
 ```{r }
 summary(ess9_de$nwspol)
 sum(is.na(ess9_de$nwspol))
@@ -66,7 +70,7 @@ ggplot(ess9_de, aes(nwspol, 1)) +
 ```
 
 ```{r}
-boxplot(ess9_de$nwspol, outline=FALSE)
+
 ```
 
 ### **Was muss man alles für eine deskriptive Analyse machen?**
@@ -76,6 +80,10 @@ typeof(ess9_de$eduade3)
 summary(ess9_de$eduade3)
 sum(is.na(ess9_de$eduade3))
 ```
+
+#### Cleaning of the data
+
+##### linear Model
 
 ```{r recode Variable resp. clean}
 #NEWS Politics time recoded
@@ -89,6 +97,7 @@ ess9_de["eduade3.na"][ess9_de["eduade3.na"] >= 5555] <- NA
 #recode the age variable
 ess9_de$agea.na <- ess9_de$agea
 ess9_de["agea.na"][ess9_de["agea.na"] >= 140] <- NA
+
 ```
 
 ```{r checking}
@@ -100,6 +109,31 @@ summary(ess9_de$eduade3.na)
 
 summary(ess9_de$agea)
 summary(ess9_de$agea.na)
+```
+
+```{r}
+boxplot(ess9_de$nwspol_na, outline = FALSE)
+```
+
+##### Binomial Model
+
+```{r}
+summary(ess9_de$vote)
+#1 = yes
+#2 = no
+#elligible
+ess9_de$vote_na <- ess9_de$nwspol
+ess9_de["vote_na"][ess9_de["vote_na"] >= 4] <- NA
+summary(ess9_de$vote_na)
+typeof(ess9_de$vote)
+
+```
+
+```{r}
+ess9_de$pstplonl_f <- as.factor(ifelse(ess9_de$pstplonl <2, 'Y', 'Nein'))
+is.na(ess9_de$pstplonl_f)[8] <- TRUE
+summary(ess9_de$pstplonl_f)
+typeof(ess9_de$pstplonl_f)
 ```
 
 # 3. Models
@@ -133,15 +167,7 @@ data = ess9_ch)
 ## 3.3 GLM Binominal
 
 ```{r}
-glmP_news <- glm(nwspol ~ edu,
-family = "poisson", ## we specify the distribution!
-data = ess9_ch)
-```
-
-# 3.3 GLM Binominal
-
-```{r}
-
+gl
 ```
 
 ## 3.3 GLM Binominal
