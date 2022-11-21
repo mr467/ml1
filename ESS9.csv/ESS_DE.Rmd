@@ -313,14 +313,25 @@ fitted_glm.pol.0.disc <- ifelse(fitted(glm_pol.0) < 0.5,
 head(fitted_glm.pol.0.disc)
 ```
 
-```{)}
-d.obs.fit.glm.pol.0 <- data.frame(obs = ess9_binary.na$postonline, 
+```{d.obs.fit.glm.pol <- data.frame(obs = ess9_binary.na$postonline,}
                                   fitted = fitted_glm.pol.0.disc)
-table(d.obs.fit.glm.pol.0)
+table(d.obs.fit.glm.pol)
 ```
 
 ```{r binary regression with more than 1 predictor}
 glm_pol.1 <- glm(postonline ~ agea.na + polint, data = ess9_binary.na,
+                 family = "binomial")
+summary(glm_pol.1)
+```
+
+```{r}
+glm_pol.2 <- glm(postonline ~ agea.na + polint + polscale.na, data = ess9_binary.na,
+                 family = "binomial")
+summary(glm_pol.2)
+```
+
+```{r}
+glm_pol.1 <- glm(postonline ~ agea.na + polint + polscale.na + trustparl, data = ess9_binary.na,
                  family = "binomial")
 summary(glm_pol.1)
 ```
