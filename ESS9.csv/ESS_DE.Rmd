@@ -262,11 +262,16 @@ data = ess9_ch)
 
 ## 3.3 GLM Binominal
 
-```{r}
-gl
+```{r clean data}
+#y = posted online
+summary(as.factor(ess9_de$postonline))
+#x1 = age
+summary(ess9_de$agea.na)
+#x2 = interest in politics (1 till 2 = yes)
+ess9_de$polint <- ess9_de$polintr
+ess9_de["polint"][ess9_de["polint"] > 4] <- NA
+summary(as.factor(ess9_de$polint))
 ```
-
-## 3.3 GLM Binominal
 
 ## 3.4 GAM
 
