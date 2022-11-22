@@ -313,10 +313,7 @@ fitted_glm.pol.0.disc <- ifelse(fitted(glm_pol.0) < 0.5,
 head(fitted_glm.pol.0.disc)
 ```
 
-```{d.obs.fit.glm.pol <- data.frame(obs = ess9_binary.na$postonline,}
-                                  fitted = fitted_glm.pol.0.disc)
-table(d.obs.fit.glm.pol)
-```
+`{d.obs.fit.glm.pol <- data.frame(obs = ess9_binary.na$postonline,}                                   fitted = fitted_glm.pol.0.disc) table(d.obs.fit.glm.pol)`
 
 ```{r binary regression with more than 1 predictor}
 glm_pol.1 <- glm(postonline ~ agea.na + polint, data = ess9_binary.na,
@@ -341,3 +338,131 @@ summary(glm_pol.1)
 ## 3.5 Neural Network
 
 ## 3.6 Support Vector Machine
+
+### Loading the Packages
+
+First make sure we have all the functionality from the `tidyverse` available:
+
+```{r}
+library(tidyverse)
+theme_set(theme_bw())
+```
+
+We are going to use the `e1071` package for this example and also some helper functions from `caret`
+
+```{r}
+library(e1071) 
+library(caret)
+```
+
+```{r}
+ess9_de$scale_cat  <- cut(ess9_de$polscale.na,
+              breaks=c(-1, 2.5, 4.5, 5.5, 7.5, 10),
+              labels=c('left', 'center left', 'center', 'center right', 'right'))
+summary(ess9_de$scale_cat)
+summary(as.factor(ess9_de$polscale.na))
+ess9_de$scale_cat <- as.factor(ess9_de$scale_cat)
+typeof(ess9_de$scale_cat)
+```
+
+## Have a quick look at the Data
+
+```{r}
+ess9_de %>%
+  ggplot(aes(x = agea.na, y = nwspol_na, color = scale_cat)) +
+  geom_point() +
+  ylim(0, 250)
+```
+
+```{r}
+ess9_de %>%
+  ggplot(aes(x = agea.na, y = trustparl, color = scale_cat)) +
+  geom_point()
+```
+
+## Prepare the Data for Training
+
+```{r}
+set.seed(123)
+indices <- createDataPartition(ess9_de$scale_cat, p=.85, list = F)
+```
+
+### Create some easy Variables to access Data
+
+```{r}
+train <- ess9_de %>%
+  slice(indices)
+test_in <- ess9_de %>%
+  slice(-indices) %>%
+  select(-scale_cat)
+test_truth <- ess9_de %>%
+  slice(-indices) %>%
+  pull(scale_cat)
+```
+
+## Train the Neural Network
+
+Call the `svm` function using the default `cost = 10` parameter.
+
+```{r}
+set.seed(123)
+ess_de_svm <- svm(scale_cat ~ ., train, kernel = "linear", scale = TRUE, cost = 10)
+```
+
+Of course the visualization is a bit difficult as we have some classification regions in four dimensions.
+
+So plot first the resulting classification for the two Petal leaf dimensions
+
+```{r}
+plot(iris_svm, train, Petal.Length ~ Petal.Width)
+```
+
+And for the Sepal leaf dimensions (of course you need to slice the other dimensions at a reasonable point)
+
+```{r}
+plot(iris_svm, train, Sepal.Length ~ Sepal.Width, slice = list(Petal.Length = 4.5, Petal.Width = 1.75))
+```
+
+## Make Predictions
+
+```{r}
+test_pred <- predict(iris_svm, test_in)
+table(test_pred)
+```
+
+## Evaluate the Results
+
+```{r}
+conf_matrix <- confusionMatrix(test_pred, test_truth)
+conf_matrix
+```
+
+So we have a resulting SVM with a prediction accuracy of around 95% (of course we would also need to do some cross validation to ensure we were not simply "lucky" with the train/test split).
+
+## Try again with other parameters
+
+```{r}
+set.seed(123)
+iris_svm2 <- svm(Species ~ ., train, kernel = "radial", scale = TRUE, cost = 100)
+summary(iris_svm2)
+```
+
+```{r}
+plot(iris_svm2, train, Petal.Length ~ Petal.Width, slice = list(Sepal.Length = 6, Sepal.Width = 3))
+```
+
+```{r}
+plot(iris_svm2, train, Sepal.Length ~ Sepal.Width, slice = list(Petal.Length = 4.5, Petal.Width = 1.75))
+```
+
+```{r}
+test_pred <- predict(iris_svm2, test_in)
+table(test_pred)
+```
+
+```{r}
+conf_matrix <- confusionMatrix(test_pred, test_truth)
+conf_matrix
+```
+
+So we have here the same accuracy but with much more complex boundaries (radial kernels and higher costs) so we might be overfitting here a bit more.
