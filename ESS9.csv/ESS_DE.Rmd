@@ -363,19 +363,26 @@ summary(ess9_de$scale_cat)
 summary(as.factor(ess9_de$polscale.na))
 ess9_de$scale_cat <- as.factor(ess9_de$scale_cat)
 typeof(ess9_de$scale_cat)
+summary(ess9_de$scale_cat)
+```
+
+```{r}
+d.ess9_supportvec <- ess9_de[, c("postonline", "agea.na", "polint", "gov.allows", 
+                                 "trustparl", "polscale.na", "scale_cat", "nwspol_na")]
+d.ess9_supportvec <- d.ess9_supportvec[complete.cases(d.ess9_supportvec),]
 ```
 
 ## Have a quick look at the Data
 
 ```{r}
-ess9_de %>%
+d.ess9_supportvec %>%
   ggplot(aes(x = agea.na, y = nwspol_na, color = scale_cat)) +
   geom_point() +
   ylim(0, 250)
 ```
 
 ```{r}
-ess9_de %>%
+d.ess9_supportvec %>%
   ggplot(aes(x = agea.na, y = trustparl, color = scale_cat)) +
   geom_point()
 ```
@@ -384,18 +391,18 @@ ess9_de %>%
 
 ```{r}
 set.seed(123)
-indices <- createDataPartition(ess9_de$scale_cat, p=.85, list = F)
+indices <- createDataPartition(d.ess9_supportvec$scale_cat, p=.85, list = F)
 ```
 
 ### Create some easy Variables to access Data
 
 ```{r}
-train <- ess9_de %>%
+train <- d.ess9_supportvec %>%
   slice(indices)
-test_in <- ess9_de %>%
+test_in <- d.ess9_supportvec %>%
   slice(-indices) %>%
   select(-scale_cat)
-test_truth <- ess9_de %>%
+test_truth <- d.ess9_supportvec %>%
   slice(-indices) %>%
   pull(scale_cat)
 ```
@@ -414,7 +421,7 @@ Of course the visualization is a bit difficult as we have some classification re
 So plot first the resulting classification for the two Petal leaf dimensions
 
 ```{r}
-plot(iris_svm, train, Petal.Length ~ Petal.Width)
+plot(ess_de_svm, train, agea.na ~ nwspol_na)
 ```
 
 And for the Sepal leaf dimensions (of course you need to slice the other dimensions at a reasonable point)
@@ -426,7 +433,7 @@ plot(iris_svm, train, Sepal.Length ~ Sepal.Width, slice = list(Petal.Length = 4.
 ## Make Predictions
 
 ```{r}
-test_pred <- predict(iris_svm, test_in)
+test_pred <- predict(ess_de_svm, test_in)
 table(test_pred)
 ```
 
