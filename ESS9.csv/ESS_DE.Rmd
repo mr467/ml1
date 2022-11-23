@@ -248,37 +248,37 @@ summary(lm_news.0)
 ```
 
 ```{r}
-coef(lm_news.1)
+coef(lm_news.0)
 ```
 
 ```{r}
-summary(lm_news.1)$coefficients
+summary(lm_news.0)$coefficients
 ```
 
 ```{r}
-confint(lm_news.1)
+confint(lm_news.0)
 ```
 
 ```{r}
 plot(nwspol.na ~ eduyrs.na, data = ess9_de, main = "Minutes spent on Political News")
-abline(lm_news.1)
+abline(lm_news.0)
 ```
 
 ```{r fitted values}
-fit_lm_news.1 <- fitted(lm_news.1)
-str(fit_lm_news.1)
-head(fit_lm_news.1)
+fit_lm_news.0 <- fitted(lm_news.0)
+str(fit_lm_news.0)
+head(fit_lm_news.0)
 ```
 
 ```{r fitted values plot lm1}
 plot(nwspol.na ~ eduyrs.na, data = ess9_de, 
      main = "Minutes spent on Political News", 
      col = "darkgrey")
-points(fit_lm_news.1 ~ eduyrs.na, 
+points(fit_lm_news.0 ~ eduyrs.na, 
        col = "purple", 
        pch = 19, 
        data = ess9_de)
-abline(lm_news.1, col = "black")
+abline(lm_news.0, col = "black")
 ```
 
 ```{r}
