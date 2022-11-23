@@ -376,7 +376,82 @@ abline(lm_news.0, col = "black")
 
 There are 67 unique values, therefore, the other observations are overlapping. Here we zoomed in to see the negative relationship between news consumption and education years.
 
+#### Residuals
 
+```{r}
+resid.news.0 <- resid(lm_news.0)
+##
+length(resid.news.0 )
+head(resid.news.0 )
+```
+
+```{r}
+set.seed(20) ## for reproducibility 
+id <- sample(x = 1:2296, size = 20) 
+resid.news.0[id]
+```
+
+```{r}
+fit_lm_news.0[id]
+```
+
+```{r}
+plot(nwspol.na ~ eduyrs.na, data = ess9_linear,
+     main = "Minutes spent on Political News",
+     col = "lightgray",)
+##
+abline(lm_news.0)
+##
+points(nwspol.na ~ eduyrs.na, data = ess9_linear[id, ], col = "red")
+##
+segments(x0 = ess9_linear[id, "eduyrs.na"], x1 = ess9_linear[id,"eduyrs.na"],
+         y0 = fit_lm_news.0[id], y1 = ess9_linear[id, "nwspol.na"],
+         col = "blue")
+```
+
+### Predicted values
+
+```{r}
+new.data.news <- data.frame(eduyrs.na = c(18, 7, 28))
+pred.new.news <- predict(object = lm_news.0, newdata = new.data.news)
+
+plot(nwspol.na ~ eduyrs.na, data = ess9_linear,
+     main = "Minutes spent on Political News",
+     col = "lightgray",
+      ylim=c(0, 200))
+abline(lm_news.0)
+points(x = new.data.news$eduyrs.na,
+       y = pred.new.news,
+       col = "purple",
+       pch = 19, cex = 1.5)
+```
+
+```{r}
+pred.new.news.ci <- predict(object = lm_news.0,
+                            interval = "prediction",
+        newdata = new.data.news)
+pred.new.news.ci
+```
+
+```{r}
+plot(nwspol.na ~ eduyrs.na, data = ess9_linear,
+     main = "Minutes spent on Political News",
+     col = "lightgray",
+      ylim=c(0, 800))
+abline(lm_news.0)
+##
+points(x = new.data.news$eduyrs.na,
+       y = pred.new.news.ci[, "fit"], 
+       col = "purple",
+       pch = 19, cex = 1.5)
+##
+segments(x0 = new.data.news$eduyrs.na, 
+         x1 = new.data.news$eduyrs.na,
+         y0 = pred.new.news.ci[, "lwr"],
+         y1 = pred.new.news.ci[, "upr"],
+         lwd = 2,
+         col = "purple")
+```
 
 ## 3.2 GLM Poisson
 
