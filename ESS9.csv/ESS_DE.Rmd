@@ -47,7 +47,7 @@ ess9_at <- subset(ess9, cntry == "AT", select =dweight:domain)
 str(ess9_de)
 ```
 
-#### Cleaning of the data
+## 2.1 Cleaning of the data
 
 ```{r Your [pay/pensions/social benefits], which frequency do you know best}
 #1 = weekly, 2 = monthly, 3 = annual
@@ -61,9 +61,11 @@ ess9_de$grspnum.na <- ess9_de$grspnum
 ess9_de["grspnum.na"][ess9_de["grspnum.na"] >= 666666666] <- NA
 summary(ess9_de$grspnum.na)
 ###Multiplication
-ess9_de$grspnum.tot <- ess9_de$grspnum.na
-ess9_de$yearpay = ifelse(ess9_de$infqbst.fac %in% c(1,2), 
-                                ess9_de$grspnum.na*52, ess9_de$grspnum.na*12)
+ess9_de$yearpay <- ifelse(ess9_de$infqbst %in% 1,
+                          ess9_de$grspnum*52,
+                          ifelse(ess9_de$infqbst %in% 2,
+                                 ess9_de$grspnum*12,
+                                 ess9_de$grspnum))
 ```
 
 ```{r recode Variable resp. clean}
