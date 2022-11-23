@@ -238,7 +238,7 @@ summary(ess9_de$ability)
 
 ```{r create a DV where no outlier}
 ess9_de$nwspol.outlier <- ess9_de$nwspol.na
-ess9_de["nwspol.na"][ess9_de["nwspol.na"] >= 400] <- NA
+ess9_de["nwspol.outlier"][ess9_de["nwspol.outlier"] >= 400] <- NA
 ```
 
 ```{r create a subset of data with only the variables mentioned above}
