@@ -56,7 +56,6 @@ sum(is.na(ess9_de$nwspol))
 summary(ess9_de$gndr)
 sum(is.na(ess9_de$gndr))
 typeof(ess9_de$nwspol)
-
 ```
 
 ```{r}
@@ -71,7 +70,6 @@ ggplot(ess9_de, aes(nwspol, 1)) +
 typeof(ess9_de$eduyrs)
 summary(ess9_de$eduyrs)
 sum(is.na(ess9_de$eduyrs))
-
 ```
 
 # MULTIPLIKATION GROSSPAY
@@ -265,6 +263,7 @@ confint(lm_news.0)
 ```
 
 ```{r}
+par(mfrow=c(1,2))
 plot(nwspol.na ~ eduyrs.na, data = ess9_linear,
      xlim = c(0,31), 
      ylim = c(0, 500))
@@ -273,9 +272,7 @@ grid(ny = 20)
 ##
 abline(lm_news.0,
        col = "red", lty = "dashed")
-```
-
-```{r Zoom in so that we see if there is}
+#Zoom in 
 plot(nwspol.na ~ eduyrs.na, data = ess9_linear,
      xlim = c(0,31), 
      ylim = c(0, 100))
@@ -288,10 +285,119 @@ abline(lm_news.0,
 
 Interpretation: we can see that the line is nearly flat and the p-value confirms this observation. The p-Value is nearly 1 and the parameter is nearly 0.
 
-```{r das ausschli}
+```{r outlier will be eliminated (above 400min)}
 lm.news.outlier <- lm(nwspol.outlier ~ eduyrs.na, data = ess9_de, na.omit = TRUE)
 summary(lm.news.outlier)
 ```
+
+#### adding additional predictors
+
+```{r}
+lm_news.1 <- lm(nwspol.na ~ eduyrs.na + age.na, data = ess9_linear)
+summary(lm_news.1)
+```
+
+```{r}
+coef(lm_news.1)
+```
+
+```{r}
+summary(lm_news.1)$coefficients
+```
+
+```{r}
+confint(lm_news.1)
+```
+
+**We can see that the predictor age has a low p-value and it is signifcant.**
+
+```{r}
+lm_news.2 <- lm(nwspol.na ~ eduyrs.na + age.na + gndr.fac + stfdem.na + ability + polinteress, data = ess9_linear)
+summary(lm_news.2)
+```
+
+```{r}
+coef(lm_news.2)
+```
+
+```{r}
+summary(lm_news.2)$coefficients
+```
+
+```{r}
+confint(lm_news.2)
+```
+
+```{r}
+cis.lm_news.2 <- confint(lm_news.2)
+##
+## 2) plot estimates
+par(mar = c(4,5,2,2))
+plot(y = 1:7,
+     x = rev(coef(lm_news.2)),
+     xlim = c(-20, 120),
+     xlab = "Estimated coefficients",
+     ylab = "",
+     axes = FALSE)
+box()
+axis(side = 2, at = 1:7,
+     labels = rev(names(coef(lm_news.2))), 
+     las = 2)
+axis(side = 1)
+
+segments(x0 = rev(cis.lm_news.2[, "2.5 %"]),
+         x1 = rev(cis.lm_news.2[, "97.5 %"]),
+         y0 = 1:7,
+         y1 = 1:7)
+abline(v = 0, lty = "dashed")
+```
+
+#### Interaction: Age \* Interest
+
+```{r}
+lm_news.3 <- lm(nwspol.na ~ eduyrs.na + age.na * polinteress + gndr.fac + stfdem.na + ability, data = ess9_linear)
+summary(lm_news.3)
+```
+
+```{r}
+coef(lm_news.3)
+```
+
+```{r}
+summary(lm_news.3)$coefficients
+```
+
+```{r}
+confint(lm_news.3)
+```
+
+```{r}
+cis.lm_news.3 <- confint(lm_news.3)
+##
+## 2) plot estimates
+par(mar = c(4,8,2,2))
+plot(y = 1:8,
+     x = rev(coef(lm_news.3)),
+     xlim = c(-20, 100),
+     xlab = "Estimated coefficients",
+     ylab = "",
+     axes = FALSE)
+box()
+axis(side = 2, at = 1:8,
+     labels = rev(names(coef(lm_news.3))), 
+     las = 2)
+axis(side = 1)
+
+segments(x0 = rev(cis.lm_news.3[, "2.5 %"]),
+         x1 = rev(cis.lm_news.3[, "97.5 %"]),
+         y0 = 1:8,
+         y1 = 1:8)
+abline(v = 0, lty = "dashed")
+```
+
+A finding is: the interaction with age and polinterest is there
+
+#### Fitted Values
 
 ```{r fitted values}
 fit_lm_news.0 <- fitted(lm_news.0)
