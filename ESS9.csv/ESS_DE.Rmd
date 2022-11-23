@@ -160,9 +160,6 @@ ess9_de["ability"][ess9_de["ability"] > 6] <- NA
 summary(ess9_de$nwspol)
 summary(ess9_de$nwspol.na)
 sum(is.na(ess9_de$nwspol.na))
-summary(ess9_de$eduade3)
-summary(ess9_de$eduade3.na)
-summary(as.factor(ess9_de$eduade3.na))
 
 summary(ess9_de$agea)
 summary(ess9_de$age.na)
@@ -181,7 +178,7 @@ boxplot(ess9_de$nwspol.na, outline = FALSE)
 ```
 
 ```{r}
-ggplot(ess9_de, aes(eduade3.na, nwspol.na)) + 
+ggplot(ess9_de, aes(eduyrs.na, nwspol.na)) + 
   geom_point() +
   ylim(0, 500)
 ```
@@ -263,7 +260,7 @@ confint(lm_news.1)
 ```
 
 ```{r}
-plot(nwspol.na ~ eduade3.na, data = ess9_de, main = "Minutes spent on Political News")
+plot(nwspol.na ~ eduyrs.na, data = ess9_de, main = "Minutes spent on Political News")
 abline(lm_news.1)
 ```
 
@@ -274,10 +271,10 @@ head(fit_lm_news.1)
 ```
 
 ```{r fitted values plot lm1}
-plot(nwspol.na ~ eduade3.na, data = ess9_de, 
+plot(nwspol.na ~ eduyrs.na, data = ess9_de, 
      main = "Minutes spent on Political News", 
      col = "darkgrey")
-points(fit_lm_news.1 ~ eduade3.na, 
+points(fit_lm_news.1 ~ eduyrs.na, 
        col = "purple", 
        pch = 19, 
        data = ess9_de)
@@ -285,7 +282,7 @@ abline(lm_news.1, col = "black")
 ```
 
 ```{r}
-lm_news.2 <- lm(nwspol.na ~ eduade3.na + age.na, data = ess9_de)
+lm_news.2 <- lm(nwspol.na ~ eduyrs.na + age.na, data = ess9_de)
 summary(lm_news.2)
 ```
 
@@ -298,12 +295,12 @@ summary(lm_news.2)$coefficients
 ```
 
 ```{r}
-plot(nwspol.na ~ eduade3.na + age.na, data = ess9_de, main = "Minutes spent on Political News")
+plot(nwspol.na ~ eduyrs.na + age.na, data = ess9_de, main = "Minutes spent on Political News")
 abline(lm_news.2)
 ```
 
 ```{r}
-lm_news.3 <- lm(nwspol.na ~ eduade3.na + age.na + gndr.fac, data = ess9_de)
+lm_news.3 <- lm(nwspol.na ~ eduyrs.na + age.na + gndr.fac, data = ess9_de)
 summary(lm_news.3)
 ```
 
