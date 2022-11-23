@@ -20,6 +20,9 @@ knitr::opts_chunk$set(
 
 ```{r, include=FALSE}
 if (!require("naniar")) install.packages("naniar", dependencies=TRUE)
+if (!require("ggpubr")) install.packages("ggpubr", dependencies=TRUE)
+if (!require("cowplot")) install.packages("cowplot", dependencies=TRUE)
+library("ggpubr")
 library(lubridate)
 library(multcomp)
 library(dplyr)
@@ -27,6 +30,7 @@ library(readr)
 library(data.table)
 library(tidyverse)
 library(naniar)
+library(cowplot)
 ```
 
 ```{r}
@@ -139,6 +143,17 @@ ess9_de$postonline<-ifelse(ess9_de$postonline==1,1,0)
 summary(ess9_de$postonline)
 summary(as.factor(ess9_de$postonline))
 ess9_de$postonline <- as.integer(ess9_de$postonline)
+#-----------------------------------------------------------------------------------------
+##Political system allows people to have a say in what government does 1 = no
+ess9_de$gov.allows <- ess9_de$psppsgva
+ess9_de["gov.allows"][ess9_de["gov.allows"] > 5] <- NA
+ess9_de$gov.allows <- factor(ess9_de$gov.allows)
+summary(ess9_de$gov.allows)
+#-----------------------------------------------------------------------------------------
+#Trust in country's parliament 0 = no trust
+ess9_de$trustparl <- ess9_de$trstprl
+ess9_de["trustparl"][ess9_de["trustparl"] > 10] <- NA
+summary(as.factor(ess9_de$trustparl))
 ```
 
 ```{r}
@@ -181,8 +196,22 @@ ess9_linear <- ess9_linear[complete.cases(ess9_linear),]
 
 ### Graphical analysis
 
+```{r boxplots for the categorial variables w/ outliers}
+par(mfrow=c(1,3))
+boxplot(nwspol.na ~ gndr.fac, data = ess9_linear)
+boxplot(nwspol.na ~ ability.fac, data = ess9_linear)
+boxplot(nwspol.na ~ interest.fac, data = ess9_linear)
+```
+
+```{r boxplots for the categorial variables w/out outliers}
+par(mfrow=c(1, 3))
+boxplot(nwspol.na ~ gndr.fac, data = ess9_linear, outline = FALSE)
+boxplot(nwspol.na ~ ability.fac, data = ess9_linear, outline = FALSE)
+boxplot(nwspol.na ~ interest.fac, data = ess9_linear, outline = FALSE)
+```
+
 ```{r}
-par(mfrow=c(1,2))
+par(mfrow=c(1, 3))
 plot()
 ```
 
@@ -199,10 +228,6 @@ coef(lm_news.0)
 
 ```{r}
 summary(lm_news.0)$coefficients
-```
-
-```{r}
-confint(lm_news.0)
 ```
 
 ```{r}
@@ -463,39 +488,32 @@ data = ess9_ch)
 
 ## 3.3 GLM Binominal
 
-### maybe change the "direction" of yes/no to higher number = yes
-
-```{r clean data}
-#y = posted online
-summary(as.factor(ess9_de$postonline))
-#x1 = age
-summary(ess9_de$age.na)
-#x2 = interest in politics (1 till 2 = yes)
-ess9_de$polint <- ess9_de$polintr
-ess9_de["polint"][ess9_de["polint"] > 4] <- NA
-summary(as.factor(ess9_de$polint))
-#x3 pol system allows (1 till 3 = no)
-ess9_de$gov.allows <- ess9_de$psppsgva
-ess9_de["gov.allows"][ess9_de["gov.allows"] > 5] <- NA
-summary(as.factor(ess9_de$gov.allows))
-#trust in parliament (0-5 = no at all)
-ess9_de$trustparl <- ess9_de$trstprl
-ess9_de["trustparl"][ess9_de["trustparl"] > 10] <- NA
-summary(as.factor(ess9_de$trustparl))
-#political scale (0-5 = left)
-summary(as.factor(ess9_de$polscale.na))
-```
-
 ```{r subset of dataframe because of differen NA}
-ess9_binary <- ess9_de[, c("postonline", "age.na", "polint", "gov.allows", "trustparl", "polscale.na")]
+ess9_binary <- ess9_de[, c("postonline", "age.na", "interest.fac", "gov.allows", "trustparl", "polscale.na", "eduyrs.na", "ability.fac", "sat.dem.fac", "boycott.fac")]
 ess9_binary.na <- ess9_binary[complete.cases(ess9_binary),]
 ```
 
+### Graphical Analysis
+
 ```{r EDA}
-ggplot(data = ess9_binary.na,
+
+g1 <- ggplot(data = ess9_binary.na,
        mapping = aes(y = postonline,
                      x = age.na))+
   geom_point()
+
+g2 <- ggplot(data = ess9_binary.na,
+       mapping = aes(y = postonline,
+                     x = eduyrs.na))+
+  geom_point()
+
+g3 <- ggplot(data = ess9_binary.na,
+       mapping = aes(y = postonline,
+                     x = interest.fac))+
+  geom_point()
+
+plot_grid(g1, g2, g3,
+          ncol = 2, nrow = 2)
 ```
 
 ```{r glm model for binary data}
