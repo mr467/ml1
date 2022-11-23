@@ -47,160 +47,97 @@ ess9_at <- subset(ess9, cntry == "AT", select =dweight:domain)
 str(ess9_de)
 ```
 
-```{r }
-summary(ess9_de$nwspol)
-sum(is.na(ess9_de$nwspol))
-```
-
-```{r echo=FALSE}
-summary(ess9_de$gndr)
-sum(is.na(ess9_de$gndr))
-typeof(ess9_de$nwspol)
-```
-
-```{r}
-ggplot(ess9_de, aes(nwspol, 1)) +
-  geom_bar(stat = "identity") + 
-  xlim(c(0, 200))
-```
-
-### **Was muss man alles für eine deskriptive Analyse machen?**
-
-```{r lineare Regression}
-typeof(ess9_de$eduyrs)
-summary(ess9_de$eduyrs)
-sum(is.na(ess9_de$eduyrs))
-```
-
-# MULTIPLIKATION GROSSPAY
+#### Cleaning of the data
 
 ```{r Your [pay/pensions/social benefits], which frequency do you know best}
 #1 = weekly, 2 = monthly, 3 = annual
-typeof(ess9_de$infqbst)
 ess9_de$infqbst.na <- ess9_de$infqbst
 ess9_de["infqbst.na"][ess9_de["infqbst.na"] >= 4] <- NA
 ess9_de$infqbst.fac <- factor(ess9_de$infqbst.na)
-typeof(ess9_de$infqbst.fac)
 summary(ess9_de$infqbst.fac)
-```
 
-```{r gross pay cleaning}
+##Grosspay 
 ess9_de$grspnum.na <- ess9_de$grspnum
 ess9_de["grspnum.na"][ess9_de["grspnum.na"] >= 666666666] <- NA
 summary(ess9_de$grspnum.na)
+###Multiplication
 ess9_de$grspnum.tot <- ess9_de$grspnum.na
-```
-
-```{r subset the german dataset}
-ess9_income <- subset(ess9_de, select = 1:576)
-ess9_income.na <- ess9_income[complete.cases(ess9_income$grspnum.na),]
-ess9_income.na <- ess9_income.na[complete.cases(ess9_income.na$infqbst.fac),]
-summary(ess9_income.na$infqbst.fac)
-```
-
-```{r}
-ess9_income.na$yearpay = ifelse(ess9_income.na$infqbst.fac %in% c(1,2), 
-                                ess9_income.na$grspnum.na*52, ess9_income.na$grspnum.na*12)
 ess9_de$yearpay = ifelse(ess9_de$infqbst.fac %in% c(1,2), 
                                 ess9_de$grspnum.na*52, ess9_de$grspnum.na*12)
 ```
-
-#### Cleaning of the data
-
-##### linear Model
 
 ```{r recode Variable resp. clean}
 #NEWS Politics time recoded
 ess9_de$nwspol.na <- ess9_de$nwspol
 ess9_de["nwspol.na"][ess9_de["nwspol.na"] >= 7777] <- NA
-#Educationlevel  recoding
+#-----------------------------------------------------------------------------------------
+#Educationlevel recoding
 ess9_de$eduyrs.na <- ess9_de$eduyrs
 ess9_de["eduyrs.na"][ess9_de["eduyrs.na"] >= 77] <- NA
 #Added "Other" also under NA bc we cannot explain what other is
-
+#-----------------------------------------------------------------------------------------
 #recode the age variable
 ess9_de$age.na <- ess9_de$agea
 ess9_de["age.na"][ess9_de["age.na"] >= 140] <- NA
-
+#-----------------------------------------------------------------------------------------
 #record the gender variable
 ess9_de$gender <- ess9_de$gndr
 ess9_de["gender"][ess9_de["gender"] >= 9] <- NA
+##factor/categorical
 ess9_de$gndr.fac <- factor(ess9_de$gender)
-
+#-----------------------------------------------------------------------------------------
 #clean the satisfaction with democracy works in country
 ess9_de$stfdem.na <- ess9_de$stfdem
 ess9_de["stfdem.na"][ess9_de["stfdem.na"] > 10] <- NA
-
+##factor/categorical
+ess9_de$sat.dem.fac <- factor(ess9_de$stfdem.na)
+summary(ess9_de$sat.dem.fac)
+#-----------------------------------------------------------------------------------------
 #clean Boycott certain products
 ess9_de$bctprd.na <- ess9_de$bctprd
 ess9_de["bctprd.na"][ess9_de["bctprd.na"] > 2] <- NA
+##factor/categorical
 ess9_de$boycott.fac <- factor(ess9_de$bctprd.na)
-
+#-----------------------------------------------------------------------------------------
 #clean left-right scale 0 =l / 10 = r
 ess9_de$polscale.na <- ess9_de$lrscale
 ess9_de["polscale.na"][ess9_de["polscale.na"] > 10] <- NA
-
+#-----------------------------------------------------------------------------------------
 #clean fair chance to participate in politics in yr country (5er scale)
 ess9_de$fairchance <- ess9_de$frprtpl
 ess9_de["fairchance"][ess9_de["fairchance"] > 6] <- NA
-
+##factor/categorical
+ess9_de$fairchance.fac <- factor(ess9_de$fairchance, levels=1:5, labels=c("not at all", "very little", "some", "a lot", "a great deal"))
+#-----------------------------------------------------------------------------------------
 #clean polinteresse (4er scale)
 ess9_de$polinteress <- ess9_de$polintr
 ess9_de["polinteress"][ess9_de["polinteress"] > 6] <- NA
-
+##factor/categorical
+ess9_de$interest.fac <- factor(ess9_de$polinteress, levels=1:4, 
+                               labels=c("very", "quite", "hardly", "none at all"))
+###order differently
+ess9_de$interest.fac <- ordered(ess9_de$interest.fac, 
+                                levels = c("none at all", "hardly", "quite", "very"))
+#-----------------------------------------------------------------------------------------
 #clean confidence in own ability to participate (5er scale)
 ess9_de$ability <- ess9_de$cptppola
 ess9_de["ability"][ess9_de["ability"] > 6] <- NA
-
-```
-
-```{r polint is factor}
-ess9_de$interest.fac <- factor(ess9_de$polinteress, levels=1:4, labels=c("very", "quite", "hardly", "none at all"))
-#order differently
-ess9_de$interest.fac <- ordered(ess9_de$interest.fac, levels = c("none at all", "hardly", "quite", "very"))
-```
-
-```{r confidence in ability as factor}
+##factor/categorical
 ess9_de$ability.fac <- factor(ess9_de$ability, levels=1:5, labels=c("not at all", "a little", "quite", "very", "completely"))
 summary(ess9_de$ability.fac)
-```
-
-```{r satisfaction with how democracy is in the country}
-ess9_de$sat.dem.fac <- factor(ess9_de$stfdem.na)
-summary(ess9_de$sat.dem.fac)
-```
-
-```{r checking}
-summary(ess9_de$nwspol)
-summary(ess9_de$nwspol.na)
-sum(is.na(ess9_de$nwspol.na))
-
-summary(ess9_de$agea)
-summary(ess9_de$age.na)
-
-summary(ess9_de$gndr.fac)
-sum(is.na(ess9_de$gndr.na))
-summary(as.factor(ess9_de$stfdem.na))
-sum(is.na(ess9_de$stfdem.na))
-sum(is.na(ess9_de$bctprd.na))
-
-sum(is.na(ess9_de$polscale.na))
-```
-
-```{r}
-boxplot(ess9_de$nwspol.na, outline = FALSE)
-```
-
-```{r}
-ggplot(ess9_de, aes(eduyrs.na, nwspol.na)) + 
-  geom_point() +
-  ylim(0, 500)
-```
-
-```{r}
-ggplot(ess9_de, aes(age.na, nwspol.na)) + 
-  geom_point() +
-  ylim(0, 500)
+#-----------------------------------------------------------------------------------------
+#1 = yes / 2 = no / 3 = not eligble
+ess9_de$vote.fac <- factor(ess9_de$vote, levels = 1:3, labels = c("Yes", "No", "Not eligible"))
+ess9_de["vote.fac"][ess9_de["vote.fac"] >= 4] <- NA
+summary(ess9_de$vote.fac)
+#-----------------------------------------------------------------------------------------
+#post something online in the last 12 month
+ess9_de$postonline <- factor(ess9_de$pstplonl)
+ess9_de$postonline<-ifelse(ess9_de$postonline==1,1,0)
+summary(ess9_de$postonline)
+summary(as.factor(ess9_de$postonline))
+ess9_de$postonline <- as.integer(ess9_de$postonline)
+typeof(ess9_de$postonline)
 ```
 
 ```{r}
@@ -208,29 +145,6 @@ boxplot(ess9_de$nwspol.na, ess9_de$gndr.fac, outline = FALSE)
 ```
 
 ### wieso ist gender = 2 so komisch?
-
-##### Binomial Model
-
-```{r}
-summary(ess9_de$vote)
-#1 = yes
-#2 = no
-#elligible
-ess9_de$vote_na <- ess9_de$vote
-ess9_de["vote_na"][ess9_de["vote_na"] >= 4] <- NA
-summary(ess9_de$vote_na)
-summary(as.factor(ess9_de$vote.na))
-```
-
-```{r}
-ess9_de$postonline <- factor(ess9_de$pstplonl)
-ess9_de$postonline<-ifelse(ess9_de$postonline==1,1,0)
-#ess9_de["pstplonl.na"][ess9_de["pstplonl.na"] > 2] <- NA
-summary(ess9_de$postonline)
-summary(as.factor(ess9_de$postonline))
-ess9_de$postonline <- as.integer(ess9_de$postonline)
-typeof(ess9_de$postonline)
-```
 
 # 3. Models
 
