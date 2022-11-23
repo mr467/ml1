@@ -30,12 +30,7 @@ library(naniar)
 ```
 
 ```{r}
-
 ess9 <- read_csv("ESS9.csv")
-
-unique(ess9$name)
-unique(ess9$gndr)
-unique(ess9$cntry)
 ```
 
 ```{r making subsets of the whole dataset to only german speaking countries}
@@ -49,7 +44,7 @@ ess9_at <- subset(ess9, cntry == "AT", select =dweight:domain)
 # 2. Descriptive Statistics
 
 ```{r}
-glimpse(ess9_de)
+str(ess9_de)
 ```
 
 ```{r }
@@ -73,10 +68,41 @@ ggplot(ess9_de, aes(nwspol, 1)) +
 ### **Was muss man alles für eine deskriptive Analyse machen?**
 
 ```{r lineare Regression}
-typeof(ess9_de$eduade3)
-summary(ess9_de$eduade3)
-sum(is.na(ess9_de$eduade3))
+typeof(ess9_de$eduyrs)
+summary(ess9_de$eduyrs)
+sum(is.na(ess9_de$eduyrs))
 
+```
+
+# MULTIPLIKATION GROSSPAY
+
+```{r Your [pay/pensions/social benefits], which frequency do you know best}
+#1 = weekly, 2 = monthly, 3 = annual
+typeof(ess9_de$infqbst)
+ess9_de$infqbst.na <- ess9_de$infqbst
+ess9_de["infqbst.na"][ess9_de["infqbst.na"] >= 4] <- NA
+ess9_de$infqbst.fac <- factor(ess9_de$infqbst.na)
+typeof(ess9_de$infqbst.fac)
+summary(ess9_de$infqbst.fac)
+```
+
+```{r gross pay cleaning}
+ess9_de$grspnum.na <- ess9_de$grspnum
+ess9_de["grspnum.na"][ess9_de["grspnum.na"] >= 666666666] <- NA
+summary(ess9_de$grspnum.na)
+ess9_de$grspnum.tot <- ess9_de$grspnum.na
+```
+
+```{r subset the german dataset}
+ess9_income <- subset(ess9_de, select = 1:576)
+ess9_income.na <- ess9_income[complete.cases(ess9_income$grspnum.na),]
+ess9_income.na <- ess9_income.na[complete.cases(ess9_income.na$infqbst.fac),]
+summary(ess9_income.na$infqbst.fac)
+```
+
+```{r}
+ess9_income.na$yearpay = ifelse(ess9_income.na$infqbst.fac %in% c(1,2), 
+                                ess9_income.na$grspnum.na*52, ess9_income.na$grspnum.na*12)
 ```
 
 #### Cleaning of the data
@@ -86,22 +112,22 @@ sum(is.na(ess9_de$eduade3))
 ```{r recode Variable resp. clean}
 #NEWS Politics time recoded
 ess9_de$nwspol_na <- ess9_de$nwspol
-ess9_de["nwspol_na"][ess9_de["nwspol_na"] >= 7777] <- NA
+ess9_de["nwspol.na"][ess9_de["nwspol.na"] >= 7777] <- NA
 #Educationlevel  recoding
-ess9_de$eduade3.na <- ess9_de$eduade3
-ess9_de["eduade3.na"][ess9_de["eduade3.na"] >= 5555] <- NA
+ess9_de$eduyrs.na <- ess9_de$eduyrs
+ess9_de["eduyrs.na"][ess9_de["eduyrs.na"] >= 77] <- NA
 #Added "Other" also under NA bc we cannot explain what other is
 
 #recode the age variable
-ess9_de$agea.na <- ess9_de$agea
-ess9_de["agea.na"][ess9_de["agea.na"] >= 140] <- NA
+ess9_de$age.na <- ess9_de$agea
+ess9_de["age.na"][ess9_de["age.na"] >= 140] <- NA
 
 #record the gender variable
-ess9_de$gndr.na <- ess9_de$gndr
-ess9_de["gndr.na"][ess9_de["gndr.na"] >= 9] <- NA
-ess9_de$gndr.fac <- factor(ess9_de$gndr.na)
+ess9_de$gender <- ess9_de$gndr
+ess9_de["gender"][ess9_de["gender"] >= 9] <- NA
+ess9_de$gndr.fac <- factor(ess9_de$gender)
 
-#clean the satisfaction with government
+#clean the satisfaction with democracy works in country
 ess9_de$stfdem.na <- ess9_de$stfdem
 ess9_de["stfdem.na"][ess9_de["stfdem.na"] > 10] <- NA
 
@@ -189,6 +215,11 @@ education level by years = IV\
 happy with government = IV\
 Gender = IV\
 Age = IV
+
+```{r all variables that i want to include}
+#DV
+ess
+```
 
 ```{r linear Regression}
 lm_news.1 <- lm(nwspol_na ~ eduade3.na, data = ess9_de)
