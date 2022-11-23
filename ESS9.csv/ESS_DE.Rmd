@@ -160,6 +160,16 @@ ess9_de$interest.fac <- factor(ess9_de$polinteress, levels=1:4, labels=c("very",
 ess9_de$interest.fac <- ordered(ess9_de$interest.fac, levels = c("none at all", "hardly", "quite", "very"))
 ```
 
+```{r confidence in ability as factor}
+ess9_de$ability.fac <- factor(ess9_de$ability, levels=1:5, labels=c("not at all", "a little", "quite", "very", "completely"))
+summary(ess9_de$ability.fac)
+```
+
+```{r satisfaction with how democracy is in the country}
+ess9_de$sat.dem.fac <- factor(ess9_de$stfdem.na)
+summary(ess9_de$sat.dem.fac)
+```
+
 ```{r checking}
 summary(ess9_de$nwspol)
 summary(ess9_de$nwspol.na)
@@ -236,7 +246,9 @@ summary(ess9_de$eduyrs.na)
 summary(ess9_de$gndr.fac)
 summary(ess9_de$age.na)
 summary(ess9_de$stfdem.na)
+summary(ess9_de$sat.dem.fac)
 summary(ess9_de$ability)
+summary(ess9_de$ability.fac)
 summary(ess9_de$interest.fac)
 summary(as.factor(ess9_de$polinteress))
 ```
@@ -248,7 +260,7 @@ ess9_de["nwspol.outlier"][ess9_de["nwspol.outlier"] >= 400] <- NA
 
 ```{r create a subset of data with only the variables mentioned above}
 ess9_linear <- ess9_de[, c("nwspol.na", "age.na", "gndr.fac", "eduyrs.na", 
-                           "stfdem.na", "ability", "polinteress", "interest.fac")]
+                           "stfdem.na", "ability", "ability.fac", "polinteress", "interest.fac", "sat.dem.fac")]
 ess9_linear <- ess9_linear[complete.cases(ess9_linear),]
 ```
 
@@ -319,7 +331,7 @@ confint(lm_news.1)
 **We can see that the predictor age has a low p-value and it is signifcant.**
 
 ```{r}
-lm_news.2 <- lm(nwspol.na ~ eduyrs.na + age.na + gndr.fac + stfdem.na + ability + polinteress, data = ess9_linear)
+lm_news.2 <- lm(nwspol.na ~ eduyrs.na + age.na + gndr.fac + stfdem.na + ability.fac + interest.fac, data = ess9_linear)
 summary(lm_news.2)
 ```
 
