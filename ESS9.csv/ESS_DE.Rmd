@@ -716,7 +716,7 @@ glmP_news <- glm(nwspol ~ polintr + eisced + trstprl+
 summary(glmP_news)
 ```
 
-The summary shows the residual deviance as 1532064 on 16960 degrees of freedom. This indicates a overdispersion as the difference between these two numbers is large.
+The summary shows the residual deviance as 1532064 on 16960 degrees of freedom. This indicates an overdispersion as the difference between these two numbers is large.
 
 
 ```{r Poisson model coef}
@@ -1094,9 +1094,7 @@ set.seed(123)
 indices <- createDataPartition(ess9_ann2$netusoft, p=.85, list = F)
 ```
 
-#### Why do we use the `caret` function
-
-Look at the distribution of our different prediction classes in the train and test data sets. The data shows a concentration of 4 and 5 values. The participants of this survey are often and frequently using the internet.
+The distribution of our different prediction classes in the train and test data sets can be compared. The data shows a concentration of 4 and 5 values. The participants of this survey are often and frequently using the internet.
 
 ```{r}
 ess9_ann2 %>%
@@ -1105,7 +1103,6 @@ ess9_ann2 %>%
   table()
 ```
 
-#### Create some easy Variables to access Data
 
 ```{r}
 train <- ess9_ann2 %>%
@@ -1135,14 +1132,14 @@ plot(ess9_ann_net)
 
 #### Make Predictions
 
-```{r Predictions, include=FALSE}
+```{r Predictions, collapse=FALSE}
 test_results <- neuralnet::compute(ess9_ann_net, test_in)
 test_results$net.result
 ```
 
 Find class (i.e. output neuron) with the highest probability and convert this back into a factor
 
-```{r find class, include=FALSE}
+```{r find class, collapse=FALSE}
 test_pred <- apply(test_results$net.result, 1, which.max)
 test_pred <- factor(levels(test_truth)[test_pred], levels = levels(test_truth))
 test_pred
