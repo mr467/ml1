@@ -111,9 +111,35 @@ summary(lm_news.1)
 ```
 
 ## 3.2 GLM Poisson
-### 3.2.1Data preparation
 
-```{r, data preparation, include=TRUE}
+The goal of this chapter is to apply a generalized linear model of the poisson type on the ESS9 data set. 
+The poisson model is applied to count data, in this case the information of how many minutes the participants spend per day for consuming media, such as newspaper, TV new shows or online resources. 
+In this chapter the model is used to simulate the data, based on the provided data from the survey. 
+First the data is cleaned and prepared for using it. A subset of the data is used, containing variables which should help to model the news consumption of a person. 
+These parameters are used:
+Depended variable: 
+* How much politics are you watching ("nwspol")
+Independent variables:
+
+* Interest in politics ("polintr)
+* Trust into the current parlament ("trstprl")
+* Highest level of education ("eisced")
+* Years of education ("eduyrs")
+* Satisfaction with the general economical situation ("stfeco")
+* Satisfaction with the current government ("stfgov")
+* Gender ("gndr")
+* Age ("agea")
+* Level of person religion believe ("rlgdgr")
+* Time spent online ("netusoft")
+* Posibility for political participation ("psppsgva")
+* Yearly gross income (combination of two factors into a new one - "yrpy")
+
+
+### 3.2.1 Data preparation
+The data have to be prepared and transformed. For poisson count data are needed for the predictive variable. The time in minutes is modeled therefore. 
+
+
+```{r, data preparation for models, include=TRUE}
 # Setting NA values correct for the used parameters replace with NA replace function from naniar package. As each variable has a different NA setting, it is specified for each variable.
 
 ess9_prep <- ess9 %>%
@@ -144,9 +170,7 @@ sum(is.na(ess9_prep$eduyrs))
 sum(is.na(ess9_prep$stfgov))
 sum(is.na(ess9_prep$netusoft))
 
-
-
-# The variable "grspnum" is depended on the variable "infqbst." As "infqbst" sets the period of the payment and "grpsnum" is the payment amount for the defined period. To standardize it on a yearly gross payment it needs a nested ifelse statement. If "infqbst" is one, we multiple it by 52 weeks of the year, if it is a two we multiple it by 12, and if it something else we keep it as it is. 
+# The variable "grspnum" is depended on the variable "infqbst." As "infqbst" sets the period of the payment and "grpsnum" is the payment amount for the defined period. To standardize it on a yearly gross payment it needs a nested ifelse statement. If "infqbst" is one, we multiple it by 52 weeks of the year, if it is a two we multiple it by 12, and if it something else we keep it as it is (3 is already yearly payment, and values above will be filterd in the next step. 
 
 ess9_prep$yrpy <- ifelse(ess9_prep$infqbst %in% 1,
                                 ess9_prep$grspnum*52,  
@@ -154,29 +178,24 @@ ess9_prep$yrpy <- ifelse(ess9_prep$infqbst %in% 1,
                                 ess9_prep$grspnum*12, 
                                 ess9_prep$grspnum))
 ```
+Subset of data for this task, as 14 parameters in total. The rows with NA are dropped, as the data set is large enough for droping theses values.
 
-
-```{r, data preparation, include=TRUE}
+```{r, data subset and NA, include=TRUE}
 # defining subset for study and models. These factors will be used in the Poisson and Neural Network models below. 
 ess9_subset <- c("nwspol", "polintr", "trstprl", "eisced", "eduyrs","stfeco", "stfgov", "stfdem", "gndr", "agea","rlgdgr","netusoft", "psppsgva", "yrpy")
-```
 
-
-```{r, data preparation, include=TRUE}
 #subsetting the dataset with the defined parameters
 ess9_prep <- ess9_prep[ess9_subset]
-```
 
-
-```{r, data preparation, include=TRUE}
 # drop NA for the columns used for the poisson model
 ess9_prep <- ess9_prep %>% drop_na((ess9_subset))
-#keep data for AMM part as numeric values
+
+#keep data for AMM part as numeric values - saved for later
 ess9_prep_num <- ess9_prep
 ```
 
 
-```{r, data preparation, include=TRUE}
+```{r, data factorization, include=TRUE}
 # set of parameters which are categorical variables
 factors <- c("polintr","trstprl", "eisced", "stfeco", "stfgov", "stfdem", "gndr", "rlgdgr", "psppsgva", "netusoft")
 
@@ -187,7 +206,7 @@ str(ess9_prep)
 
 ```
 
-The media consumption information from the survey are measured in minutes. These Information are count data. In this study a GLM Poisson model is applied. It is used to simulate the different media consumption by Gender. 
+The plot shows the media consumption for male and female. Males have a higher mean and the variance of the first and thrid quantile are larger.
 ```{r}
 # Use cleaned and factorized data for the Poisson model
 ess9_poisson <- ess9_prep
@@ -202,6 +221,8 @@ ggplot(data = ess9_poisson, mapping = aes(y = nwspol,x = gndr)) +
 ```
 
 ### 3.2.2 Fitting the poisson model
+Using the parameter specified above to model the consumption. 
+
 ```{r}
 # fitting the model
 glmP_news <- glm(nwspol ~ polintr + eisced + trstprl+ eduyrs + netusoft + stfeco + stfgov +
@@ -317,19 +338,20 @@ ggplot(data = ess9_GAM ,mapping = aes(y = nwspol ,
 
 
 ggplot(data = ess9_GAM ,mapping = aes(y = nwspol ,
-                                  x =  (grspnum))) +
+                                  x =  (yrpy))) +
   geom_point()+
   geom_smooth()
 
-ess9_gam <- gam((nwspol) ~ s(eduyrs, k= 1) + s(gndr, k= 1) + s(agea, k= 1) +
-                  s(netustm, k= 1) + s(grspnum, k= 1),
-                data = ess9_poisson)
-data("ozone")
-head(ozone)
+# ess9_gam <- gam((nwspol) ~ s(eduyrs, k= 1) + s(gndr, k= 1) + s(agea, k= 1) +
+#                   s(netusoft, k= 1) + s(yrpy, k= 1),
+#                 data = ess9_poisson)
+
 ```
 
 
 ## 3.5 Neural Network 
+
+Additional to "classic" linear models and GLM options, there are neural networks for analyzing and predicting data. 
 
 ###3.5.1 continious variable
 
@@ -494,7 +516,7 @@ ess9_ann2 %>%
 ```
 So using the `createDataPartition` function makes sure that no class is over- or underrepresented relative to the total occurance in the two sets
 
-### Create some easy Variables to access Data
+#### Create some easy Variables to access Data
 
 ```{r}
 train <- ess9_ann2 %>%
@@ -507,7 +529,7 @@ test_truth <- ess9_ann2 %>%
   pull(netusoft)
 ```
 
-## Train the Neural Network
+#### Train the Neural Network
 
 Call the `neuralnet` function creating a network with two hidden layers containing 4 and 3 neurons (probably way too complex for our problem here).
 
@@ -521,7 +543,7 @@ Plot the resulting network including the weights
 ```{r}
 plot(ess9_ann_net)
 ```
-## Make Predictions
+#### Make Predictions
 
 ```{r}
 test_results <- neuralnet::compute(ess9_ann_net, test_in)
@@ -535,13 +557,13 @@ test_pred <- apply(test_results$net.result, 1, which.max)
 test_pred <- factor(levels(test_truth)[test_pred], levels = levels(test_truth))
 test_pred
 ```
-## Evaluate the Results
+#### Evaluate the Results
 
 ```{r}
 conf_matrix <- confusionMatrix(test_truth, test_pred)
 conf_matrix
 ```
-## Optimize Network Structure
+#### Optimize Network Structure
 
 First we need to remodel the data due to some limitations of `caret`
 
@@ -560,14 +582,14 @@ train_mod <- ess9_ann_mod %>% slice(indices)
 ```{r}
 
 set.seed(142)
-formula = netusoft + netusoft2 + netusoft3 + netusoft4 + netusoft5 ~ gndr + agea + yrpy + eduyrs
+formula = netusoft + netusoft2 + netusoft3 + netusoft4 + netusoft5 ~ nwspol + stfdem + gndr + agea + yrpy + eduyrs
 models <- train(formula, train_mod,
                method="neuralnet",   
                ### Parameters for layers
-               tuneGrid = expand.grid(.layer1=c(2:4), .layer2=c(0:4), .layer3=c(0)),               
+               tuneGrid = expand.grid(.layer1=c(1:2), .layer2=c(0:3), .layer3=c(0)),               
                ### Parameters for optmisation
                learningrate = 0.1,  
-               threshold = 0.01,     
+               threshold = 0.1,     
                stepmax = 5000         
 )
 ```
@@ -585,10 +607,10 @@ set.seed(42)
 best_model <- neuralnet(
   formula,
   ess9_ann_mod %>% slice(indices),
-  hidden = c(2,3),
+  hidden = c(1,2),
   learningrate = 0.01, 
   threshold = 0.01,   
-  stepmax = 50000 
+  stepmax = 5000 
 )
 plot(best_model)
 ```
