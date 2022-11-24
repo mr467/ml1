@@ -576,60 +576,41 @@ segments(x0 = new.data.news$eduyrs.na,
 
 ## 3.2 GLM Poisson
 
-The goal of this chapter is to apply a generalized linear model of the poisson type on the ESS9 data set. The poisson model is applied to count data, in this case the information of how many minutes the participants spend per day for consuming media, such as newspaper, TV new shows or online resources. In this chapter the model is used to simulate the data, based on the provided data from the survey. First the data is cleaned and prepared for using it. A subset of the data is used, containing variables which should help to model the news consumption of a person. These parameters are used: Depended variable:
+The goal of this chapter is to apply a generalized linear model of the poisson type on the ESS9 data set. The poisson model is applied to count data, in this case the information of how many minutes the participants spend per day for consuming media, such as newspaper, TV new shows or online resources.
 
--   How much politics are you watching ("nwspol") Independent variables:
+In this chapter the model is used to simulate the data, based on the survey data. Getting a simulation of the minutes according to a selected subset of variables from the study.
 
-The goal of this chapter is to apply a generalized linear model of the poisson type on the ESS9 data set. The poisson model is applied to count data, in this case the information of how many minutes the participants spend per day for consuming media, such as newspaper, TV new shows or online resources. In this chapter the model is used to simulate the data, based on the provided data from the survey. First the data is cleaned and prepared for using it. A subset of the data is used, containing variables which should help to model the news consumption of a person. These parameters are used: Depended variable:
+First the data is cleaned and prepared for using it. A subset of the data is used, containing social and demographic variables which should help to model the news consumption of a person. These parameters are used:
 
--   How much politics are you watching ("nwspol") Independent variables:
+Depended variable:
+
+-   How much politics are you watching ("nwspol")
+
+Independent variables:
 
 -   Interest in politics ("polintr)
-
 -   Trust into the current parlament ("trstprl")
-
 -   Highest level of education ("eisced")
-
 -   Years of education ("eduyrs")
-
 -   Satisfaction with the general economical situation ("stfeco")
-
 -   Satisfaction with the current government ("stfgov")
-
 -   Gender ("gndr")
-
 -   Age ("agea")
-
 -   Level of person religion believe ("rlgdgr")
-
 -   Time spent online ("netusoft")
-
--   Posibility for political participation ("psppsgva")
-
+-   Possibility for political participation ("psppsgva")
 -   Yearly gross income (combination of two factors into a new one - "yrpy")
-
 -   Interest in politics ("polintr)
-
 -   Trust into the current parlament ("trstprl")
-
 -   Highest level of education ("eisced")
-
 -   Years of education ("eduyrs")
-
 -   Satisfaction with the general economical situation ("stfeco")
-
 -   Satisfaction with the current government ("stfgov")
-
 -   Gender ("gndr")
-
 -   Age ("agea")
-
 -   Level of person religion believe ("rlgdgr")
-
--   Time spent online ("netusoft")
-
--   Posibility for political participation ("psppsgva")
-
+-   Time spent online in 5 categorical values("netusoft")
+-   Possibility for political participation ("psppsgva")
 -   Yearly gross income (combination of two factors into a new one - "yrpy")
 
 ### 3.2.1 Data preparation
@@ -657,7 +638,6 @@ ess9_prep <- ess9 %>%
                                  psppsgva = c(7,8,9),
                                  grspnum = c(666666666,777777777,888888888,999999999),
                                  infqbst = c(6,7,8,9)
-                                 
                                  ))
 
 #testing if change has worked and how many NA we have - for four examples
@@ -667,7 +647,7 @@ sum(is.na(ess9_prep$eduyrs))
 sum(is.na(ess9_prep$stfgov))
 sum(is.na(ess9_prep$netusoft))
 
-# The variable "grspnum" is depended on the variable "infqbst." As "infqbst" sets the period of the payment and "grpsnum" is the payment amount for the defined period. To standardize it on a yearly gross payment it needs a nested ifelse statement. If "infqbst" is one, we multiple it by 52 weeks of the year, if it is a two we multiple it by 12, and if it something else we keep it as it is (3 is already yearly payment, and values above will be filterd in the next step. 
+# The variable "grspnum" is depended on the variable "infqbst." As "infqbst" sets the period of the payment and "grpsnum" is the payment amount for the defined period. To standardize it on a yearly gross payment it needs a nested ifelse statement.
 
 ess9_prep$yrpy <- ifelse(ess9_prep$infqbst %in% 1,
                                 ess9_prep$grspnum*52,  
