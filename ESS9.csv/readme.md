@@ -1,14 +1,15 @@
 
-Machine Learning 1 group project Authors: Milica, Nuria and Marco Initial setup: 30.09.2022
+Machine Learning 1,
+Group project Authors: Milica, Nuria and Marco Initial setup: 30.09.2022
 
-Updates:  5.10.2022: Added data set to import 
-Updates: Change in group setup - Nuria canceled Master Programm - therefore Milica and Marco will work on the subject. The tasks of Nuria are split among the two.
+Update 5.10.2022: Added data set to import 
 
+Update 6.11.2022: Change in group setup - Nuria canceled - therefore Milica and Marco will work on the subject. The tasks of Nuria are split among the two.
 
 What to Include in your README
 
 1. Project's Title
-This is the name of the project. It describes the whole project in one sentence, and helps people understand what the main goal and aim of the project is.
+European Survey - What is the political sentiment in German speaking Countries Before Covid?
 
 2. Project Description
 
