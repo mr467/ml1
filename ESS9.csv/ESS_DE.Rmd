@@ -588,30 +588,19 @@ Depended variable:
 
 Independent variables:
 
--   Interest in politics ("polintr)
--   Trust into the current parlament ("trstprl")
--   Highest level of education ("eisced")
--   Years of education ("eduyrs")
--   Satisfaction with the general economical situation ("stfeco")
--   Satisfaction with the current government ("stfgov")
--   Gender ("gndr")
--   Age ("agea")
--   Level of person religion believe ("rlgdgr")
--   Time spent online ("netusoft")
--   Possibility for political participation ("psppsgva")
--   Yearly gross income (combination of two factors into a new one - "yrpy")
--   Interest in politics ("polintr)
--   Trust into the current parlament ("trstprl")
--   Highest level of education ("eisced")
--   Years of education ("eduyrs")
--   Satisfaction with the general economical situation ("stfeco")
--   Satisfaction with the current government ("stfgov")
--   Gender ("gndr")
--   Age ("agea")
--   Level of person religion believe ("rlgdgr")
--   Time spent online in 5 categorical values("netusoft")
--   Possibility for political participation ("psppsgva")
--   Yearly gross income (combination of two factors into a new one - "yrpy")
+1.  Interest in politics ("polintr)
+2.  Trust into the current parlament ("trstprl")
+3.  Highest level of education ("eisced")
+4.  Years of education ("eduyrs")
+5.  Satisfaction with the general economical situation ("stfeco")
+6.  Satisfaction with the current government ("stfgov")
+7.  Satisfaction with the democratic system ("stfdem")
+8.  Gender ("gndr")
+9.  Age ("agea")
+10. Level of religiouse believes ("rlgdgr")
+11. Time spent online in 5 categorical values("netusoft")
+12. Possibility for political participation ("psppsgva")
+13. Yearly gross income (combination of two factors into a new one - "yrpy")
 
 ### 3.2.1 Data preparation
 
@@ -654,9 +643,10 @@ ess9_prep$yrpy <- ifelse(ess9_prep$infqbst %in% 1,
                             ifelse(ess9_prep$infqbst %in% 2,
                                 ess9_prep$grspnum*12, 
                                 ess9_prep$grspnum))
+
 ```
 
-Subset of data for this task, as 14 parameters in total. The rows with NA are dropped, as the data set is large enough for droping theses values.
+Subset data for this task, to the defined 14 variables in total. The rows with NA are dropped, as the data set is large enough for dropping theses values.
 
 ```{r data subset and NA, include=TRUE}
 # defining subset for study and models. These factors will be used in the Poisson and Neural Network models below. 
