@@ -489,7 +489,7 @@ data = ess9_ch)
 ## 3.3 GLM Binominal
 
 ```{r subset of dataframe because of differen NA}
-ess9_binary <- ess9_de[, c("postonline", "age.na", "interest.fac", "gov.allows", "trustparl", "polscale.na", "eduyrs.na", "ability.fac", "sat.dem.fac", "boycott.fac")]
+ess9_binary <- ess9_de[, c("postonline", "age.na", "interest.fac", "gov.allows", "trustparl", "polscale.na", "eduyrs.na", "ability.fac", "sat.dem.fac", "boycott.fac", "vote.fac")]
 ess9_binary.na <- ess9_binary[complete.cases(ess9_binary),]
 ```
 
@@ -500,21 +500,56 @@ ess9_binary.na <- ess9_binary[complete.cases(ess9_binary),]
 g1 <- ggplot(data = ess9_binary.na,
        mapping = aes(y = postonline,
                      x = age.na))+
-  geom_point()
+  geom_point()+
+  geom_smooth(method = "glm", 
+              se = FALSE,
+              method.args = list(family = "binomial")) 
 
 g2 <- ggplot(data = ess9_binary.na,
        mapping = aes(y = postonline,
                      x = eduyrs.na))+
-  geom_point()
+  geom_point()+
+  geom_smooth(method = "glm", 
+              se = FALSE,
+              method.args = list(family = "binomial")) 
 
 g3 <- ggplot(data = ess9_binary.na,
        mapping = aes(y = postonline,
                      x = interest.fac))+
-  geom_point()
+  geom_point()+
+  geom_smooth(method = "glm", 
+              se = FALSE,
+              method.args = list(family = "binomial")) 
 
-plot_grid(g1, g2, g3,
-          ncol = 2, nrow = 2)
+g4 <- ggplot(data = ess9_binary.na,
+       mapping = aes(y = postonline,
+                     x = ability.fac))+
+  geom_point()+
+  geom_smooth(method = "glm", 
+              se = FALSE,
+              method.args = list(family = "binomial")) 
+
+g5 <- ggplot(data = ess9_binary.na,
+       mapping = aes(y = postonline,
+                     x = boycott.fac))+
+  geom_point()+
+  geom_smooth(method = "glm", 
+              se = FALSE,
+              method.args = list(family = "binomial")) 
+
+g6 <- ggplot(data = ess9_binary.na,
+       mapping = aes(y = postonline,
+                     x = vote.fac))+
+  geom_point()+
+  geom_smooth(method = "glm", 
+              se = FALSE,
+              method.args = list(family = "binomial")) 
+
+plot_grid(g1, g2, g3, g4, g5, g6,
+          ncol = 2, nrow = 3)
 ```
+
+### Fitting the binary model (logistic regression
 
 ```{r glm model for binary data}
 glm_pol.0 <- glm(postonline ~ age.na, data = ess9_binary.na,
@@ -523,33 +558,28 @@ summary(glm_pol.0)
 ```
 
 ```{r}
+glm_pol.1 <- glm(postonline ~ age.na + eduyrs.na + interest.fac, data = ess9_binary.na,
+                 family = "binomial")
+summary(glm_pol.1)
+```
+
+### Estimating the performance of a binary model
+
+```{r}
 fitted(glm_pol.0) %>% round(digits = 2)
 ```
 
 ```{r}
-fitted_glm.pol.0.disc <- ifelse(fitted(glm_pol.0) < 0.5, 
-                                yes = 0, no = 1)
+fitted_glm.pol.0.disc <- ifelse(fitted(glm_pol.0) < 0.3, 
+                                yes = 1, no = 0)
 head(fitted_glm.pol.0.disc)
-```
-
-`{d.obs.fit.glm.pol <- data.frame(obs = ess9_binary.na$postonline,}                                   fitted = fitted_glm.pol.0.disc) table(d.obs.fit.glm.pol)`
-
-```{r binary regression with more than 1 predictor}
-glm_pol.1 <- glm(postonline ~ age.na + polint, data = ess9_binary.na,
-                 family = "binomial")
-summary(glm_pol.1)
+summary(as.factor(fitted_glm.pol.0.disc))
 ```
 
 ```{r}
-glm_pol.2 <- glm(postonline ~ age.na + polint + polscale.na, data = ess9_binary.na,
-                 family = "binomial")
-summary(glm_pol.2)
-```
-
-```{r}
-glm_pol.1 <- glm(postonline ~ age.na + polint + polscale.na + trustparl, data = ess9_binary.na,
-                 family = "binomial")
-summary(glm_pol.1)
+d.obs.fit.glm.pol <- data.frame(obs = ess9_binary.na$postonline,                            
+                                fitted = fitted_glm.pol.0.disc) 
+table(d.obs.fit.glm.pol)
 ```
 
 ## 3.4 GAM
