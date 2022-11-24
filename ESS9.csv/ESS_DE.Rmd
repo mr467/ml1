@@ -420,15 +420,15 @@ fit_lm_news.0[id]
 ```{r}
 plot(nwspol.na ~ eduyrs.na, data = ess9_linear,
      main = "Minutes spent on Political News",
-     col = "lightgray",)
+     col = "lightgray")
 ##
 abline(lm_news.0)
 ##
 points(nwspol.na ~ eduyrs.na, data = ess9_linear[id, ], col = "red")
 ##
-segments(x0 = ess9_linear[id, "eduyrs.na"], x1 = ess9_linear[id,"eduyrs.na"],
-         y0 = fit_lm_news.0[id], y1 = ess9_linear[id, "nwspol.na"],
-         col = "blue")
+#segments(x0 = ess9_linear[id, "eduyrs.na"], x1 = ess9_linear[id, "eduyrs.na"],
+ #        y0 = fit_lm_news.0[id], 
+  #       y1 = ess9_linear[id, "nwspol.na"],  col = "blue")
 ```
 
 ### Predicted values
