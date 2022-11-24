@@ -617,8 +617,8 @@ library(caret)
 
 ```{r}
 ess9_de$scale_cat  <- cut(ess9_de$polscale.na,
-              breaks=c(-1, 2.5, 4.5, 5.5, 7.5, 10),
-              labels=c('left', 'center left', 'center', 'center right', 'right'))
+              breaks=c(-1, 4.5, 7.5, 10),
+              labels=c('left', 'center', 'right'))
 summary(ess9_de$scale_cat)
 summary(as.factor(ess9_de$polscale.na))
 ess9_de$scale_cat <- as.factor(ess9_de$scale_cat)
@@ -627,23 +627,36 @@ summary(ess9_de$scale_cat)
 ```
 
 ```{r}
-d.ess9_supportvec <- ess9_de[, c("postonline", "age.na", "polint", "gov.allows", 
-                                 "trustparl", "polscale.na", "scale_cat", "nwspol.na")]
+d.ess9_supportvec <- ess9_de[, c("age.na", "interest.fac", "scale_cat", "eduyrs.na", "sat.dem.fac", "yearpay", "vote.fac")]
 d.ess9_supportvec <- d.ess9_supportvec[complete.cases(d.ess9_supportvec),]
+str(d.ess9_supportvec)
 ```
 
-## Have a quick look at the Data
+```{r year pay in K}
+d.ess9_supportvec$yearpay.k <- d.ess9_supportvec$yearpay/1000
+summary(d.ess9_supportvec$yearpay.k)
+summary(d.ess9_supportvec$yearpay)
+```
+
+### Have a quick look at the Data
 
 ```{r}
 d.ess9_supportvec %>%
-  ggplot(aes(x = age.na, y = nwspol.na, color = scale_cat)) +
-  geom_point() +
-  ylim(0, 250)
+  ggplot(aes(x = age.na, y = yearpay.k, color = scale_cat)) +
+  geom_point() 
+
+d.ess9_supportvec %>%
+  ggplot(aes(x = age.na, y = yearpay.k, color = vote.fac)) +
+  geom_point()
 ```
 
 ```{r}
 d.ess9_supportvec %>%
-  ggplot(aes(x = age.na, y = trustparl, color = scale_cat)) +
+  ggplot(aes(x = age.na, y = eduyrs.na, color = scale_cat)) +
+  geom_point()
+
+d.ess9_supportvec %>%
+  ggplot(aes(x = age.na, y = eduyrs.na, color = vote.fac)) +
   geom_point()
 ```
 
