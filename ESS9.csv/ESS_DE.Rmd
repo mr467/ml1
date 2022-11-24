@@ -1000,12 +1000,6 @@ plot(ess9_nnet)
 
 #### Predict the test set
 
-```{r, include=FALSE}
-pred <- compute(ess9_nnet, test %>% select(-nwspol))
-pred$net.result
-```
-
-So what went wrong here? Obviously we also need to use the scaled data to make predictions and then scale back to real nwspol values
 
 ```{r predict, include=FALSE}
 pred_scaled <- compute(ess9_nnet, test_scaled %>% select(-nwspol))
@@ -1026,9 +1020,9 @@ sqrt(mean((test$nwspol - pred)^2))
 
 #### Redo with `caret` and Cross Validation
 
-```{r caret applied again, include=FALSE, message=FALSE, warning=FALSE}
+```{r caret applied again, collapse=TRUE, message=FALSE, warning=FALSE}
 set.seed(42)
-tuGrid <- expand.grid(.layer1=c(1:1), .layer2=c(0,2), .layer3=c(0))
+tuGrid <- expand.grid(.layer1=c(1:2), .layer2=c(0,2), .layer3=c(0))
 
 
 trCtrl <- trainControl(
@@ -1053,6 +1047,8 @@ models <- train(
 ```{r message=FALSE, warning=FALSE}
 plot(test$nwspol, pred, col='blue', pch=16, ylab = "predicted rating NN", xlab = "real rating")
 abline(0,1)
+
+
 ```
 
 ```{r}
