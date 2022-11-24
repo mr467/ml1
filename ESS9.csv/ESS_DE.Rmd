@@ -1,12 +1,16 @@
 ---
-title: "European Survey - What is the political sentiment in German speaking Countries Before Covid?"
+title: "European Survey - What is the political sentiment in German speaking Countries
+  Before Covid?"
 author: "Milica Pajkic and Marco Rieder"
 date: "`r Sys.Date()`"
-code_folding: hide
 output:
+  pdf_document:
+    toc: yes
+    toc_depth: '5'
   html_document:
-    toc: true
-    toc_depth: 3
+    toc: yes
+    toc_depth: 5
+code_folding: hide
 ---
 
 ```{r setup, include=FALSE}
@@ -37,7 +41,7 @@ library(mgcv)
 
 ```
 
-```{r}
+```{r data import}
 ess9 <- read_csv("ESS9.csv")
 
 unique(ess9$name)
@@ -111,7 +115,32 @@ summary(lm_news.1)
 
 ## 3.2 GLM Poisson
 
-The goal of this chapter is to apply a generalized linear model of the poisson type on the ESS9 data set. The poisson model is applied to count data, in this case the information of how many minutes the participants spend per day for consuming media, such as newspaper, TV new shows or online resources. In this chapter the model is used to simulate the data, based on the provided data from the survey. First the data is cleaned and prepared for using it. A subset of the data is used, containing variables which should help to model the news consumption of a person. These parameters are used: Depended variable: \* How much politics are you watching ("nwspol") Independent variables:
+The goal of this chapter is to apply a generalized linear model of the poisson type on the ESS9 data set. The poisson model is applied to count data, in this case the information of how many minutes the participants spend per day for consuming media, such as newspaper, TV new shows or online resources. In this chapter the model is used to simulate the data, based on the provided data from the survey. First the data is cleaned and prepared for using it. A subset of the data is used, containing variables which should help to model the news consumption of a person. These parameters are used: Depended variable: 
+
+* How much politics are you watching ("nwspol") Independent variables:
+
+The goal of this chapter is to apply a generalized linear model of the poisson type on the ESS9 data set. 
+The poisson model is applied to count data, in this case the information of how many minutes the participants spend per day for consuming media, such as newspaper, TV new shows or online resources. 
+In this chapter the model is used to simulate the data, based on the provided data from the survey. 
+First the data is cleaned and prepared for using it. A subset of the data is used, containing variables which should help to model the news consumption of a person. 
+These parameters are used:
+Depended variable: 
+
+* How much politics are you watching ("nwspol")
+Independent variables:
+
+* Interest in politics ("polintr)
+* Trust into the current parlament ("trstprl")
+* Highest level of education ("eisced")
+* Years of education ("eduyrs")
+* Satisfaction with the general economical situation ("stfeco")
+* Satisfaction with the current government ("stfgov")
+* Gender ("gndr")
+* Age ("agea")
+* Level of person religion believe ("rlgdgr")
+* Time spent online ("netusoft")
+* Posibility for political participation ("psppsgva")
+* Yearly gross income (combination of two factors into a new one - "yrpy")
 
 -   Interest in politics ("polintr)
 -   Trust into the current parlament ("trstprl")
@@ -130,7 +159,7 @@ The goal of this chapter is to apply a generalized linear model of the poisson t
 
 The data have to be prepared and transformed. For poisson count data are needed for the predictive variable. The time in minutes is modeled therefore.
 
-```{r, data preparation for models, include=TRUE}
+```{r data preparation for models, include=TRUE}
 # Setting NA values correct for the used parameters replace with NA replace function from naniar package. As each variable has a different NA setting, it is specified for each variable.
 
 ess9_prep <- ess9 %>%
@@ -172,7 +201,7 @@ ess9_prep$yrpy <- ifelse(ess9_prep$infqbst %in% 1,
 
 Subset of data for this task, as 14 parameters in total. The rows with NA are dropped, as the data set is large enough for droping theses values.
 
-```{r, data subset and NA, include=TRUE}
+```{r data subset and NA, include=TRUE}
 # defining subset for study and models. These factors will be used in the Poisson and Neural Network models below. 
 ess9_subset <- c("nwspol", "polintr", "trstprl", "eisced", "eduyrs","stfeco", "stfgov", "stfdem", "gndr", "agea","rlgdgr","netusoft", "psppsgva", "yrpy")
 
@@ -186,7 +215,10 @@ ess9_prep <- ess9_prep %>% drop_na((ess9_subset))
 ess9_prep_num <- ess9_prep
 ```
 
-```{r, data factorization, include=TRUE}
+
+
+```{r data factorization, include=TRUE}
+
 # set of parameters which are categorical variables
 factors <- c("polintr","trstprl", "eisced", "stfeco", "stfgov", "stfdem", "gndr", "rlgdgr", "psppsgva", "netusoft")
 
@@ -197,9 +229,14 @@ str(ess9_prep)
 
 ```
 
-The plot shows the media consumption for male and female. Males have a higher mean and the variance of the first and thrid quantile are larger. \>\>\>\>\>\>\> dev_marco
 
-```{r}
+The plot shows the media consumption for male and female. Males have a higher mean and the variance of the first and thrid quantile are larger. 
+
+
+The plot shows the media consumption for male and female. Males have a higher mean and the variance of the first and third quantile are larger.
+
+
+```{r plotting of media consumaption}
 # Use cleaned and factorized data for the Poisson model
 ess9_poisson <- ess9_prep
 
@@ -216,7 +253,7 @@ ggplot(data = ess9_poisson, mapping = aes(y = nwspol,x = gndr)) +
 
 Using the parameter specified above to model the consumption.
 
-```{r}
+```{r Poisson model fitting}
 # fitting the model
 glmP_news <- glm(nwspol ~ polintr + eisced + trstprl+ eduyrs + netusoft + stfeco + stfgov +
                    stfdem + gndr + agea + rlgdgr +yrpy,
@@ -237,7 +274,6 @@ Now we simulate with our model the average media consumption for Females and Mal
 
 ```{r poisson}
 
-
 set.seed(2) # for reproducibility
 #simulate the data from glm poisson
 sim.data.ess9.Poisson <- simulate(glmP_news)
@@ -257,7 +293,10 @@ ggplot(mapping = aes(y = sim.data.ess9.Poisson$sim_1,
 
 ```
 
+
 The simulated data look similar as the real data based of the survey. The variance is smaller for the simulated one. The higher mean for males are in both plots visible.
+
+The simulated data look similar as the real data based of the survey. The variance is smaller for the simulated one. The higher mean and the higher variance for the male group is indicated in the real data as well as in the simulated data. 
 
 ### 3.2.4 GLM Quasi-Poisson
 
@@ -289,28 +328,20 @@ To compare it with the variable of "stfdem" about how satisfied the participants
 
 ### Labs Example
 
-```{r}
-
-```
-
-# 3.3 GLM Binominal
-
-```{r}
-
-```
 
 ## 3.3 GLM Binominal
 
 ## 3.4 GAM
 
-```{r GAM}
+In this chapter a generalized additive model (GAM) is applied to the data set. First the data is visually analyzed and checked. The variables don't show a strong relation ship and the line is mostly horizontal.
 
+```{r GAM peperation}
 ess9_GAM <- ess9_prep
 
 # Multi plots for News Consumption
 
 pairs((nwspol) ~ . , data = ess9_GAM, pch = ".", upper.panel = panel.smooth)
-#ploting news consumption and highest level of education (standardized)
+#plotting news consumption and highest level of education (standardized)
 ggplot(data = ess9_GAM ,mapping = aes(y = nwspol ,
                                   x = eisced)) +
   geom_boxplot()
@@ -334,10 +365,23 @@ ggplot(data = ess9_GAM ,mapping = aes(y = nwspol ,
                                   x =  (yrpy))) +
   geom_point()+
   geom_smooth()
+```
 
-# ess9_gam <- gam((nwspol) ~ s(eduyrs, k= 1) + s(gndr, k= 1) + s(agea, k= 1) +
-#                   s(netusoft, k= 1) + s(yrpy, k= 1),
-#                 data = ess9_poisson)
+
+```{r GAM}
+GAM.netusoft <- gam((as.numeric(netusoft)) ~ yrpy + 
+                      s(nwspol) + s(agea) + 
+                      s(eduyrs, k= 1),
+                data = ess9_poisson)
+plot(GAM.netusoft, residuals = TRUE, cex = 2)
+```
+```{r}
+GAM.netusoft2 <- gam((as.numeric(netusoft)) ~ yrpy + 
+                      s(nwspol) + s(agea) + 
+                      eduyrs,
+                data = ess9_poisson)
+
+plot(GAM.netusoft2, residuals = TRUE, cex = 2)
 
 ```
 
@@ -345,9 +389,16 @@ ggplot(data = ess9_GAM ,mapping = aes(y = nwspol ,
 
 Additional to "classic" linear models and GLM options, there are neural networks for analyzing and predicting data.
 
-###3.5.1 continious variable
+## 3.5 Neural Network 
 
-```{r}
+Within this chapter two types of neural network model are applied to two different questions. 
+
+1. Predicting the values for the continuous variable 
+2. Predicting the vallues for the categorical variable inidicating the 5 levels of 
+### 3.5.1 continious variable
+
+
+```{r data import for neural network}
 
 ess9_ann<- ess9_prep_num
 
@@ -357,7 +408,7 @@ str(ess9_ann)
 
 #### Prepare for Training
 
-```{r}
+```{r preparation}
 set.seed(123)
 ess9_ann[factors] <- lapply(ess9_ann[factors], as.numeric)
 
@@ -367,9 +418,8 @@ test <- ess9_ann %>% slice(-indices)
 boxplot(train$nwspol, test$nwspol, ess9_ann %>% sample_frac(0.2) %>% pull(nwspol), outline = FALSE)
 ```
 
-And this time we will also scale the data (by hand for educational purposes)
 
-```{r}
+```{r scaling of data}
 max <- apply(ess9_ann, 2, max)
 min <- apply(ess9_ann, 2, min)
 ess9_ann_scaled <- as.data.frame(scale(ess9_ann, center = min, scale = max - min))
@@ -379,13 +429,13 @@ test_scaled <- ess9_ann_scaled %>% slice(-indices)
 
 #### Fit the Network
 
-```{r}
+```{r NN model fitting}
 
 
 set.seed(42)
 ess9_nnet = neuralnet(nwspol ~ polintr + eisced + trstprl+ eduyrs + netusoft + 
                         stfeco + stfgov + stfdem + gndr + agea + rlgdgr +yrpy,
-                      train_scaled, hidden = 5 , linear.output = FALSE)
+                      train_scaled, hidden = 3 , linear.output = FALSE)
 plot(ess9_nnet)
 ```
 
@@ -398,30 +448,29 @@ pred$net.result
 
 So what went wrong here? Obviously we also need to use the scaled data to make predictions and then scale back to real nwspol values
 
-```{r, include=FALSE}
+```{r predict, include=FALSE}
 pred_scaled <- compute(ess9_nnet, test_scaled %>% select(-nwspol))
 pred <- pred_scaled$net.result * (max(ess9_ann$nwspol) - min(ess9_ann$nwspol)) + min(ess9_ann$nwspol)
 pred
 ```
 
-```{r}
+
+```{r plot comparsion of real and predicated data}
 plot(test$nwspol, pred, col='blue', pch=16, ylab = "predicted nwspol NN", xlab = "real nwspol")
 abline(0,1)
 ```
 
 And calculate the RMSE
 
-```{r}
+```{r RMSE}
 sqrt(mean((test$nwspol - pred)^2))
 ```
 
 #### Redo with `caret` and Cross Validation
 
-In principle we cannot be sure that we were not simply "lucky" with the train/test split above, so the proper way to run this would be via `caret` using k-fold Cross Validation. And also as we use `caret` anyway let's also run some hyperparameter tuning:
-
-```{r message=FALSE, warning=FALSE}
+```{r caret applied again, include=FALSE, message=FALSE, warning=FALSE}
 set.seed(42)
-tuGrid <- expand.grid(.layer1=c(1:4), .layer2=c(0,2), .layer3=c(0))
+tuGrid <- expand.grid(.layer1=c(1:1), .layer2=c(0,2), .layer3=c(0))
 
 
 trCtrl <- trainControl(
@@ -435,7 +484,7 @@ models <- train(
   x = ess9_ann %>% select(-nwspol),
   y = ess9_ann_scaled %>% pull(nwspol),
   method = 'neuralnet', metric = 'RMSE', 
-  linear.output = TRUE,
+  linear.output = FALSE,
   # be careful, does only work on x!
   preProcess = c('center', 'scale'),
   tuneGrid = tuGrid,
@@ -454,11 +503,12 @@ plot(models)
 
 and extract the best model
 
-```{r}
+#and extract the best model
+
 plot(models$finalModel)
 ```
 
-###3.5.2 Categorical variable
+### 3.5.2 Categorical variable
 
 ```{r}
 ess9_ann2<- ess9_prep_num
@@ -542,14 +592,14 @@ plot(ess9_ann_net)
 
 #### Make Predictions
 
-```{r}
+```{r Predictions, include=FALSE}
 test_results <- neuralnet::compute(ess9_ann_net, test_in)
 test_results$net.result
 ```
 
 Find class (i.e. output neuron) with the highest probability and convert this back into a factor
 
-```{r}
+```{r find class, include=FALSE}
 test_pred <- apply(test_results$net.result, 1, which.max)
 test_pred <- factor(levels(test_truth)[test_pred], levels = levels(test_truth))
 test_pred
@@ -557,7 +607,7 @@ test_pred
 
 #### Evaluate the Results
 
-```{r}
+```{r conf matrix}
 conf_matrix <- confusionMatrix(test_truth, test_pred)
 conf_matrix
 ```
@@ -583,20 +633,23 @@ train_mod <- ess9_ann_mod %>% slice(indices)
 set.seed(142)
 formula = netusoft + netusoft2 + netusoft3 + netusoft4 + netusoft5 ~ nwspol + stfdem + gndr + agea + yrpy + eduyrs
 models <- train(formula, train_mod,
-               method="neuralnet",   
+               method="neuralnet",
+               linear.output = FALSE,
                ### Parameters for layers
-               tuneGrid = expand.grid(.layer1=c(1:2), .layer2=c(0:3), .layer3=c(0)),               
+               tuneGrid = expand.grid(.layer1=c(1:2), .layer2=c(0:3), .layer3=c(0)),  
                ### Parameters for optmisation
                learningrate = 0.1,  
                threshold = 0.1,     
                stepmax = 5000         
 )
+
 ```
 
 And have a look at the different models
 
 ```{r}
 plot(models)
+
 ```
 
 And try out the best model
@@ -606,12 +659,15 @@ set.seed(42)
 best_model <- neuralnet(
   formula,
   ess9_ann_mod %>% slice(indices),
-  hidden = c(1,2),
-  learningrate = 0.01, 
-  threshold = 0.01,   
-  stepmax = 5000 
+  hidden = c(2,3),
+  learningrate = 0.1, 
+  threshold = 0.1,   
+  stepmax = 20000,
+  linear.output = FALSE
 )
+
 plot(best_model)
+
 ```
 
 ## 3.6 Support Vector Machine
