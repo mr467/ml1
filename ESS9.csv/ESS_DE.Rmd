@@ -43,27 +43,21 @@ library(caret)
 library(gamlss.add)
 library(ggplot2)
 library(mgcv)
-```
-
-```{r data import}
-library(naniar)
 library(cowplot)
 library(ISLR)
 library(kernlab)
 library(tidyverse)
-theme_set(theme_bw())
 library(car)
+```
+
+```{r data import}
 options(scipen=999)
 ```
 
 ```{r}
 ess9 <- read_csv("ESS9.csv")
-```
-
-```{r making subsets of the whole dataset to only german speaking countries}
+#making subsets of the whole dataset to only Germany
 ess9_de <- subset(ess9, cntry == "DE", select =dweight:domain)
-ess9_ch <- subset(ess9, cntry == "CH", select =dweight:domain)
-ess9_at <- subset(ess9, cntry == "AT", select =dweight:domain)
 ```
 
 # 1. Introduction
@@ -78,20 +72,7 @@ The survey is really comprehensive and consists out of 572 variables. Some of th
 
 # 2. Descriptive Statistics
 
-First
-
-```{r }
-summary(ess9$nwspol)
-sum(is.na(ess9$nwspol))
-```
-
-```{r echo=FALSE}
-summary(ess9_de$gndr)
-sum(is.na(ess9_de$gndr))
-typeof(ess9_de$nwspol)
-```
-
-```{r}
+```{r, collapse = TRUE}
 str(ess9_de)
 ```
 
@@ -117,7 +98,7 @@ ess9_de$yearpay <- ifelse(ess9_de$infqbst %in% 1,
 summary(ess9_de$yearpay)
 ```
 
-```{r recode Variable resp. clean}
+```{r recode Variable resp. clean, results = FALSE}
 #NEWS Politics time recoded
 ess9_de$nwspol.na <- ess9_de$nwspol
 ess9_de["nwspol.na"][ess9_de["nwspol.na"] >= 7777] <- NA
