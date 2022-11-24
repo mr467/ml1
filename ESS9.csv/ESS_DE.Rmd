@@ -726,8 +726,6 @@ exp(coef(glmP_news)["gndr2"]) %>% round(digits = 4)
 ```
 Female do consume approx. 10% less media than male participants.
 
-
-
 ### 3.2.3 Simulation
 
 Now we simulate with our model the average media consumption for Females and Males.
@@ -759,6 +757,9 @@ The simulated data look similar as the real data based of the survey. The varian
 
 ### 3.2.4 GLM Quasi-Poisson
 
+In chapter 3.2.2 the data showed a overdispersion for the poisson model. This isn't unusual and can be handled by the quasipoisson model type. The value for the dispersion parameter of 206.3327 indicates a much faster increase of variance than linearly. 
+
+
 ```{r quasipoisson}
 glmQ_news <- glm(nwspol ~ polintr + eisced + trstprl+ eduyrs + netusoft + stfeco + stfgov +
                    stfdem + gndr + agea + rlgdgr +yrpy,
@@ -774,7 +775,7 @@ glmQ_news_noGender <- update(glmQ_news, . ~ . - gndr)
 anova(glmQ_news, glmQ_news_noGender, test = "F")
 ```
 
-Yes, Gender plays a role for the quasi poisson model.
+Yes, Gender plays a role for the quasi poisson model. This can be assured with this test.
 
 ```{r quasipoisson - Anova for stfdem}
 
@@ -783,7 +784,9 @@ glmQ_news_noGender <- update(glmQ_news, . ~ . - stfdem)
 anova(glmQ_news, glmQ_news_noGender, test = "F")
 ```
 
-To compare it with the variable of "stfdem" about how satisfied the participants of the survey are about how the democracy in their country works. This variable doensn't play a role to predict the media consumption according to the quasipoisson model.
+To compare it with the variable of "stfdem" about how satisfied the participants of the survey are about how the democracy in their country works. This variable doesn't play a role to predict the media consumption according to the quasipoisson model.
+
+The results can be concluded that according to the models there is some evidence, that the factors Interest in politics, age, and gender are influencing the media consumption.
 
 ## 3.3 GLM Binomial
 
