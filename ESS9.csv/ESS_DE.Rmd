@@ -122,6 +122,7 @@ In this chapter the model is used to simulate the data, based on the provided da
 First the data is cleaned and prepared for using it. A subset of the data is used, containing variables which should help to model the news consumption of a person. 
 These parameters are used:
 Depended variable: 
+
 * How much politics are you watching ("nwspol")
 Independent variables:
 
