@@ -37,6 +37,7 @@ library(ISLR)
 library(kernlab)
 library(tidyverse)
 theme_set(theme_bw())
+library(car)
 options(scipen=999)
 ```
 
@@ -227,6 +228,32 @@ plot_grid(plot.lin1, plot.lin1a,
           ncol = 2, nrow = 1)
 ```
 
+```{r}
+gg_age.1 <- ggplot(data = ess9_linear,
+       mapping = aes(y = nwspol.na,
+                     x = age.na))+
+  geom_point()+ggtitle("Plot of daily News Consumption \nby age without outlier") +
+  xlab("Age") + ylab("News Consumption in Minutes")
+  
+##
+gg_age.1 +
+  geom_smooth()+
+  ylim(0,150)
+```
+
+```{r}
+gg_edu.1 <- ggplot(data = ess9_linear,
+       mapping = aes(y = nwspol.na,
+                     x = eduyrs.na))+
+  geom_point()+ggtitle("Plot of daily News Consumption \nby age without outlier") +
+  xlab("Education in Years") + ylab("News Consumption in Minutes")
+  
+##
+gg_edu.1 +
+  geom_smooth()+
+  ylim(0,100)
+```
+
 ### Fitting Model
 
 ```{r linear Regression}
@@ -308,10 +335,6 @@ summary(lm_news.2)
 ```
 
 ```{r}
-coef(lm_news.2)
-```
-
-```{r}
 summary(lm_news.2)$coefficients
 ```
 
@@ -327,6 +350,7 @@ par(mar = c(4,9,2,2))
 plot(y = 1:12,
      x = rev(coef(lm_news.2)),
      xlim = c(-20, 80),
+     main = "Conifidence Intervall of predictors",
      xlab = "Estimated coefficients",
      ylab = "",
      axes = FALSE)
@@ -387,6 +411,19 @@ abline(v = 0, lty = "dashed")
 ```
 
 The interaction is not significant
+
+### Testing several Variables
+
+```{r}
+formula(lm_news.1)
+formula(lm_news.2)
+formula(lm_news.3)
+```
+
+```{r}
+formula(lm_news.2)
+drop1(lm_news.2, test = "F")
+```
 
 ### Fitted Values and Residuals
 
@@ -747,5 +784,3 @@ table(test_pred1)
 conf_matrix <- confusionMatrix(test_pred1, test_truth)
 conf_matrix
 ```
-
-So we have here the same accuracy but with much more complex boundaries (radial kernels and higher costs) so we might be overfitting here a bit more.
