@@ -2,6 +2,7 @@
 title: "European Survey - What is the political sentiment in German speaking Countries Before Covid?"
 author: "Milica Pajkic and Marco Rieder"
 date: "`r Sys.Date()`"
+code_folding: hide
 output:
   html_document:
     toc: true
@@ -110,15 +111,15 @@ summary(lm_news.1)
 
 ## 3.2 GLM Poisson
 
-The media consumption in minutes is count data, therefore the GLM Poisson model can be used and indicate how the 
 
-```{r}
-# Setting NA values correct for the used parameters replace with NA replace function from naniar package
+```{r, data preparation, include=TRUE}
+# Setting NA values correct for the used parameters replace with NA replace function from naniar package. As each variable has a different NA setting, it is specified for each variable.
 
-ess9_poisson <- ess9 %>%
+ess9_prep <- ess9 %>%
   replace_with_na(replace = list(nwspol =
                                    c(6666, 7777, 8888, 9999),
                                  polintr = c(7,8,9),
+                                 trstprl = c(77,88,99),
                                  eisced = c(77,88,99),
                                  eduyrs = c(77, 88, 99),
                                  stfeco = c(77, 88, 99),
@@ -129,44 +130,69 @@ ess9_poisson <- ess9 %>%
                                  rlgdgr = c(77, 88, 99),
                                  netustm = c(6666, 7777, 8888, 9999),
                                  netusoft = c(7,8,9),
-                                 ggchld = c(6,7,8,9),
                                  psppsgva = c(7,8,9),
-                                 grspnum = c(666666666,777777777,888888888,999999999)
-
-
+                                 grspnum = c(666666666,777777777,888888888,999999999),
+                                 infqbst = c(6,7,8,9)
+                                 
                                  ))
 
 #testing if change has worked and how many NA we have - for four examples
 
-sum(is.na(ess9_poisson$nwspol))
-sum(is.na(ess9_poisson$eduyrs))
-sum(is.na(ess9_poisson$stfgov))
-sum(is.na(ess9_poisson$agea))
+sum(is.na(ess9_prep$nwspol))
+sum(is.na(ess9_prep$eduyrs))
+sum(is.na(ess9_prep$stfgov))
+sum(is.na(ess9_prep$agea))
 
-# defining subset for study and models
-ess9_factor <- c("nwspol", "polintr", "eisced", "eduyrs","stfeco", "stfgov", "stfdem", "gndr", "agea","rlgdgr", "netustm", "netusoft", "ggchld", "psppsgva", "grspnum")
+
+# The variable "grspnum" is depended on the variable "infqbst." As "infqbst" sets the period of the payment and "grpsnum" is the payment amount for the defined period. To standardize it on a yearly gross payment it needs a nested ifelse statement. If "infqbst" is one, we multiple it by 52 weeks of the year, if it is a two we multiple it by 12, and if it something else we keep it as it is. 
+
+ess9_prep$yrpy <- ifelse(ess9_prep$infqbst %in% 1,
+                                ess9_prep$grspnum*52,  
+                            ifelse(ess9_prep$infqbst %in% 2,
+                                ess9_prep$grspnum*12, 
+                                ess9_prep$grspnum))
+
+# defining subset for study and models. Keeping the helping columns to assure to be fine
+ess9_factor <- c("nwspol", "polintr", "trstprl", "eisced", "eduyrs","stfeco", "stfgov", "stfdem", "gndr", "agea","rlgdgr", "netustm", "netusoft", "psppsgva","infqbst" ,"grspnum", "yrpy")
 
 #subsetting the dataset with the defined parameters
-ess9_poisson <- ess9_poisson[ess9_factor]
+ess9_prep <- ess9_prep[ess9_factor]
 
 # drop NA for the columns used for the poisson model
-ess9_poisson <- ess9_poisson %>% drop_na((ess9_factor))
+ess9_prep <- ess9_prep %>% drop_na((ess9_factor))
+
+factors <- c("polintr","trstprl", "eisced", "stfeco", "stfgov", "stfdem", "gndr", "rlgdgr", "netusoft", "psppsgva", "infqbst")
+ess9_prep[factors] <- lapply(ess9_prep[factors], as.factor)
 
 
+str(ess9_prep)
 
-ggplot(data = ess9_poisson, mapping = aes(y = nwspol,x = as.factor(gndr))) +
-  geom_hline(yintercept = 0) + ## to highlight the lower bound of the data
-  geom_boxplot()
+```
+
+The media consumption information from the survey are measured in minutes. These Information are count data. In this study a GLM Poisson model is applied. It is used to simulate the different media consumption by Gender. 
+```{r}
+# Use cleaned and facotorized data for the Poisson model
+ess9_poisson <- ess9_prep
+
+ggplot(data = ess9_poisson, mapping = aes(y = nwspol,x = gndr)) +
+  geom_boxplot() +
+  ggtitle("Media consumption in minutes compared to Gender (Zoomed In)")+
+  ylab("media consumption in minutes") +
+  xlab("Gender") +
+  coord_cartesian(ylim = quantile(ess9_poisson$nwspol, c(0.1, 0.9))) # large outliers are cropt out to indicate variance of male and female
+
+```
 
 
-
-# fit the model and use 5 parameter
+```{r}
+# fitting the model
 glmP_news <- glm(nwspol ~ polintr + eduyrs + netusoft + stfeco + stfgov +
                    stfdem + gndr + agea + rlgdgr,
                  family = "poisson", ## we specify the distribution!
                  data = ess9_poisson)
 
 summary(glmP_news)
+
 ```
 
 Now we simulate with our model the average media consumption for Females and Males.
@@ -184,23 +210,32 @@ head(sim.data.ess9.Poisson)
 
 #plot data as bar plot, with gender as factor to get two groups to compare, without factoring only one plot would show.
 ggplot(mapping = aes(y = sim.data.ess9.Poisson$sim_1,
-                     x = as.factor(ess9_poisson$gndr))) +
+                     x = ess9_poisson$gndr)) +
   geom_boxplot() +
   geom_hline(yintercept = 0) +
   ylab("simulated media consumption \n(assuming Poisson dist)") +
-  xlab("Gender")
+  xlab("Gender") +
+  coord_cartesian(ylim = quantile(ess9_poisson$nwspol, c(0.1, 0.9))) # large outliers are removed to indicate variance of male and female
+
 ```
+The simulated data look similar as the real data based of the survey. The variance is smaller for the simulated one. The higher mean for males are in both plots visible. 
+
 ### 3.2.1 GLM Quasi-Poisson
 
 
 ```{r quasipoisson}
 
-glmQ_news <- glm(nwspol ~ eduyrs + stfeco + stfgov + stfdem + gndr + agea + rlgdgr,
+glmQ_news <- glm(nwspol ~ eduyrs + trstprl + stfeco + stfgov + stfdem + gndr + agea + rlgdgr,
                  family = "quasipoisson", ## we specify the distribution!
                  data = ess9)
 summary(glmQ_news)
 
 
+
+```
+### Labs Example
+
+```{r}
 
 ```
 
@@ -220,37 +255,34 @@ summary(glmQ_news)
 
 ```{r GAM}
 
+ess9_GAM <- ess9_prep
+
 # Multi plots for News Consumption
 
-pairs((nwspol) ~ . , data = ess9_poisson, pch = ".", upper.panel = panel.smooth)
+pairs((nwspol) ~ . , data = ess9_GAM, pch = ".", upper.panel = panel.smooth)
 
 
 #ploting news consumption and highest level of education (standardized)
-ggplot(data = ess9_poisson ,mapping = aes(y = nwspol ,
-                                  x = as.factor (eisced))) +
-  geom_boxplot()
-
-# ploting news and if there are grand childern 
-ggplot(data = ess9_poisson ,mapping = aes(y = nwspol ,
-                                  x = as.factor (ggchld))) +
+ggplot(data = ess9_GAM ,mapping = aes(y = nwspol ,
+                                  x = eisced)) +
   geom_boxplot()
 
 
 # ploting news and age of participants
-ggplot(data = ess9_poisson ,mapping = aes(y = nwspol ,
+ggplot(data = ess9_GAM ,mapping = aes(y = nwspol ,
                                   x =  (agea))) +
   geom_point()+
   geom_smooth()
 
 #plotting news and education
 
-ggplot(data = ess9_poisson ,mapping = aes(y = nwspol ,
+ggplot(data = ess9_GAM ,mapping = aes(y = nwspol ,
                                   x =  (eduyrs))) +
   geom_point()+
   geom_smooth()
 
 
-ggplot(data = ess9_poisson ,mapping = aes(y = nwspol ,
+ggplot(data = ess9_GAM ,mapping = aes(y = nwspol ,
                                   x =  (grspnum))) +
   geom_point()+
   geom_smooth()
@@ -267,7 +299,11 @@ ggplot(data = ess9_poisson ,mapping = aes(y = nwspol ,
 
 
 ```{r}
+
+ess9_ann<- ess9_prep
+
 str(ess9_poisson)
+
 ```
 
 
@@ -275,40 +311,42 @@ str(ess9_poisson)
 
 ```{r}
 set.seed(123)
-indices <- createDataPartition(ess9_poisson$nwspol, p = 0.8, list = FALSE)
-train <- ess9_poisson %>% slice(indices)
-test <- ess9_poisson %>% slice(-indices)
-boxplot(train$nwspol, test$nwspol, ess9_poisson %>% sample_frac(0.2) %>% pull(nwspol))
+ess9_ann[factors] <- lapply(ess9_ann[factors], as.numeric)
+
+indices <- createDataPartition(ess9_ann$nwspol, p = 0.8, list = FALSE)
+train <- ess9_ann %>% slice(indices)
+test <- ess9_ann %>% slice(-indices)
+boxplot(train$nwspol, test$nwspol, ess9_ann %>% sample_frac(0.2) %>% pull(nwspol), outline = FALSE)
 ```
 
 And this time we will also scale the data (by hand for educational purposes)
 
 ```{r}
-max <- apply(ess9_poisson, 2, max)
-min <- apply(ess9_poisson, 2, min)
-ess9_poisson_scaled <- as.data.frame(scale(ess9_poisson, center = min, scale = max - min))
-train_scaled <- ess9_poisson_scaled %>% slice(indices)
-test_scaled <- ess9_poisson_scaled %>% slice(-indices)
+
+#ess9_ann_scaled <-ess9_ann %>% mutate(across(where(is.numeric), scale(ess9_ann, center = min, scale = max - min)))
+ess9_ann_scaled <-ess9_ann %>% mutate(scale(ess9_ann, center = min, scale = max - min))
+train_scaled <- ess9_ann_scaled %>% slice(indices)
+test_scaled <- ess9_ann_scaled %>% slice(-indices)
 ```
 
 ### Fit the Network
 
 ```{r}
 set.seed(42)
-cereal_net = neuralnet(nwspol ~ polintr + eisced + eduyrs + stfeco + stfdem + gndr + agea + rlgdgr + netusoft + ggchld + psppsgva + grspnum, train_scaled, hidden = 3 , linear.output = TRUE)
-plot(cereal_net)
+ess9_nnet = neuralnet(nwspol ~ polintr + eisced + eduyrs + stfeco + stfdem + gndr + agea + rlgdgr + netusoft + psppsgva + yrpy, train_scaled, hidden = 3 , linear.output = FALSE)
+plot(ess9_nnet)
 ```
 ### Predict the test set
 
-```{r}
-pred <- compute(cereal_net, test %>% select(-nwspol))
+```{r, include=FALSE}
+pred <- compute(ess9_nnet, test %>% select(-nwspol))
 pred$net.result
 ```
 So what went wrong here? Obviously we also need to use the scaled data to make predictions and then scale back to real nwspol values
 
-```{r}
-pred_scaled <- compute(cereal_net, test_scaled %>% select(-nwspol))
-pred <- pred_scaled$net.result * (max(ess9_poisson$nwspol) - min(ess9_poisson$nwspol)) + min(ess9_poisson$nwspol)
+```{r, include=FALSE}
+pred_scaled <- compute(ess9_nnet, test_scaled %>% select(-nwspol))
+pred <- pred_scaled$net.result * (max(ess9_ann$nwspol) - min(ess9_ann$nwspol)) + min(ess9_ann$nwspol)
 pred
 ```
 
@@ -328,18 +366,19 @@ In principle we cannot be sure that we were not simply "lucky" with the train/te
 
 ```{r message=FALSE, warning=FALSE}
 set.seed(42)
-tuGrid <- expand.grid(.layer1=c(1:4), .layer2=c(0,2), .layer3=c(0))
+tuGrid <- expand.grid(.layer1=c(1:15), .layer2=c(0,10), .layer3=c(0))
+
 
 trCtrl <- trainControl(
   method = 'repeatedcv', 
-  number = 5, 
-  repeats = 10, 
+  number = 4, 
+  repeats = 8, 
   returnResamp = 'final'
 )
 
 models <- train(
-  x = ess9_poisson %>% select(-nwspol),
-  y = ess9_poisson_scaled %>% pull(nwspol),
+  x = ess9_ann %>% select(-nwspol),
+  y = ess9_ann_scaled %>% pull(nwspol),
   method = 'neuralnet', metric = 'RMSE', 
   linear.output = TRUE,
   # be careful, does only work on x!
@@ -349,38 +388,10 @@ models <- train(
 )
 ```
 
-```{r}
-plot(models)
-```
-and extract the best model
-
-```{r}
-plot(models$finalModel)
-```
 
 ```{r message=FALSE, warning=FALSE}
-#ess9_scaled <- as.data.frame(scale(ess9, center = min, scale = max - min))
-
-set.seed(42)
-tuGrid <- expand.grid(.layer1=c(1:4), .layer2=c(0,2), .layer3=c(0))
-
-trCtrl <- trainControl(
-  method = 'repeatedcv', 
-  number = 5, 
-  repeats = 10, 
-  returnResamp = 'final'
-)
-
-models <- train(
-  x = ess9_poisson %>% select(-nwspol),
-  y = ess9_poisson_scaled %>% pull(nwspol),
-  method = 'neuralnet', metric = 'RMSE', 
-  linear.output = TRUE,
-  # be careful, does only work on x!
-  preProcess = c('center', 'scale'),
-  tuneGrid = tuGrid,
-  trControl = trCtrl
-)
+plot(test$nwspol, pred, col='blue', pch=16, ylab = "predicted rating NN", xlab = "real rating")
+abline(0,1)
 ```
 
 ```{r}
@@ -391,6 +402,7 @@ and extract the best model
 ```{r}
 plot(models$finalModel)
 ```
+
 
 ```{r}
 
