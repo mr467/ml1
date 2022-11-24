@@ -139,10 +139,11 @@ summary(ess9_de$vote.fac)
 #-----------------------------------------------------------------------------------------
 #post something online in the last 12 month
 ess9_de$postonline <- factor(ess9_de$pstplonl)
+ess9_de["postonline"][ess9_de["postonline"] > 5] <- NA
 ess9_de$postonline<-ifelse(ess9_de$postonline==1,1,0)
 summary(ess9_de$postonline)
 summary(as.factor(ess9_de$postonline))
-ess9_de$postonline <- as.integer(ess9_de$postonline)
+summary(as.factor(ess9_de$pstplonl))
 #-----------------------------------------------------------------------------------------
 ##Political system allows people to have a say in what government does 1 = no
 ess9_de$gov.allows <- ess9_de$psppsgva
@@ -493,7 +494,17 @@ ess9_binary <- ess9_de[, c("postonline", "age.na", "interest.fac", "gov.allows",
 ess9_binary.na <- ess9_binary[complete.cases(ess9_binary),]
 ```
 
+```{r}
+str(ess9_binary.na)
+```
+
 ### Graphical Analysis
+
+```{r}
+pairs(postonline ~ age.na + interest.fac + gov.allows +
+trustparl + polscale.na +
+ability.fac + sat.dem.fac + boycott.fac + vote.fac, data = ess9_binary.na, upper.panel = panel.smooth)
+```
 
 ```{r EDA}
 
