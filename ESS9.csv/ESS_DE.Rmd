@@ -1063,11 +1063,12 @@ plot(models$finalModel)
 
 ### 3.5.2 Categorical variable
 
+NN models can be used for categorical variables as well. In this chapter the goal is to find a classification of values to the categories. As variable the frequency of usage of the internet is used.
+
 ```{r}
 ess9_ann2<- ess9_prep_num
-
+#changing depended variable to factor
 ess9_ann2$netusoft <- as.factor(ess9_ann2$netusoft)
-
 
 str(ess9_ann2)
 ```
@@ -1095,7 +1096,7 @@ indices <- createDataPartition(ess9_ann2$netusoft, p=.85, list = F)
 
 #### Why do we use the `caret` function
 
-Look at the distribution of our different prediction classes in the train and test datasets:
+Look at the distribution of our different prediction classes in the train and test data sets. The data shows a concentration of 4 and 5 values. The participants of this survey are often and frequently using the internet.
 
 ```{r}
 ess9_ann2 %>%
@@ -1103,17 +1104,6 @@ ess9_ann2 %>%
   select(netusoft, train) %>%
   table()
 ```
-
-Now compare this to the "random" approach:
-
-```{r}
-ess9_ann2 %>%
-  mutate(train = runif(nrow(ess9_ann2)) < .85) %>%
-  select(netusoft, train) %>%
-  table()
-```
-
-So using the `createDataPartition` function makes sure that no class is over- or underrepresented relative to the total occurance in the two sets
 
 #### Create some easy Variables to access Data
 
@@ -1130,7 +1120,7 @@ test_truth <- ess9_ann2 %>%
 
 #### Train the Neural Network
 
-Call the `neuralnet` function creating a network with two hidden layers containing 4 and 3 neurons (probably way too complex for our problem here).
+Call the `neuralnet` function creating a network with two hidden layer.
 
 ```{r}
 set.seed(21)
@@ -1159,6 +1149,7 @@ test_pred
 ```
 
 #### Evaluate the Results
+The confusion maztrix shows 
 
 ```{r conf matrix}
 conf_matrix <- confusionMatrix(test_truth, test_pred)
