@@ -24,7 +24,6 @@ knitr::opts_chunk$set(
 # Getting the Data and installing libraries
 
 ```{r, include=FALSE}
-if (!require("naniar")) install.packages("naniar", dependencies=TRUE)
 if (!require("ggpubr")) install.packages("ggpubr", dependencies=TRUE)
 if (!require("cowplot")) install.packages("cowplot", dependencies=TRUE)
 if (!require("kernlab")) install.packages("kernlab", dependencies=TRUE)
@@ -44,7 +43,6 @@ library(caret)
 library(gamlss.add)
 library(ggplot2)
 library(mgcv)
-
 ```
 
 ```{r data import}
