@@ -674,11 +674,9 @@ str(ess9_prep)
 
 ```
 
-The plot shows the media consumption for male and female. Males have a higher mean and the variance of the first and thrid quantile are larger.
+The plot shows the media consumption for male and female to gain a quick overview. Males have a higher mean and the variance for the first and third quantile is larger as well.
 
-The plot shows the media consumption for male and female. Males have a higher mean and the variance of the first and third quantile are larger.
-
-```{r plotting of media consumaption}
+```{r plotting of media consumaption and gender}
 # Use cleaned and factorized data for the Poisson model
 ess9_poisson <- ess9_prep
 
@@ -687,28 +685,48 @@ ggplot(data = ess9_poisson, mapping = aes(y = nwspol,x = gndr)) +
   ggtitle("Media consumption in minutes compared to Gender (Zoomed In)")+
   ylab("media consumption in minutes") +
   xlab("Gender") +
+  coord_cartesian(ylim = quantile(ess9_poisson$nwspol, c(0.1, 0.9))) # large outliers are cropd out to indicate variance of male and female
+```
+
+The second plot indicates the frequency of internet usage and the media consumption. The mean of the two lower frequencies ("never" and "only occasionally") have higher values for media consumption.
+
+```{r plotting of media consumaption and frequency of internet usage, collapse=TRUE}
+
+ggplot(data = ess9_poisson, mapping = aes(y = nwspol,x = netusoft)) +
+  geom_boxplot() +
+  ggtitle("Media consumption in minutes compared to frequency of internet usage (Zoomed In)")+
+  ylab("media consumption in minutes") +
+  xlab("frequency of internet usage") +
   coord_cartesian(ylim = quantile(ess9_poisson$nwspol, c(0.1, 0.9))) # large outliers are cropt out to indicate variance of male and female
 
 ```
 
 ### 3.2.2 Fitting the poisson model
 
-Using the parameter specified above to model the consumption.
+Using the parameter specified above to model the consumption. Using the subset variables of the survey.
 
 ```{r Poisson model fitting}
 # fitting the model
-glmP_news <- glm(nwspol ~ polintr + eisced + trstprl+ eduyrs + netusoft + stfeco + stfgov +
+glmP_news <- glm(nwspol ~ polintr + eisced + trstprl+ 
+                   eduyrs + netusoft + stfeco + stfgov + 
                    stfdem + gndr + agea + rlgdgr +yrpy,
                  family = "poisson", ## we specify the distribution!
                  data = ess9_poisson)
 
 summary(glmP_news)
+```
 
+The summary shows the residual deviance as 1532064 on 16960 degrees of freedom. This indicates a overdispersion as the difference between these two numbers is large.
+
+
+```{r Poisson model coef}
 coef(glmP_news)
 
-exp(coef(glmP_news)["(Intercept)"])
-
+exp(coef(glmP_news)["gndr2"]) %>% round(digits = 4)
 ```
+Female do consume approx. 10% less media than male participants.
+
+
 
 ### 3.2.3 Simulation
 
