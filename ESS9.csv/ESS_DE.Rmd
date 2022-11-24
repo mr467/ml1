@@ -654,12 +654,6 @@ table(d.obs.fit.glm.pol)
 
 ### Loading the Packages
 
-First make sure we have all the functionality from the `tidyverse` available:
-
-```{r}
-
-```
-
 We are going to use the `e1071` package for this example and also some helper functions from `caret`
 
 ```{r}
