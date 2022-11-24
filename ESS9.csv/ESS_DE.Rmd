@@ -4,12 +4,12 @@ title: "European Survey - What is the political sentiment in German speaking Cou
 author: "Milica Pajkic and Marco Rieder"
 date: "`r Sys.Date()`"
 output:
-  pdf_document:
-    toc: yes
-    toc_depth: '5'
   html_document:
     toc: yes
     toc_depth: 5
+  pdf_document:
+    toc: yes
+    toc_depth: '5'
 code_folding: hide
 ---
 
