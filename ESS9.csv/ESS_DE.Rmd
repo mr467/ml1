@@ -91,7 +91,6 @@ sum(is.na(ess9_de$gndr))
 typeof(ess9_de$nwspol)
 ```
 
-
 ```{r}
 str(ess9_de)
 ```
@@ -577,44 +576,60 @@ segments(x0 = new.data.news$eduyrs.na,
 
 ## 3.2 GLM Poisson
 
-The goal of this chapter is to apply a generalized linear model of the poisson type on the ESS9 data set. The poisson model is applied to count data, in this case the information of how many minutes the participants spend per day for consuming media, such as newspaper, TV new shows or online resources. In this chapter the model is used to simulate the data, based on the provided data from the survey. First the data is cleaned and prepared for using it. A subset of the data is used, containing variables which should help to model the news consumption of a person. These parameters are used: Depended variable: 
+The goal of this chapter is to apply a generalized linear model of the poisson type on the ESS9 data set. The poisson model is applied to count data, in this case the information of how many minutes the participants spend per day for consuming media, such as newspaper, TV new shows or online resources. In this chapter the model is used to simulate the data, based on the provided data from the survey. First the data is cleaned and prepared for using it. A subset of the data is used, containing variables which should help to model the news consumption of a person. These parameters are used: Depended variable:
 
-* How much politics are you watching ("nwspol") Independent variables:
+-   How much politics are you watching ("nwspol") Independent variables:
 
-The goal of this chapter is to apply a generalized linear model of the poisson type on the ESS9 data set. 
-The poisson model is applied to count data, in this case the information of how many minutes the participants spend per day for consuming media, such as newspaper, TV new shows or online resources. 
-In this chapter the model is used to simulate the data, based on the provided data from the survey. 
-First the data is cleaned and prepared for using it. A subset of the data is used, containing variables which should help to model the news consumption of a person. 
-These parameters are used:
-Depended variable: 
+The goal of this chapter is to apply a generalized linear model of the poisson type on the ESS9 data set. The poisson model is applied to count data, in this case the information of how many minutes the participants spend per day for consuming media, such as newspaper, TV new shows or online resources. In this chapter the model is used to simulate the data, based on the provided data from the survey. First the data is cleaned and prepared for using it. A subset of the data is used, containing variables which should help to model the news consumption of a person. These parameters are used: Depended variable:
 
-* How much politics are you watching ("nwspol")
-Independent variables:
-
-* Interest in politics ("polintr)
-* Trust into the current parlament ("trstprl")
-* Highest level of education ("eisced")
-* Years of education ("eduyrs")
-* Satisfaction with the general economical situation ("stfeco")
-* Satisfaction with the current government ("stfgov")
-* Gender ("gndr")
-* Age ("agea")
-* Level of person religion believe ("rlgdgr")
-* Time spent online ("netusoft")
-* Posibility for political participation ("psppsgva")
-* Yearly gross income (combination of two factors into a new one - "yrpy")
+-   How much politics are you watching ("nwspol") Independent variables:
 
 -   Interest in politics ("polintr)
+
 -   Trust into the current parlament ("trstprl")
+
 -   Highest level of education ("eisced")
+
 -   Years of education ("eduyrs")
+
 -   Satisfaction with the general economical situation ("stfeco")
+
 -   Satisfaction with the current government ("stfgov")
+
 -   Gender ("gndr")
+
 -   Age ("agea")
+
 -   Level of person religion believe ("rlgdgr")
+
 -   Time spent online ("netusoft")
+
 -   Posibility for political participation ("psppsgva")
+
+-   Yearly gross income (combination of two factors into a new one - "yrpy")
+
+-   Interest in politics ("polintr)
+
+-   Trust into the current parlament ("trstprl")
+
+-   Highest level of education ("eisced")
+
+-   Years of education ("eduyrs")
+
+-   Satisfaction with the general economical situation ("stfeco")
+
+-   Satisfaction with the current government ("stfgov")
+
+-   Gender ("gndr")
+
+-   Age ("agea")
+
+-   Level of person religion believe ("rlgdgr")
+
+-   Time spent online ("netusoft")
+
+-   Posibility for political participation ("psppsgva")
+
 -   Yearly gross income (combination of two factors into a new one - "yrpy")
 
 ### 3.2.1 Data preparation
@@ -677,7 +692,6 @@ ess9_prep <- ess9_prep %>% drop_na((ess9_subset))
 ess9_prep_num <- ess9_prep
 ```
 
-
 ```{r data factorization, include=TRUE}
 
 # set of parameters which are categorical variables
@@ -690,12 +704,9 @@ str(ess9_prep)
 
 ```
 
-
-The plot shows the media consumption for male and female. Males have a higher mean and the variance of the first and thrid quantile are larger. 
-
+The plot shows the media consumption for male and female. Males have a higher mean and the variance of the first and thrid quantile are larger.
 
 The plot shows the media consumption for male and female. Males have a higher mean and the variance of the first and third quantile are larger.
-
 
 ```{r plotting of media consumaption}
 # Use cleaned and factorized data for the Poisson model
@@ -754,10 +765,9 @@ ggplot(mapping = aes(y = sim.data.ess9.Poisson$sim_1,
 
 ```
 
-
 The simulated data look similar as the real data based of the survey. The variance is smaller for the simulated one. The higher mean for males are in both plots visible.
 
-The simulated data look similar as the real data based of the survey. The variance is smaller for the simulated one. The higher mean and the higher variance for the male group is indicated in the real data as well as in the simulated data. 
+The simulated data look similar as the real data based of the survey. The variance is smaller for the simulated one. The higher mean and the higher variance for the male group is indicated in the real data as well as in the simulated data.
 
 ### 3.2.4 GLM Quasi-Poisson
 
@@ -929,7 +939,6 @@ ggplot(data = ess9_GAM ,mapping = aes(y = nwspol ,
   geom_smooth()
 ```
 
-
 ```{r GAM}
 GAM.netusoft <- gam((as.numeric(netusoft)) ~ yrpy + 
                       s(nwspol) + s(agea) + 
@@ -937,6 +946,7 @@ GAM.netusoft <- gam((as.numeric(netusoft)) ~ yrpy +
                 data = ess9_poisson)
 plot(GAM.netusoft, residuals = TRUE, cex = 2)
 ```
+
 ```{r}
 GAM.netusoft2 <- gam((as.numeric(netusoft)) ~ yrpy + 
                       s(nwspol) + s(agea) + 
@@ -951,14 +961,12 @@ plot(GAM.netusoft2, residuals = TRUE, cex = 2)
 
 Additional to "classic" linear models and GLM options, there are neural networks for analyzing and predicting data.
 
-## 3.5 Neural Network 
+### 3.5.1 Neural Network
 
-Within this chapter two types of neural network model are applied to two different questions. 
+Within this chapter two types of neural network model are applied to two different questions.
 
-1. Predicting the values for the continuous variable 
-2. Predicting the vallues for the categorical variable inidicating the 5 levels of 
-### 3.5.1 continious variable
-
+1.  Predicting the values for the continuous variable
+2.  Predicting the vallues for the categorical variable inidicating the 5 levels of \### 3.5.1 continious variable
 
 ```{r data import for neural network}
 
@@ -979,7 +987,6 @@ train <- ess9_ann %>% slice(indices)
 test <- ess9_ann %>% slice(-indices)
 boxplot(train$nwspol, test$nwspol, ess9_ann %>% sample_frac(0.2) %>% pull(nwspol), outline = FALSE)
 ```
-
 
 ```{r scaling of data}
 max <- apply(ess9_ann, 2, max)
@@ -1015,7 +1022,6 @@ pred_scaled <- compute(ess9_nnet, test_scaled %>% select(-nwspol))
 pred <- pred_scaled$net.result * (max(ess9_ann$nwspol) - min(ess9_ann$nwspol)) + min(ess9_ann$nwspol)
 pred
 ```
-
 
 ```{r plot comparsion of real and predicated data}
 plot(test$nwspol, pred, col='blue', pch=16, ylab = "predicted nwspol NN", xlab = "real nwspol")
