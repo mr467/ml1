@@ -22,7 +22,9 @@ knitr::opts_chunk$set(
 if (!require("naniar")) install.packages("naniar", dependencies=TRUE)
 if (!require("ggpubr")) install.packages("ggpubr", dependencies=TRUE)
 if (!require("cowplot")) install.packages("cowplot", dependencies=TRUE)
-library("ggpubr")
+if (!require("kernlab")) install.packages("kernlab", dependencies=TRUE)
+if (!require("ISLR")) install.packages("ISLR", dependencies=TRUE)
+library(ggpubr)
 library(lubridate)
 library(multcomp)
 library(dplyr)
@@ -31,6 +33,11 @@ library(data.table)
 library(tidyverse)
 library(naniar)
 library(cowplot)
+library(ISLR)
+library(kernlab)
+library(tidyverse)
+theme_set(theme_bw())
+options(scipen=999)
 ```
 
 ```{r}
@@ -205,6 +212,23 @@ boxplot(nwspol.na ~ interest.fac, data = ess9_linear)
 boxplot(nwspol.na ~ gndr.fac, data = ess9_linear, outline = FALSE)
 boxplot(nwspol.na ~ ability.fac, data = ess9_linear, outline = FALSE)
 boxplot(nwspol.na ~ interest.fac, data = ess9_linear, outline = FALSE)
+```
+
+```{r}
+plot.lin1 <- ggplot(ess9_linear, aes(age.na, nwspol.na)) + 
+  ylim(0, 500)+
+  geom_point()+
+  ggtitle("Plot of daily News Consumption \n by age") +
+  xlab("Age") + ylab("News Consumption in Minutes")
+
+plot.lin1a <- ggplot(ess9_linear, aes(age.na, nwspol.na)) + 
+  ylim(0, 200)+
+  geom_point()+
+  ggtitle("Plot of daily News Consumption \n by age without outlier") +
+  xlab("Age") + ylab("News Consumption in Minutes")
+
+plot_grid(plot.lin1, plot.lin1a, 
+          ncol = 2, nrow = 1)
 ```
 
 ### Fitting Model
@@ -472,7 +496,6 @@ segments(x0 = new.data.news$eduyrs.na,
 
 ## 3.2 GLM Poisson
 
-
 ## 3.3 GLM Binomial
 
 ```{r subset of dataframe because of differen NA}
@@ -590,10 +613,7 @@ table(d.obs.fit.glm.pol)
 First make sure we have all the functionality from the `tidyverse` available:
 
 ```{r}
-options(scipen=999)
 
-library(tidyverse)
-theme_set(theme_bw())
 ```
 
 We are going to use the `e1071` package for this example and also some helper functions from `caret`
@@ -661,6 +681,8 @@ test_truth <- d.ess9_supportvec %>%
 ```{r}
 set.seed(123)
 ess_de_svm <- svm(scale_cat ~ ., train, kernel = "linear", scale = TRUE, cost = 10)
+summary(ess_de_svm)
+
 ```
 
 ```{r}
@@ -672,7 +694,18 @@ plot(ess_de_svm, train, yearpay ~ age.na)
 #muss hier genau gliech viele löschen wie in allen zwei
 ```
 
-## Make Predictions
+```{r}
+set.seed(1)
+tune.out <- tune(svm, scale_cat ~ ., data = d.ess9_supportvec, 
+                 kernel = "linear", ranges=list(cost=c(0.001,0.01, 0.1, 1, 5, 10, 100)))
+tune.summary <- summary(tune.out)
+summary(tune.out)
+tune.summary
+bestmod <- tune.out$best.model
+summary(bestmod)
+```
+
+### Make Predictions
 
 ```{r}
 test_pred <- predict(ess_de_svm, test_in)
@@ -686,11 +719,11 @@ conf_matrix <- confusionMatrix(test_pred, test_truth)
 conf_matrix
 ```
 
-## Try again with other parameters
+### Try again with other parameters
 
 ```{r}
 set.seed(123)
-ess_de_svm.rad <- svm(scale_cat ~ ., train, kernel = "radial", scale = TRUE, cost = 100)
+ess_de_svm.rad <- svm(scale_cat ~ ., train, kernel = "radial", scale = TRUE, cost = 100000)
 summary(ess_de_svm.rad)
 ```
 
