@@ -954,7 +954,7 @@ Additional to "classic" linear models and GLM options, there are neural networks
 Within this chapter two types of neural network model are applied to two different questions.
 
 1.  Predicting the values for the continuous variable
-2.  Predicting the values for the categorical variable indicating the 5 levels of
+2.  Predicting the values for the categorical variable indicating the 5 levels of frequency of usage of internet 
 
 ### 3.5.1 continious variable
 
