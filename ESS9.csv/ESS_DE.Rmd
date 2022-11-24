@@ -207,11 +207,6 @@ boxplot(nwspol.na ~ ability.fac, data = ess9_linear, outline = FALSE)
 boxplot(nwspol.na ~ interest.fac, data = ess9_linear, outline = FALSE)
 ```
 
-```{r}
-par(mfrow=c(1, 3))
-plot()
-```
-
 ### Fitting Model
 
 ```{r linear Regression}
@@ -477,11 +472,6 @@ segments(x0 = new.data.news$eduyrs.na,
 
 ## 3.2 GLM Poisson
 
-```{r}
-glmP_news <- glm(nwspol ~ edu,
-family = "poisson", ## we specify the distribution!
-data = ess9_ch)
-```
 
 ## 3.3 GLM Binomial
 
