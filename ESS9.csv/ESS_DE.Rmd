@@ -189,7 +189,7 @@ summary(as.factor(ess9_de$trustparl))
 
 Question: What is an influence on the
 
-```{r all variables that i want to include}
+```{r all variables that i want to include, collapse=TRUE}
 #DV
 summary(ess9_de$nwspol.na)
 #predictorvariables
