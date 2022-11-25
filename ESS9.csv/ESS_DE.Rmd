@@ -351,6 +351,8 @@ lm_news.2 <- lm(nwspol.na ~ eduyrs.na + age.na + gndr.fac + stfdem.na + ability.
 summary(lm_news.2)
 ```
 
+[**Interpretation:**]{.underline} Age and two expressions of the predictor variable *interest in politics* show signifcant values. *Interest* is here only significant in terms of the reference level. This linear regression also shows a higher adjusted R2 (0.085) then the one with the two predictors. However, it is still a small value and the model explains roughly 8% of the variations of the data.
+
 ```{r}
 confint(lm_news.2)
 ```
@@ -393,7 +395,7 @@ summary(lm_news.3)
 drop1(lm_news.3)
 ```
 
-Interpretation: Nothing is significant, not even the interaction. The hypothesis on the interaction has to be dismissed.
+[**Interpretation**]{.underline}: Nothing is significant, not even the interaction. The hypothesis on the interaction has to be dismissed. Also the adjusted R2 has not increased (a lot), therefore, this interaction is not useful.
 
 ```{r}
 confint(lm_news.3)
@@ -558,8 +560,6 @@ segments(x0 = new.data.news$age.na,
          lwd = 2,
          col = "purple")
 ```
-
-Interpretation:
 
 ## 3.2 GLM Poisson
 
@@ -776,18 +776,20 @@ The results can be concluded that according to the models there is some evidence
 
 ## 3.3 GLM Binomial
 
+For the binary data we are using the following question from the survey: *There are different ways of trying to improve things in [country] or help prevent things from going wrong. During the last 12 months, have you done any of the following? Have you\... \...posted or shared anything about politics online, for example on blogs, via email or on social media such as Facebook or Twitter?*
+
 ```{r subset of dataframe because of differen NA}
 ess9_binary <- ess9_de[, c("postonline", "age.na", "interest.fac", "gov.allows", "trustparl", "polscale.na", "eduyrs.na", "ability.fac", "sat.dem.fac", "boycott.fac", "vote.fac")]
 ess9_binary.na <- ess9_binary[complete.cases(ess9_binary),]
 ```
 
-```{r, collape = TRUE}
+```{r, collapse = TRUE}
 str(ess9_binary.na)
 ```
 
 ### Graphical Analysis
 
-```{r}
+```{r, collapse=TRUE}
 pairs(postonline ~ age.na + interest.fac + gov.allows +
 trustparl + polscale.na +
 ability.fac + sat.dem.fac + boycott.fac + vote.fac, data = ess9_binary.na, upper.panel = panel.smooth)
@@ -847,7 +849,9 @@ plot_grid(g1, g2, g3, g4, g5, g6,
           ncol = 2, nrow = 3)
 ```
 
-### Fitting the binary model (logistic regression
+### Fitting the binary model (logistic regression)
+
+If someone posts online is dependent on the age of the person. Older people are not that tech-savy and therefore, have a higher inhibition to post online. On the other hand, young people grew up with social media and therefore are more likely to post political induced things.
 
 ```{r glm model for binary data}
 glm_pol.0 <- glm(postonline ~ age.na, data = ess9_binary.na,
