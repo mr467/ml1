@@ -776,7 +776,7 @@ The results can be concluded that according to the models there is some evidence
 
 ## 3.3 GLM Binomial
 
-For the binary data we are using the following question from the survey: There are different ways of trying to improve things in [country] or help prevent things from going wrong. During the last 12 months, have you done any of the following? Have you .posted or shared anything about politics online, for example on blogs, via email or on social media such as Facebook or Twitter?
+For the binary data we are using the following question from the survey: *There are different ways of trying to improve things in [country] or help prevent things from going wrong. During the last 12 months, have you done any of the following? Have you\... \...posted or shared anything about politics online, for example on blogs, via email or on social media such as Facebook or Twitter?*
 
 ```{r subset of dataframe because of differen NA}
 ess9_binary <- ess9_de[, c("postonline", "age.na", "interest.fac", "gov.allows", "trustparl", "polscale.na", "eduyrs.na", "ability.fac", "sat.dem.fac", "boycott.fac", "vote.fac")]
