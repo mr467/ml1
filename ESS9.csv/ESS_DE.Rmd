@@ -718,12 +718,12 @@ summary(glmP_news)
 
 The summary shows the residual deviance as 1532064 on 16960 degrees of freedom. This indicates an overdispersion as the difference between these two numbers is large.
 
-
 ```{r Poisson model coef}
 coef(glmP_news)
 
 exp(coef(glmP_news)["gndr2"]) %>% round(digits = 4)
 ```
+
 Female do consume approx. 10% less media than male participants.
 
 ### 3.2.3 Simulation
@@ -755,8 +755,7 @@ The simulated data look similar as the real data based of the survey. The varian
 
 ### 3.2.4 GLM Quasi-Poisson
 
-In chapter 3.2.2 the data showed a overdispersion for the poisson model. This isn't unusual and can be handled by the quasipoisson model type. The value for the dispersion parameter of 206.3327 indicates a much faster increase of variance than linearly. 
-
+In chapter 3.2.2 the data showed a overdispersion for the poisson model. This isn't unusual and can be handled by the quasipoisson model type. The value for the dispersion parameter of 206.3327 indicates a much faster increase of variance than linearly.
 
 ```{r quasipoisson}
 glmQ_news <- glm(nwspol ~ polintr + eisced + trstprl+ eduyrs + netusoft + stfeco + stfgov +
@@ -999,11 +998,10 @@ plot(GAM.netusoft2, residuals = TRUE, cex = 2)
 
 Additional to "classic" linear models and GLM options, there are neural networks for analyzing and predicting data.
 
-
 Within this chapter two types of neural network model are applied to two different questions.
 
 1.  Predicting the values for the continuous variable
-2.  Predicting the values for the categorical variable indicating the 5 levels of frequency of usage of internet 
+2.  Predicting the values for the categorical variable indicating the 5 levels of frequency of usage of internet
 
 ### 3.5.1 continious variable
 
@@ -1048,7 +1046,6 @@ plot(ess9_nnet)
 ```
 
 #### Predict the test set
-
 
 ```{r predict, include=FALSE}
 pred_scaled <- compute(ess9_nnet, test_scaled %>% select(-nwspol))
@@ -1152,7 +1149,6 @@ ess9_ann2 %>%
   table()
 ```
 
-
 ```{r}
 train <- ess9_ann2 %>%
   slice(indices)
@@ -1195,7 +1191,8 @@ test_pred
 ```
 
 #### Evaluate the Results
-The confusion maztrix shows 
+
+The confusion maztrix shows
 
 ```{r conf matrix}
 conf_matrix <- confusionMatrix(test_truth, test_pred)
