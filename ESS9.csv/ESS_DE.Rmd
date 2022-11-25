@@ -863,6 +863,19 @@ summary(glm_pol.0)
 glm_pol.1 <- glm(postonline ~ age.na + eduyrs.na + interest.fac + boycott.fac + vote.fac, data = ess9_binary.na,
                  family = "binomial")
 summary(glm_pol.1)
+exp(coef(glm_pol.1)["age.na"])
+exp(coef(glm_pol.1)["eduyrs.na"])
+```
+
+```{r}
+exp(coef(glm_pol.1))
+```
+
+Interpretation: By increasing the age by one year, the risk in odds will be increasing by approx. 1 time to post something political online.\
+The odds for posting online by having
+
+```{r}
+summary(ess9_de$interest.fac)
 ```
 
 ### Estimating the performance of a binary model
