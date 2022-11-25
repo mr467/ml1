@@ -955,12 +955,18 @@ pairs((nwspol) ~ . , data = ess9_GAM, pch = ".", upper.panel = panel.smooth)
 #plotting news consumption and highest level of education (standardized)
 ggplot(data = ess9_GAM ,mapping = aes(y = nwspol ,
                                   x = eisced)) +
+    ggtitle("Media consumption and level of education") +
+  ylab("Media consumption in minutes") +
+  xlab("Highest achieved level of education") +
   geom_boxplot()
 
 
 # ploting news and age of participants
 ggplot(data = ess9_GAM ,mapping = aes(y = nwspol ,
                                   x =  (agea))) +
+      ggtitle("Media consumption and age")+
+  ylab("Age") +
+  xlab("Highest achieved level of education") +
   geom_point()+
   geom_smooth()
 
@@ -969,11 +975,17 @@ ggplot(data = ess9_GAM ,mapping = aes(y = nwspol ,
 ggplot(data = ess9_GAM ,mapping = aes(y = nwspol ,
                                   x =  (eduyrs))) +
   geom_point()+
+      ggtitle("Media consumption and years of education")+
+  ylab("media consumption in minutes") +
+  xlab("Years of education") +
   geom_smooth()
 
 
 ggplot(data = ess9_GAM ,mapping = aes(y = nwspol ,
                                   x =  (yrpy))) +
+      ggtitle("Media consumption and yearly gross income")+
+  ylab("media consumption in minutes") +
+  xlab("yearly gross income") + 
   geom_point()+
   geom_smooth()
 ```
