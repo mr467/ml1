@@ -983,8 +983,11 @@ GAM.netusoft <- gam((as.numeric(netusoft)) ~ yrpy +
                       s(nwspol) + s(agea) + 
                       s(eduyrs, k= 1),
                 data = ess9_poisson)
+
+summary(GAM.netusoft)
 plot(GAM.netusoft, residuals = TRUE, cex = 2)
 ```
+The number of education years has a "edf" value of 1.9 this means it isn't linear but has the lowest value of the three parameter and the model can be refitted. 
 
 ```{r}
 GAM.netusoft2 <- gam((as.numeric(netusoft)) ~ yrpy + 
@@ -992,9 +995,11 @@ GAM.netusoft2 <- gam((as.numeric(netusoft)) ~ yrpy +
                       eduyrs,
                 data = ess9_poisson)
 
+summary(GAM.netusoft2)
 plot(GAM.netusoft2, residuals = TRUE, cex = 2)
 
 ```
+The parameter age and news consumption can be compared for the two GAM models. It is visible that both are non-linear and only age changes in comparison of the two models.
 
 ## 3.5 Neural Network
 
@@ -1179,14 +1184,14 @@ plot(ess9_ann_net)
 
 #### Make Predictions
 
-```{r Predictions, collapse=FALSE}
+```{r Predictions, collapse=TRUE}
 test_results <- neuralnet::compute(ess9_ann_net, test_in)
 test_results$net.result
 ```
 
 Find class (i.e. output neuron) with the highest probability and convert this back into a factor
 
-```{r find class, collapse=FALSE}
+```{r find class, collapse=TRUE}
 test_pred <- apply(test_results$net.result, 1, which.max)
 test_pred <- factor(levels(test_truth)[test_pred], levels = levels(test_truth))
 test_pred
