@@ -6,7 +6,7 @@ Update 5.10.2022: Added data set to import
 
 Update 6.11.2022: Change in group setup - Nuria canceled - therefore Milica and Marco will work on the subject. The tasks of Nuria are split among the two. Tasks for GAM and linear models are now by Milica and Marco.
 
-## European Survey - What is the political sentiment in Europe Before Covid?
+## European Survey - What is the political sentiment in Europe especially on the (online) media consumption
 
 -   Project Description
 
