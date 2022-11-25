@@ -316,11 +316,6 @@ abline(lm_news.0,
 
 [**Interpretation**]{.underline}: age is a highly significant predictor. It is a positive relationship to the news consumption in minute. The p-Value is \<0.05. For every additional year a person nearly 1 minute (0.97) is added to the news consumption. This does not dismis the hypothesis that with every additional year, a person is following the news. There is the common knowledge that the older population is more likely to vote and that young people are more focused on other life topics.
 
-```{r outlier will be eliminated (above 400min)}
-lm.news.outlier <- lm(nwspol.outlier ~ eduyrs.na, data = ess9_de, na.omit = TRUE)
-summary(lm.news.outlier)
-```
-
 #### Adding additional predictors
 
 ```{r}
@@ -336,7 +331,7 @@ confint(lm_news.1)
 drop1(lm_news.1, test = "F")
 ```
 
-Interpretation: the Variable *Confidence in ones ability* might have an influence on the dependent variable.
+[**Interpretation**]{.underline}: the Variable *Confidence in ability* might have an influence on the dependent variable as it is significant in the single term deletions.
 
 ```{r}
 ph.test.THSD <- glht(lm_news.1,
@@ -344,12 +339,12 @@ ph.test.THSD <- glht(lm_news.1,
 summary(ph.test.THSD)
 ```
 
-Interpretation: When comparing the different self assumed levels of confidence in ones ability it is observable that the polar opposites *completely* and *not at all* have significant difference (p\<.05) and the next biggest difference *completely* and *a little* are also significant.
-
 ```{r}
 par(mar = c(5.1,7.5,4.1,2.1))
 plot(ph.test.THSD)
 ```
+
+[**Interpretation**]{.underline}: When comparing the different self assumed levels of *confidence in ones ability* it is observable that the polar opposites *completely* and *not at all* have significant difference (p\<.05) and the next biggest difference *completely* and *a little* are also significant. The others have a lower level of significants or none at all.
 
 ```{r}
 lm_news.2 <- lm(nwspol.na ~ eduyrs.na + age.na + gndr.fac + stfdem.na + ability.fac + interest.fac, data = ess9_linear)
@@ -385,7 +380,7 @@ segments(x0 = rev(cis.lm_news.2[, "2.5 %"]),
 abline(v = 0, lty = "dashed")
 ```
 
-#### Interaction: Age \* ability
+***Interaction: Age \* ability***
 
 The background to this interaction: With every additional year on this earth one grows in his confidence in the own ability to participate in the political landscape. So therefore, the level of confidence in ones ability is dependent/varies on the age.
 
@@ -398,7 +393,7 @@ summary(lm_news.3)
 drop1(lm_news.3)
 ```
 
-Interpretation: Nothing is significant, not even the interaction.
+Interpretation: Nothing is significant, not even the interaction. The hypothesis on the interaction has to be dismissed.
 
 ```{r}
 confint(lm_news.3)
@@ -428,7 +423,7 @@ segments(x0 = rev(cis.lm_news.3[, "2.5 %"]),
 abline(v = 0, lty = "dashed")
 ```
 
-The interaction is not significant. Therefore, let's investigate the *interest in politics* variable
+The interaction is not significant. Therefore, let's focus on the *interest in politics* variable
 
 ```{r}
 ph.test.THSD.1 <- glht(lm_news.3,
@@ -451,7 +446,7 @@ ggplot(data = ess9_linear,
   xlab("Age")
 ```
 
-Interpretation: the different stages of political interest indicate a different usage of news according to the age. While the lowest level of political interest shows a positive relationship between news consumption and age, it has the the second smallest slope. The most interest category expression has the biggest slope over the lifetime.
+[**Interpretation**]{.underline}: the different stages of political interest indicate a different usage of news according to the age. While the lowest level of political interest shows a positive relationship between news consumption and age, it has the the second smallest slope. The most interest category expression has the biggest slope over the lifetime.
 
 ### Fitted Values and Residuals
 
@@ -516,7 +511,6 @@ plot(nwspol.na ~ age.na, data = ess9_linear,
 abline(lm_news.0)
 ##
 points(nwspol.na ~ age.na, data = ess9_linear[id, ], col = "red")
-
 ```
 
 ### Predicted values
@@ -564,6 +558,8 @@ segments(x0 = new.data.news$age.na,
          lwd = 2,
          col = "purple")
 ```
+
+Interpretation:
 
 ## 3.2 GLM Poisson
 
