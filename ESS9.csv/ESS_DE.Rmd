@@ -1,6 +1,5 @@
 ---
-title: "European Survey - What is the political sentiment in German speaking Countries
-  Before Covid?"
+title: "European Survey - What is the political sentiment in Europe especially on the (online) media consumption?"
 author: "Milica Pajkic and Marco Rieder"
 date: "`r Sys.Date()`"
 output:
@@ -59,7 +58,7 @@ ess9_de <- subset(ess9, cntry == "DE", select =dweight:domain)
 
 # 1. Introduction
 
-The European Social Survey (ESS) is a large scale survey conducted in over 38 countries within Europe. Focusing on public attitudes and values and changes within time. This paper is evaluating the ninth version of the survey (ESS9) form 2018.
+The European Social Survey (ESS) is a large scale survey conducted in over 38 countries within Europe. Focusing on public attitudes and values and changes within time. This paper is evaluating the ninth version of the survey (ESS9) form 2018. The political landscape has been changed immensely after the start of the pandemic. Everyone has an opinion on everything remarkably political and does not shy away from posting it online. Furthermore, as a society we have upped the news consumption during the pandemic (see for Switzerland: <https://medien.srf.ch/-/ein-von-corona-gepragtes-jahr-srf-mit-positiver-nutzungsbilanz>). So the question that this analysis is looking to answer is: Is the perception that the political interest in news consumption and
 
 ## 1.1 Selection of parameters
 
@@ -1279,8 +1278,7 @@ plot(best_model)
 
 ```
 
-The error for both types of neutral network model is still high, the optimization options were limited, as changing variables lead to high computing times. 
-Nevertheless the models predict values for the two chosen variables. The continuous model lead to better results, comparing the calculated errors. 
+The error for both types of neutral network model is still high, the optimization options were limited, as changing variables lead to high computing times. Nevertheless the models predict values for the two chosen variables. The continuous model lead to better results, comparing the calculated errors.
 
 ## 3.6 Support Vector Machine
 
