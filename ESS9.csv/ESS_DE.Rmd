@@ -1048,7 +1048,7 @@ plot(ess9_nnet)
 #### Predict the test set
 
 ```{r predict, include=FALSE}
-pred_scaled <- compute(ess9_nnet, test_scaled %>% select(-nwspol))
+pred_scaled <- compute(ess9_nnet, test_scaled %>% dplyr::select(-nwspol))
 pred <- pred_scaled$net.result * (max(ess9_ann$nwspol) - min(ess9_ann$nwspol)) + min(ess9_ann$nwspol)
 pred
 ```
@@ -1079,7 +1079,7 @@ trCtrl <- trainControl(
 )
 
 models <- train(
-  x = ess9_ann %>% select(-nwspol),
+  x = ess9_ann %>% dplyr::select(-nwspol),
   y = ess9_ann_scaled %>% pull(nwspol),
   method = 'neuralnet', metric = 'RMSE', 
   linear.output = FALSE,
@@ -1145,7 +1145,7 @@ The distribution of our different prediction classes in the train and test data 
 ```{r}
 ess9_ann2 %>%
   mutate(train = row_number() %in% indices) %>%
-  select(netusoft, train) %>%
+  dplyr::select(netusoft, train) %>%
   table()
 ```
 
@@ -1154,7 +1154,7 @@ train <- ess9_ann2 %>%
   slice(indices)
 test_in <- ess9_ann2 %>%
   slice(-indices) %>%
-  select(-netusoft)
+  dplyr::select(-netusoft)
 test_truth <- ess9_ann2 %>%
   slice(-indices) %>%
   pull(netusoft)
@@ -1211,7 +1211,7 @@ head(xor)
 ```
 
 ```{r}
-ess9_ann_mod <- cbind(xor, ess9_ann2 %>% select(-netusoft))
+ess9_ann_mod <- cbind(xor, ess9_ann2 %>% dplyr::select(-netusoft))
 train_mod <- ess9_ann_mod %>% slice(indices)
 ```
 
@@ -1305,7 +1305,7 @@ train <- d.ess9_supportvec %>%
   slice(indices)
 test_in <- d.ess9_supportvec %>%
   slice(-indices) %>%
-  select(-scale_cat)
+  dplyr::select(-scale_cat)
 test_truth <- d.ess9_supportvec %>%
   slice(-indices) %>%
   pull(scale_cat)
