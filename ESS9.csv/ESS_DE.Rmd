@@ -1061,7 +1061,7 @@ test_scaled <- ess9_ann_scaled %>% slice(-indices)
 set.seed(42)
 ess9_nnet = neuralnet(nwspol ~ polintr + eisced + trstprl+ eduyrs + netusoft + 
                         stfeco + stfgov + stfdem + gndr + agea + rlgdgr +yrpy,
-                      train_scaled, hidden = 3 , linear.output = FALSE)
+                      train_scaled, hidden = c(5,2) , linear.output = FALSE)
 plot(ess9_nnet)
 ```
 
@@ -1276,6 +1276,9 @@ best_model <- neuralnet(
 plot(best_model)
 
 ```
+
+The error for both types of neutral network model is still high, the optimization options were limited, as changing variables lead to high computing times. 
+Nevertheless the models predict values for the two chosen variables. The continuous model lead to better results, comparing the calculated errors. 
 
 ## 3.6 Support Vector Machine
 
