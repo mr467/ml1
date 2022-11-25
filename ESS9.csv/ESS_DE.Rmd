@@ -1059,28 +1059,28 @@ sqrt(mean((test$nwspol - pred)^2))
 
 #### Redo with `caret` and Cross Validation
 
-```{r caret applied again, collapse=TRUE, message=FALSE, warning=FALSE}
-set.seed(42)
-tuGrid <- expand.grid(.layer1=c(1:2), .layer2=c(0,2), .layer3=c(0))
+```{#{r caret applied again, collapse=TRUE, message=FALSE, warning=FALSE}
+#set.seed(42)
+#tuGrid <- expand.grid(.layer1=c(1:2), .layer2=c(0,2), .layer3=c(0))
 
 
-trCtrl <- trainControl(
-  method = 'repeatedcv', 
-  number = 4, 
-  repeats = 8, 
-  returnResamp = 'final'
-)
+#trCtrl <- trainControl(
+ # method = 'repeatedcv', 
+  #number = 4, 
+#  repeats = 8, 
+ # returnResamp = 'final'
+#)
 
-models <- train(
-  x = ess9_ann %>% dplyr::select(-nwspol),
-  y = ess9_ann_scaled %>% pull(nwspol),
-  method = 'neuralnet', metric = 'RMSE', 
-  linear.output = FALSE,
+#models <- train(
+ # x = ess9_ann %>% dplyr::select(-nwspol),
+ # y = ess9_ann_scaled %>% pull(nwspol),
+  # method = 'neuralnet', metric = 'RMSE', 
+  # linear.output = FALSE,
   # be careful, does only work on x!
-  preProcess = c('center', 'scale'),
-  tuneGrid = tuGrid,
-  trControl = trCtrl
-)
+   #preProcess = c('center', 'scale'),
+   #tuneGrid = tuGrid,
+   #trControl = trCtrl
+ #)
 ```
 
 ```{r message=FALSE, warning=FALSE}
@@ -1091,7 +1091,7 @@ abline(0,1)
 ```
 
 ```{r}
-plot(models)
+#plot(models)
 ```
 
 and extract the best model
@@ -1451,3 +1451,7 @@ confusionMatrix(table(test_pred_grid, testing$scale_cat))
 ```
 
 **Interpretation**: The classification of the political affiliation can surpass the 50% accuracy mark but much more is not achievable. This model is not made for the kernel = linear but rather kernel = radial. It is a much more complex data and it needs to be treated that way.
+
+# Conclusion
+
+The question, whether the not-traditional political participation has differed during/after the pandemic (<https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9038938/>) was the aim of this analysis with the "European Social Survey" 2018. As the linear regression shows, consumption of political/current affairs news increases with age and political interest. However, education has a small to none effect. The poisson model indicates, that for the same dependent variable the predictor variable age, political interest and gender have an influence on consumption. For the binomial model this analysis focused on whether persons posted something political or not. The results show that again age and political interest play a vital role. However, age is in a negative relationship to the dependent variable. The GAM-model is hinting that news consumption and age are non-linear. The last two models, NN and SVM, have some high limitations. The latter shows some low accuracy-level even with making it more complex and using the best cost number.
