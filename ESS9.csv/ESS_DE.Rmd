@@ -1464,3 +1464,5 @@ test_pred_grid <- predict(svm_linear_grid, newdata = testing)
 test_pred_grid
 confusionMatrix(table(test_pred_grid, testing$scale_cat))
 ```
+
+**Interpretation**: The classification of the political affiliation can surpass the 50% accuracy mark but much more is not achievable. This model is not made for the kernel = linear but rather kernel = radial. It is a much more complex data and it needs to be treated that way.
