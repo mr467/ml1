@@ -58,13 +58,17 @@ ess9_de <- subset(ess9, cntry == "DE", select =dweight:domain)
 
 # 1. Introduction
 
-The European Social Survey (ESS) is a large scale survey conducted in over 38 countries within Europe. Focusing on public attitudes and values and changes within time. This paper is evaluating the ninth version of the survey (ESS9) form 2018. The political landscape has been changed immensely after the start of the pandemic. Everyone has an opinion on everything remarkably political and does not shy away from posting it online. Furthermore, as a society we have upped the news consumption during the pandemic (see for Switzerland: <https://medien.srf.ch/-/ein-von-corona-gepragtes-jahr-srf-mit-positiver-nutzungsbilanz>). So the question that this analysis is looking to answer is: How was the political sentiment during the last European Social Survey before Corona? Especially the consumption of political news and online posting of current affairs is of important understanding considering the inhibition threshold is bigger than just talking to your family. If someone posts something online, then the person has to calculate the cost of the post for the future social interactions. The consumption of news is also connected to the thinking, a person could also consum another media content, that is much lighter and oftentimes more positive.
+The European Social Survey (ESS) is a large scale survey conducted in over 38 countries within Europe. Focusing on public attitudes and values and changes within time. This paper is evaluating the ninth version of the survey (ESS9) form 2018. The political landscape has been changed immensely after the start of the pandemic. Everyone has an opinion on everything remarkably political and does not shy away from posting it online. Furthermore, as a society we have upped the news consumption during the pandemic (see for Switzerland: <https://medien.srf.ch/-/ein-von-corona-gepragtes-jahr-srf-mit-positiver-nutzungsbilanz>). So the question that this analysis is looking to answer is: How was the political sentiment during the last European Social Survey before Corona?
 
 ## 1.1 Selection of parameters
 
 The survey is really comprehensive and consists out of 572 variables. Some of them are related to others and only answered by a subset of participants. Here is the link to the survey and their many variables: <https://ess-search.nsd.no/en/study/bdc7c350-1029-4cb3-9d5e-53f668b8fa74>
 
 ## 1.2 Goal
+
+As already mentioned above the theme this paper is following is the of political sentiment. Moreover, the consumption of political news and online posting of current affairs is of important understanding considering the inhibition threshold is bigger than just talking to your family. If someone posts something online, then the person has to calculate the cost of the post for the future social interactions. The consumption of news is also connected to the thinking, a person could also consume another media content, that is much lighter and oftentimes more positive.
+
+This paper will be following the following structure: Firstly the cleaning of the data, as there are a lot of variables there will be only cleaning of the variable that matter for this analysis. In a next step the models will be presented. The start will be made with the linear regression, then the two GLM models "Poisson" and "Binomial". The third presented model is the GAM and the last two will be the "Neural Network" and Support Vector Machine. These models will be followed with a short conclusion.
 
 # 2. Descriptive Statistics
 
