@@ -24,10 +24,6 @@ knitr::opts_chunk$set(
 # Getting the Data and installing libraries
 
 ```{r, include=FALSE}
-if (!require("ggpubr")) install.packages("ggpubr", dependencies=TRUE)
-if (!require("cowplot")) install.packages("cowplot", dependencies=TRUE)
-if (!require("kernlab")) install.packages("kernlab", dependencies=TRUE)
-if (!require("ISLR")) install.packages("ISLR", dependencies=TRUE)
 library(ggpubr)
 library(lubridate)
 library(multcomp)
@@ -48,6 +44,7 @@ library(ISLR)
 library(kernlab)
 library(tidyverse)
 library(car)
+library(e1071)
 ```
 
 ```{r data import}
@@ -1291,15 +1288,7 @@ plot(best_model)
 
 ## 3.6 Support Vector Machine
 
-### Loading the Packages
-
-We are going to use the `e1071` package for this example and also some helper functions from `caret`
-
-```{r}
-library(e1071)
-```
-
-```{r}
+```{r, collapse=TRUE}
 ess9_de$scale_cat  <- cut(ess9_de$polscale.na,
               breaks=c(-1, 4.5, 7.5, 10),
               labels=c('left', 'center', 'right'))
@@ -1310,7 +1299,7 @@ typeof(ess9_de$scale_cat)
 summary(ess9_de$scale_cat)
 ```
 
-```{r}
+```{r, collapse= TRUE}
 d.ess9_supportvec <- ess9_de[, c("age.na", "interest.fac", "scale_cat", "eduyrs.na", "sat.dem.fac", "yearpay", "vote.fac")]
 d.ess9_supportvec <- d.ess9_supportvec[complete.cases(d.ess9_supportvec),]
 str(d.ess9_supportvec)
@@ -1322,7 +1311,6 @@ str(d.ess9_supportvec)
 d.ess9_supportvec %>%
   ggplot(aes(x = age.na, y = yearpay, color = scale_cat)) +
   geom_point() 
-
 ```
 
 ```{r}
@@ -1358,7 +1346,10 @@ test_truth <- d.ess9_supportvec %>%
 set.seed(123)
 ess_de_svm <- svm(scale_cat ~ ., train, kernel = "linear", scale = TRUE, cost = 10)
 summary(ess_de_svm)
+```
 
+```{r}
+plot(ess_de_svm, train, eduyrs.na ~ age.na)
 ```
 
 ```{r}
@@ -1366,25 +1357,26 @@ plot(ess_de_svm, train, yearpay ~ age.na)
 ```
 
 ```{r}
-#plot(ess_de_svm, train, yearpay ~ age.na, slice = list(yearpay = 150000, age.na = 70))
-#muss hier genau gliech viele löschen wie in allen zwei
+tune.out <- tune(svm, scale_cat ~ ., data = train, 
+                 kernel = "linear", ranges=list(cost=c(0.001,0.01, 0.1, 1, 5, 10, 100)))
+(bestmod <- tune.out$best.model)
 ```
 
 ```{r}
-set.seed(1)
-tune.out <- tune(svm, scale_cat ~ ., data = d.ess9_supportvec, 
-                 kernel = "linear", ranges=list(cost=c(0.001,0.01, 0.1, 1, 5, 10, 100)))
-tune.summary <- summary(tune.out)
-summary(tune.out)
-tune.summary
-bestmod <- tune.out$best.model
-summary(bestmod)
+ess_de_svm.1 <- svm(scale_cat ~ ., train, kernel = "linear", scale = TRUE, cost = 1)
+
+plot(ess_de_svm.1, train, yearpay ~ age.na)
+
+```
+
+```{r}
+plot(ess_de_svm.1, train, eduyrs.na ~ age.na)
 ```
 
 ### Make Predictions
 
 ```{r}
-test_pred <- predict(ess_de_svm, test_in)
+test_pred <- predict(ess_de_svm.1, test_in)
 table(test_pred)
 ```
 
@@ -1394,6 +1386,8 @@ table(test_pred)
 conf_matrix <- confusionMatrix(test_pred, test_truth)
 conf_matrix
 ```
+
+**Interpretation**: the accuracy of the linear model is at a bit over 50%. It makes sense, as the descriptive plots hinted that there cannot be a straight "division" line.
 
 ### Try again with other parameters
 
@@ -1408,11 +1402,65 @@ plot(ess_de_svm.rad, train, yearpay ~ age.na)
 ```
 
 ```{r}
-test_pred1 <- predict(ess_de_svm.rad, test_in)
+tune.out <- tune(svm, scale_cat ~ ., data = d.ess9_supportvec, 
+                 kernel = "radial", ranges=list(cost=c(0.001,0.01, 0.1, 1, 5, 10, 100, 1000)), gamma = c(0.5, 1, 2, 3, 4))
+(bestmod <- tune.out$best.model)
+```
+
+```{r}
+ess_de_svm.rad.1 <- svm(scale_cat ~ ., train, kernel = "radial", scale = TRUE, cost = 1, gamma = 0.5)
+
+```
+
+```{r}
+plot(ess_de_svm.rad.1, train, eduyrs.na ~ age.na)
+```
+
+```{r}
+test_pred1 <- predict(ess_de_svm.rad.1, test_in)
 table(test_pred1)
 ```
 
 ```{r}
 conf_matrix <- confusionMatrix(test_pred1, test_truth)
 conf_matrix
+```
+
+#### Tune costing
+
+```{r set training data}
+set.seed(123)
+intrain <- createDataPartition(y = d.ess9_supportvec$scale_cat, p= 0.7, list = FALSE) 
+training <- d.ess9_supportvec[intrain,]
+testing <- d.ess9_supportvec[-intrain,]
+#training[["scale_cat"]] = factor(training[["scale_cat"]] != 0) 
+#testing[["scale_cat"]] = factor(testing[["scale_cat"]] != 0)
+```
+
+```{r}
+trctrl <- trainControl(method = "repeatedcv", number = 10, repeats = 3)
+svm_linear <- train(scale_cat ~., data = training, method = "svmLinear",
+                    trControl=trctrl,
+                    preProcess = c("center", "scale"),
+                    tuneLength = 10)
+```
+
+```{r}
+grid <- expand.grid(
+  C = c(0,0.01, 0.05, 0.1, 0.25, 0.5,
+  0.75, 1, 1.25, 1.5, 1.75, 2,5))
+svm_linear_grid <- train(
+  scale_cat ~., data = train, method = "svmLinear",
+  trControl=trctrl,
+  preProcess = c("center", "scale"),
+  tuneGrid = grid,
+  tuneLength = 10
+)
+plot(svm_linear_grid)
+```
+
+```{r}
+test_pred_grid <- predict(svm_linear_grid, newdata = testing)
+test_pred_grid
+confusionMatrix(table(test_pred_grid, testing$scale_cat))
 ```
