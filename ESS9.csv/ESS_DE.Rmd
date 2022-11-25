@@ -440,7 +440,7 @@ segments(x0 = rev(cis.lm_news.3[, "2.5 %"]),
 abline(v = 0, lty = "dashed")
 ```
 
-The interaction is not significant. Therefore, let's investigate the interest variable
+The interaction is not significant. Therefore, let's investigate the *interest in politics* variable
 
 ```{r}
 ph.test.THSD.1 <- glht(lm_news.3,
@@ -450,6 +450,21 @@ par(mar = c(5.1,10.5,2.1,1.1))
 plot(ph.test.THSD.1)
 ```
 
+```{r}
+ggplot(data = ess9_linear,
+       mapping = aes(y = nwspol.na,
+                     x = age.na)) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  facet_wrap(. ~ interest.fac)+
+  ylim(0,250)+
+  ylab("News Consumption in Minutes")+
+  ggtitle("News Consumption Daily by Age: Categorized by Political Interest")+
+  xlab("Age")
+```
+
+Interpretation: the different stages of political interest indicate a different usage of news according to the age. While the lowest level of political interest shows a positive relationship between news consumption and age, it has the the second smallest slope. The most interest category expression has the biggest slope over the lifetime.
+
 ### Fitted Values and Residuals
 
 #### Fitted Values
@@ -458,33 +473,33 @@ plot(ph.test.THSD.1)
 fit_lm_news.0 <- fitted(lm_news.0)
 str(fit_lm_news.0)
 head(fit_lm_news.0)
-x.fit.0 <- unique(fit_lm_news.0)
+x.fit.0 <- unique(fit_lm_news.0) 
 ```
+
+There are 185 unique fitted values from the first linear regression.
 
 ```{r fitted values plot lm1}
 par(mfrow=c(1,2))
-plot(nwspol.na ~ eduyrs.na, data = ess9_linear, 
+plot(nwspol.na ~ age.na, data = ess9_linear, 
      main = "Minutes spent on Political News", 
      col = "darkgrey",
      ylim = c(0, 500))
-points(fit_lm_news.0 ~ eduyrs.na, 
+points(fit_lm_news.0 ~ age.na, 
        col = "purple", 
        pch = 19, 
        data = ess9_linear)
 abline(lm_news.0, col = "black")
 
-plot(nwspol.na ~ eduyrs.na, data = ess9_linear, 
+plot(nwspol.na ~ age.na, data = ess9_linear, 
      main = "Minutes spent on Political News", 
      col = "darkgrey",
-     ylim = c(0, 80))
-points(fit_lm_news.0 ~ eduyrs.na, 
+     ylim = c(0, 110))
+points(fit_lm_news.0 ~ age.na, 
        col = "purple", 
        pch = 19, 
        data = ess9_linear)
 abline(lm_news.0, col = "black")
 ```
-
-There are 67 unique values, therefore, the other observations are overlapping. Here we zoomed in to see the negative relationship between news consumption and education years.
 
 #### Residuals
 
@@ -506,31 +521,30 @@ fit_lm_news.0[id]
 ```
 
 ```{r}
-plot(nwspol.na ~ eduyrs.na, data = ess9_linear,
+plot(nwspol.na ~ age.na, data = ess9_linear,
      main = "Minutes spent on Political News",
      col = "lightgray")
 ##
 abline(lm_news.0)
 ##
-points(nwspol.na ~ eduyrs.na, data = ess9_linear[id, ], col = "red")
-##
-#segments(x0 = ess9_linear[id, "eduyrs.na"], x1 = ess9_linear[id, "eduyrs.na"],
- #        y0 = fit_lm_news.0[id], 
-  #       y1 = ess9_linear[id, "nwspol.na"],  col = "blue")
+points(nwspol.na ~ age.na, data = ess9_linear[id, ], col = "red")
+
 ```
 
 ### Predicted values
 
+#### one predictor variable
+
 ```{r}
-new.data.news <- data.frame(eduyrs.na = c(18, 7, 28))
+new.data.news <- data.frame(age.na = c(33,56, 80, 21))
 pred.new.news <- predict(object = lm_news.0, newdata = new.data.news)
 
-plot(nwspol.na ~ eduyrs.na, data = ess9_linear,
+plot(nwspol.na ~ age.na, data = ess9_linear,
      main = "Minutes spent on Political News",
      col = "lightgray",
       ylim=c(0, 200))
 abline(lm_news.0)
-points(x = new.data.news$eduyrs.na,
+points(x = new.data.news$age.na,
        y = pred.new.news,
        col = "purple",
        pch = 19, cex = 1.5)
@@ -544,19 +558,19 @@ pred.new.news.ci
 ```
 
 ```{r}
-plot(nwspol.na ~ eduyrs.na, data = ess9_linear,
+plot(nwspol.na ~ age.na, data = ess9_linear,
      main = "Minutes spent on Political News",
      col = "lightgray",
       ylim=c(0, 800))
 abline(lm_news.0)
 ##
-points(x = new.data.news$eduyrs.na,
+points(x = new.data.news$age.na,
        y = pred.new.news.ci[, "fit"], 
        col = "purple",
        pch = 19, cex = 1.5)
 ##
-segments(x0 = new.data.news$eduyrs.na, 
-         x1 = new.data.news$eduyrs.na,
+segments(x0 = new.data.news$age.na, 
+         x1 = new.data.news$age.na,
          y0 = pred.new.news.ci[, "lwr"],
          y1 = pred.new.news.ci[, "upr"],
          lwd = 2,
@@ -793,7 +807,7 @@ ess9_binary <- ess9_de[, c("postonline", "age.na", "interest.fac", "gov.allows",
 ess9_binary.na <- ess9_binary[complete.cases(ess9_binary),]
 ```
 
-```{r}
+```{r, collape = TRUE}
 str(ess9_binary.na)
 ```
 
@@ -868,14 +882,16 @@ summary(glm_pol.0)
 ```
 
 ```{r}
-glm_pol.1 <- glm(postonline ~ age.na + eduyrs.na + interest.fac, data = ess9_binary.na,
+glm_pol.1 <- glm(postonline ~ age.na + eduyrs.na + interest.fac + boycott.fac + vote.fac, data = ess9_binary.na,
                  family = "binomial")
 summary(glm_pol.1)
 ```
 
 ### Estimating the performance of a binary model
 
-```{r}
+#### simple binary model
+
+```{r, collapse = TRUE}
 fitted(glm_pol.0) %>% round(digits = 2)
 ```
 
@@ -891,6 +907,53 @@ d.obs.fit.glm.pol <- data.frame(obs = ess9_binary.na$postonline,
                                 fitted = fitted_glm.pol.0.disc) 
 table(d.obs.fit.glm.pol)
 ```
+
+```{r}
+table(obs = d.obs.fit.glm.pol$obs,
+      fit = d.obs.fit.glm.pol$fitted)
+```
+
+```{r}
+table(obs = d.obs.fit.glm.pol$obs,
+      fit = d.obs.fit.glm.pol$fitted) %>%
+  prop.table() %>%
+  round(digits = 2)
+```
+
+**Interpretation**: The table for the simple binary model (only one predictor) reveals that only 27 % of the observed data points have been correctly categorized (0 = did not post online; 1 = posted online). One reason for this low correct labeling could be the 0.3 used as a "cutoff" tool. However, by using the usually utilized 0.5 as a "cutoff" number there would not have been any observation for the level posted online. This is a trade-off the authors of this paper are aware of and it is a limitation of this analysis. The reason behind this predictor variable is the less "tech-saviness" of the older generation and therefore a less probability of them posting online about political matters.
+
+#### more complex binary model
+
+```{r, collapse = TRUE}
+fitted(glm_pol.1) %>% round(digits = 2)
+```
+
+```{r}
+fitted_glm.pol.1.disc <- ifelse(fitted(glm_pol.1) < 0.5, 
+                                yes = 1, no = 0)
+head(fitted_glm.pol.1.disc)
+summary(as.factor(fitted_glm.pol.1.disc))
+```
+
+```{r}
+d.obs.fit.glm.pol.2 <- data.frame(obs = ess9_binary.na$postonline,                            
+                                fitted = fitted_glm.pol.1.disc) 
+table(d.obs.fit.glm.pol.2)
+```
+
+```{r}
+table(obs = d.obs.fit.glm.pol.2$obs,
+      fit = d.obs.fit.glm.pol.2$fitted)
+```
+
+```{r}
+table(obs = d.obs.fit.glm.pol.2$obs,
+      fit = d.obs.fit.glm.pol.2$fitted) %>%
+  prop.table() %>%
+  round(digits = 2)
+```
+
+Interpretation: Meanwhile with the more complex binary model (more than one predictor) and the usage of the right number for the "cutoff" and the properly estimated data points are at 20%. This is also an under performing model.
 
 ## 3.4 GAM
 
