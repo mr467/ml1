@@ -10,7 +10,7 @@ Update 6.11.2022: Change in group setup - Nuria canceled - therefore Milica and 
 
 -   Project Description
 
-This project has the goal to apply machine learning models to a real world data set and gain insights from the data. Applying linear modesl, GLM, GAM, Neural Networs and Support Vector Machines.
+This project has the goal to apply machine learning models to a real world data set and gain insights from the data. Applying linear models, GLM, GAM, Neural Networks and Support Vector Machines.
 
 -   How to Install and Run the Project This project is based on R. We provide a knitted html and pdf doc based on R Markdown.
 
