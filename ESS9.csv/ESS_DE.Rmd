@@ -150,12 +150,19 @@ ess9_de$interest.fac <- factor(ess9_de$polinteress, levels=1:4,
 ###order differently
 ess9_de$interest.fac <- ordered(ess9_de$interest.fac, 
                                 levels = c("none at all", "hardly", "quite", "very"))
+ess9_de$interest.fac  <- relevel(ess9_de$interest.fac,
+                                      ref = "none at all")
 #-----------------------------------------------------------------------------------------
 #clean confidence in own ability to participate (5er scale)
 ess9_de$ability <- ess9_de$cptppola
 ess9_de["ability"][ess9_de["ability"] > 6] <- NA
 ##factor/categorical
 ess9_de$ability.fac <- factor(ess9_de$ability, levels=1:5, labels=c("not at all", "a little", "quite", "very", "completely"))
+ess9_de$ability.fac <- ordered(ess9_de$ability.fac, 
+                                levels = c("not at all", "a little", "quite", "very",
+                                "completely"))
+ess9_de$ability.fac  <- relevel(eess9_de$ability.fac,
+                                      ref = "not at all")
 summary(ess9_de$ability.fac)
 #-----------------------------------------------------------------------------------------
 #1 = yes / 2 = no / 3 = not eligble
