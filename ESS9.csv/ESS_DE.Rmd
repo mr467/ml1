@@ -1335,8 +1335,10 @@ tune.out <- tune(svm, scale_cat ~ ., data = train,
 (bestmod <- tune.out$best.model)
 ```
 
+The best cost parameter is 0.1.
+
 ```{r}
-ess_de_svm.1 <- svm(scale_cat ~ ., train, kernel = "linear", scale = TRUE, cost = 1)
+ess_de_svm.1 <- svm(scale_cat ~ ., train, kernel = "linear", scale = TRUE, cost = 0.1)
 
 plot(ess_de_svm.1, train, yearpay ~ age.na)
 
@@ -1345,6 +1347,8 @@ plot(ess_de_svm.1, train, yearpay ~ age.na)
 ```{r}
 plot(ess_de_svm.1, train, eduyrs.na ~ age.na)
 ```
+
+The plots suggest, that linear may not be the right approach to get a classification right.
 
 ### Make Predictions
 
@@ -1360,7 +1364,7 @@ conf_matrix <- confusionMatrix(test_pred, test_truth)
 conf_matrix
 ```
 
-**Interpretation**: the accuracy of the linear model is at a bit over 50%. It makes sense, as the descriptive plots hinted that there cannot be a straight "division" line.
+[**Interpretation**]{.underline}: the accuracy of the linear model is at a bit over 50%. It makes sense, as the descriptive plots hinted that there cannot be a straight "division" line.
 
 ### Try again with other parameters
 
@@ -1399,6 +1403,8 @@ conf_matrix <- confusionMatrix(test_pred1, test_truth)
 conf_matrix
 ```
 
+[**Interpretation**]{.underline}: the accuracy of the linear model is at a bit over 50%. It has improved when compared to the linear classification approach but it is still unsatisfactory.
+
 #### Tune costing
 
 ```{r set training data}
@@ -1432,9 +1438,15 @@ svm_linear_grid <- train(
 plot(svm_linear_grid)
 ```
 
-```{r}
+With alsmost every additional cost the accuracy of the model increases. However, it stagnates with cost = 2. A small c indicates that the penalization for misclassification is small and therefore, it represents a soft margin. Inside the margins, the sample that is located there will not be penalized much.
+
+```{r, collapse = TRUE}
 test_pred_grid <- predict(svm_linear_grid, newdata = testing)
 test_pred_grid
+
+```
+
+```{r}
 confusionMatrix(table(test_pred_grid, testing$scale_cat))
 ```
 
