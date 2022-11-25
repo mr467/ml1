@@ -1254,7 +1254,7 @@ The error for both types of neutral network model is still high, the optimizatio
 
 ## 3.6 Support Vector Machine
 
-The goal in this chapter is to classify people on their political scale. Leftist on the left, center on the center and right-wing people on the right. The response variable *scale_cat* is in the survey categorized from 0 = left to 10 = right. For this model to work the variable was further categorized to left, center and right. \
+The goal in this chapter is to classify people on their political scale. Leftist on the left, center on the center and right-wing people on the right. The response variable *scale_cat* is in the survey categorized from 0 = left to 10 = right. For this model to work the variable was further categorized to left, center and right.\
 The objective is to see if we can classify the persons on their political scale according to socio-demographic predictor variable.
 
 ```{r, collapse=TRUE}
@@ -1451,3 +1451,7 @@ confusionMatrix(table(test_pred_grid, testing$scale_cat))
 ```
 
 **Interpretation**: The classification of the political affiliation can surpass the 50% accuracy mark but much more is not achievable. This model is not made for the kernel = linear but rather kernel = radial. It is a much more complex data and it needs to be treated that way.
+
+# Conclusion
+
+The question, whether the not-traditional political participation has differed during/after the pandemic (<https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9038938/>) was the aim of this analysis with the "European Social Survey" 2018. As the linear regression shows, consumption of political/current affairs news increases with age and political interest. However, education has a small to none effect. The poisson model indicates, that for the same dependent variable the predictor variable age, political interest and gender have an influence on consumption. For the binomial model this analysis focused on whether persons posted something political or not. The results show that again age and political interest play a vital role. However, age is in a negative relationship to the dependent variable. The GAM-model is hinting that news consumption and age are non-linear. The last two models, NN and SVM, have some high limitations. The latter shows some low accuracy-level even with making it more complex and using the best cost number.
