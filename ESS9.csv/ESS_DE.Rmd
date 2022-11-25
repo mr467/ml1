@@ -340,26 +340,32 @@ lm_news.1 <- lm(nwspol.na ~ age.na + ability.fac, data = ess9_linear)
 summary(lm_news.1)
 ```
 
-```{}
-```
-
-```{r}
-summary(lm_news.1)$coefficients
-```
-
 ```{r}
 confint(lm_news.1)
 ```
 
-We can see that the predictor age has a low p-value and it is significant.
+```{r}
+drop1(lm_news.1, test = "F")
+```
+
+Interpretation: the Variable *Confidence in ones ability* might have an influence on the dependent variable.
+
+```{r}
+ph.test.THSD <- glht(lm_news.1,
+                     linfct = mcp(ability.fac = "Tukey"))
+summary(ph.test.THSD)
+```
+
+Interpretation: When comparing the different self assumed levels of confidence in ones ability it is observable that the polar opposites *completely* and *not at all* have significant difference (p\<.05) and the next biggest difference *completely* and *a little* are also significant.
+
+```{r}
+par(mar = c(5.1,7.5,4.1,2.1))
+plot(ph.test.THSD)
+```
 
 ```{r}
 lm_news.2 <- lm(nwspol.na ~ eduyrs.na + age.na + gndr.fac + stfdem.na + ability.fac + interest.fac, data = ess9_linear)
 summary(lm_news.2)
-```
-
-```{r}
-summary(lm_news.2)$coefficients
 ```
 
 ```{r}
@@ -391,20 +397,20 @@ segments(x0 = rev(cis.lm_news.2[, "2.5 %"]),
 abline(v = 0, lty = "dashed")
 ```
 
-#### Interaction: Age \* Interest
+#### Interaction: Age \* ability
+
+The background to this interaction: With every additional year on this earth one grows in his confidence in the own ability to participate in the political landscape. So therefore, the level of confidence in ones ability is dependent/varies on the age.
 
 ```{r}
-lm_news.3 <- lm(nwspol.na ~ eduyrs.na + age.na * interest.fac + gndr.fac + stfdem.na + ability.fac, data = ess9_linear)
+lm_news.3 <- lm(nwspol.na ~ eduyrs.na + age.na * ability.fac + gndr.fac + stfdem.na + interest.fac, data = ess9_linear)
 summary(lm_news.3)
 ```
 
 ```{r}
-coef(lm_news.3)
+drop1(lm_news.3)
 ```
 
-```{r}
-summary(lm_news.3)$coefficients
-```
+Interpretation: Nothing is significant, not even the interaction.
 
 ```{r}
 confint(lm_news.3)
@@ -415,38 +421,33 @@ cis.lm_news.3 <- confint(lm_news.3)
 ##
 ## 2) plot estimates
 par(mar = c(4,10,2,2))
-plot(y = 1:15,
+plot(y = 1:16,
      x = rev(coef(lm_news.3)),
-     xlim = c(-20, 80),
+     xlim = c(-20, 100),
      xlab = "Estimated coefficients",
      ylab = "",
      axes = FALSE)
 box()
-axis(side = 2, at = 1:15,
+axis(side = 2, at = 1:16,
      labels = rev(names(coef(lm_news.3))), 
      las = 2)
 axis(side = 1)
 
 segments(x0 = rev(cis.lm_news.3[, "2.5 %"]),
          x1 = rev(cis.lm_news.3[, "97.5 %"]),
-         y0 = 1:15,
-         y1 = 1:15)
+         y0 = 1:16,
+         y1 = 1:16)
 abline(v = 0, lty = "dashed")
 ```
 
-The interaction is not significant
-
-### Testing several Variables
+The interaction is not significant. Therefore, let's investigate the interest variable
 
 ```{r}
-formula(lm_news.1)
-formula(lm_news.2)
-formula(lm_news.3)
-```
-
-```{r}
-formula(lm_news.2)
-drop1(lm_news.2, test = "F")
+ph.test.THSD.1 <- glht(lm_news.3,
+                     linfct = mcp(interest.fac = "Tukey"))
+summary(ph.test.THSD.1)
+par(mar = c(5.1,10.5,2.1,1.1))
+plot(ph.test.THSD.1)
 ```
 
 ### Fitted Values and Residuals
