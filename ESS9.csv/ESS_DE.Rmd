@@ -78,7 +78,7 @@ str(ess9_de)
 
 ## 2.1 Cleaning of the data
 
-```{r Your [pay/pensions/social benefits], which frequency do you know best}
+```{r Your [pay/pensions/social benefits], which frequency do you know best, include = FALSE}
 #1 = weekly, 2 = monthly, 3 = annual
 ess9_de$infqbst.na <- ess9_de$infqbst
 ess9_de["infqbst.na"][ess9_de["infqbst.na"] >= 4] <- NA
@@ -98,7 +98,7 @@ ess9_de$yearpay <- ifelse(ess9_de$infqbst %in% 1,
 summary(ess9_de$yearpay)
 ```
 
-```{r recode Variable resp. clean, results = FALSE}
+```{r recode Variable resp. clean, results = FALSE, include = FALSE}
 #NEWS Politics time recoded
 ess9_de$nwspol.na <- ess9_de$nwspol
 ess9_de["nwspol.na"][ess9_de["nwspol.na"] >= 7777] <- NA
@@ -195,7 +195,7 @@ summary(as.factor(ess9_de$trustparl))
 This chapter will be focused on the continous variable *nwspol.* The question in the survey was: *On a typical day, about how much time do you spend watching, reading or listening to news about politics and current affairs?\
 *The older the person, the more they watch the news. The same hypothesis can be made for *education, satisfaction with democracy, confidence in own ability to participate and interest in politics*.
 
-```{r all variables that i want to include, collapse=TRUE}
+```{r all variables that i want to include, include=FALSE}
 #DV
 summary(ess9_de$nwspol.na)
 #predictorvariables
@@ -210,12 +210,12 @@ summary(ess9_de$interest.fac)
 summary(as.factor(ess9_de$polinteress))
 ```
 
-```{r create a DV where no outlier}
+```{r create a DV where no outlier, include=FALSE}
 ess9_de$nwspol.outlier <- ess9_de$nwspol.na
 ess9_de["nwspol.outlier"][ess9_de["nwspol.outlier"] >= 400] <- NA
 ```
 
-```{r create a subset of data with only the variables mentioned above}
+```{r create a subset of data with only the variables mentioned above, include=FALSE}
 ess9_linear <- ess9_de[, c("nwspol.na", "age.na", "gndr.fac", "eduyrs.na", 
                            "stfdem.na", "ability", "ability.fac", "polinteress", "interest.fac", "sat.dem.fac")]
 ess9_linear <- ess9_linear[complete.cases(ess9_linear),]
@@ -223,7 +223,7 @@ ess9_linear <- ess9_linear[complete.cases(ess9_linear),]
 
 ### Graphical analysis
 
-```{r boxplots for the categorial variables w/ outliers and without outliers}
+```{r boxplots for the categorial variables w/ outliers and without outliers, include=FALSE}
 par(mfrow=c(2,3))
 boxplot(nwspol.na ~ gndr.fac, data = ess9_linear)
 boxplot(nwspol.na ~ ability.fac, data = ess9_linear)
@@ -261,7 +261,7 @@ gg_age.2 <- gg_age.2 +
 
 ```
 
-```{r}
+```{r, include=FALSE}
 gg_edu.1 <- ggplot(data = ess9_linear,
        mapping = aes(y = nwspol.na,
                      x = eduyrs.na))+
@@ -328,12 +328,7 @@ lm_news.1 <- lm(nwspol.na ~ age.na + ability.fac, data = ess9_linear)
 summary(lm_news.1)
 ```
 
-```{r}
-confint(lm_news.1)
-```
-
-```{r}
-drop1(lm_news.1, test = "F")
+```{drop1(lm_news.1, test = "F")}
 ```
 
 [**Interpretation**]{.underline}: the Variable *Confidence in ability* might have an influence on the dependent variable as it is significant in the single term deletions.
@@ -459,7 +454,7 @@ ggplot(data = ess9_linear,
 
 #### Fitted Values
 
-```{r fitted values}
+```{r fitted values, include=FALSE}
 fit_lm_news.0 <- fitted(lm_news.0)
 str(fit_lm_news.0)
 head(fit_lm_news.0)
@@ -493,20 +488,20 @@ abline(lm_news.0, col = "black")
 
 #### Residuals
 
-```{r}
+```{r, include=FALSE}
 resid.news.0 <- resid(lm_news.0)
 ##
 length(resid.news.0 )
 head(resid.news.0 )
 ```
 
-```{r}
+```{r, include=FALSE}
 set.seed(20) ## for reproducibility 
 id <- sample(x = 1:2296, size = 20) 
 resid.news.0[id]
 ```
 
-```{r}
+```{r, include=FALSE}
 fit_lm_news.0[id]
 ```
 
@@ -524,7 +519,7 @@ points(nwspol.na ~ age.na, data = ess9_linear[id, ], col = "red")
 
 #### one predictor variable
 
-```{r}
+```{r, include=FALSE}
 new.data.news <- data.frame(age.na = c(33,56, 80, 21))
 pred.new.news <- predict(object = lm_news.0, newdata = new.data.news)
 
@@ -539,7 +534,7 @@ points(x = new.data.news$age.na,
        pch = 19, cex = 1.5)
 ```
 
-```{r}
+```{r, include=FALSE}
 pred.new.news.ci <- predict(object = lm_news.0,
                             interval = "prediction",
         newdata = new.data.news)
@@ -788,13 +783,13 @@ ess9_binary <- ess9_de[, c("postonline", "age.na", "interest.fac", "gov.allows",
 ess9_binary.na <- ess9_binary[complete.cases(ess9_binary),]
 ```
 
-```{r, collapse = TRUE}
+```{r, include=FALSE}
 str(ess9_binary.na)
 ```
 
 ### Graphical Analysis
 
-```{r, collapse=TRUE}
+```{r, include=FALSE}
 pairs(postonline ~ age.na + interest.fac + gov.allows +
 trustparl + polscale.na +
 ability.fac + sat.dem.fac + boycott.fac + vote.fac, data = ess9_binary.na, upper.panel = panel.smooth)
@@ -849,18 +844,18 @@ The odds for posting online by having a low interest in politics is about 3.1 ti
 
 #### simple binary model
 
-```{r, collapse = TRUE}
+```{r, , include=FALSE}
 fitted(glm_pol.0) %>% round(digits = 2)
 ```
 
-```{r}
+```{r, include=FALSE}
 fitted_glm.pol.0.disc <- ifelse(fitted(glm_pol.0) < 0.3, 
                                 yes = 1, no = 0)
 head(fitted_glm.pol.0.disc)
 summary(as.factor(fitted_glm.pol.0.disc))
 ```
 
-```{r}
+```{r, include=FALSE}
 d.obs.fit.glm.pol <- data.frame(obs = ess9_binary.na$postonline,                            
                                 fitted = fitted_glm.pol.0.disc) 
 table(d.obs.fit.glm.pol)
@@ -882,11 +877,11 @@ table(obs = d.obs.fit.glm.pol$obs,
 
 #### more complex binary model
 
-```{r, collapse = TRUE}
+```{r, include=FALSE}
 fitted(glm_pol.1) %>% round(digits = 2)
 ```
 
-```{r}
+```{r, include=FALSE}
 fitted_glm.pol.1.disc <- ifelse(fitted(glm_pol.1) < 0.5, 
                                 yes = 1, no = 0)
 head(fitted_glm.pol.1.disc)
@@ -1097,7 +1092,7 @@ abline(0,1)
 and extract the best model
 
 ```{r}
-plot(models$finalModel)
+#plot(models$finalModel)
 ```
 
 ### 3.5.2 Categorical variable
@@ -1295,14 +1290,14 @@ There can bee seen a small grouping on the left side of the plot (young people a
 
 ### Prepare the Data for Training
 
-```{r}
+```{r, include=FALSE}
 set.seed(123)
 indices <- createDataPartition(d.ess9_supportvec$scale_cat, p=.85, list = F)
 ```
 
 ### Create some easy Variables to access Data
 
-```{r}
+```{r, include=FALSE}
 train <- d.ess9_supportvec %>%
   slice(indices)
 test_in <- d.ess9_supportvec %>%
@@ -1325,11 +1320,11 @@ summary(ess_de_svm)
 plot(ess_de_svm, train, eduyrs.na ~ age.na)
 ```
 
-```{r}
+```{r, include=FALSE}
 plot(ess_de_svm, train, yearpay ~ age.na)
 ```
 
-```{r}
+```{r, include=FALSE}
 tune.out <- tune(svm, scale_cat ~ ., data = train, 
                  kernel = "linear", ranges=list(cost=c(0.001,0.01, 0.1, 1, 5, 10, 100)))
 (bestmod <- tune.out$best.model)
@@ -1352,7 +1347,7 @@ The plots suggest, that linear may not be the right approach to get a classifica
 
 ### Make Predictions
 
-```{r}
+```{r, include=FALSE}
 test_pred <- predict(ess_de_svm.1, test_in)
 table(test_pred)
 ```
@@ -1407,7 +1402,7 @@ conf_matrix
 
 #### Tune costing
 
-```{r set training data}
+```{r set training data, include=FALSE}
 set.seed(123)
 intrain <- createDataPartition(y = d.ess9_supportvec$scale_cat, p= 0.7, list = FALSE) 
 training <- d.ess9_supportvec[intrain,]
@@ -1416,7 +1411,7 @@ testing <- d.ess9_supportvec[-intrain,]
 #testing[["scale_cat"]] = factor(testing[["scale_cat"]] != 0)
 ```
 
-```{r}
+```{r, include=FALSE}
 trctrl <- trainControl(method = "repeatedcv", number = 10, repeats = 3)
 svm_linear <- train(scale_cat ~., data = training, method = "svmLinear",
                     trControl=trctrl,
