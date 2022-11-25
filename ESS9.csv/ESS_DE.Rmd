@@ -999,7 +999,7 @@ GAM.netusoft <- gam((as.numeric(netusoft)) ~ yrpy +
 summary(GAM.netusoft)
 plot(GAM.netusoft, residuals = TRUE, cex = 2)
 ```
-The number of education years has a "edf" value of 1.9 this means it isn't linear but has the lowest value of the three parameter and the model can be refitted. 
+The number of education years has a "edf" value of 1.9 this means it isn't linear but has the lowest value of the three parameter and the model can be refitted and removing the smoothing factor.
 
 ```{r}
 GAM.netusoft2 <- gam((as.numeric(netusoft)) ~ yrpy + 
@@ -1041,6 +1041,7 @@ ess9_ann[factors] <- lapply(ess9_ann[factors], as.numeric)
 indices <- createDataPartition(ess9_ann$nwspol, p = 0.8, list = FALSE)
 train <- ess9_ann %>% slice(indices)
 test <- ess9_ann %>% slice(-indices)
+
 boxplot(train$nwspol, test$nwspol, ess9_ann %>% sample_frac(0.2) %>% pull(nwspol), outline = FALSE)
 ```
 
