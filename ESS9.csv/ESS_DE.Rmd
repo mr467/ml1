@@ -229,25 +229,10 @@ boxplot(nwspol.na ~ ability.fac, data = ess9_linear, outline = FALSE)
 boxplot(nwspol.na ~ interest.fac, data = ess9_linear, outline = FALSE)
 ```
 
-```{r}
-plot.lin1 <- ggplot(ess9_linear, aes(age.na, nwspol.na)) + 
-  ylim(0, 500)+
-  geom_point()+
-  ggtitle("Plot of daily News Consumption \n by age") +
-  xlab("Age") + ylab("News Consumption in Minutes")
-
-plot.lin1a <- ggplot(ess9_linear, aes(age.na, nwspol.na)) + 
-  ylim(0, 200)+
-  geom_point()+
-  ggtitle("Plot of daily News Consumption \n by age without outlier") +
-  xlab("Age") + ylab("News Consumption in Minutes")
-
-plot_grid(plot.lin1, plot.lin1a, 
-          ncol = 2, nrow = 1)
-```
+This plot shows in the upper half *news consumption* variable with outliers. As can be seen, there are a lot of outliers. In the second half of the plot, there are no outliers and there can bee seen an increase in news consumption (*interest in politics and confidence in ability)* with every step.
 
 ```{r}
-gg_age.1 <- ggplot(data = ess9_linear,
+gg_age.1 <- ggplot(data = ess9_de,
        mapping = aes(y = nwspol.na,
                      x = age.na))+
   geom_point()+ggtitle("Plot of daily News Consumption \nby age with outlier") +
@@ -266,13 +251,10 @@ gg_age.2 <- ggplot(data = ess9_de,
   
 ##
 gg_age.2 <- gg_age.2 +
-  geom_smooth()
+  geom_smooth()+
+  ylim(0,460)
 
-plot_grid(gg_age.1, gg_age.2,
-          ncol = 2, nrow = 1)
 ```
-
-Interpretation: The relationship between age and news consumption is not at every point positively linear. It starts to grow from the age smallest age to approximitely 25 and then it stagnates till around the age 50 and then the news consumption grows with every year. This can be explained that news consumption is not that important during the time between the ages 25 to 50 because of family matters such as raising children or focusing on career. Afterwards or beforehand the obligations are lighter.
 
 ```{r}
 gg_edu.1 <- ggplot(data = ess9_linear,
@@ -282,7 +264,7 @@ gg_edu.1 <- ggplot(data = ess9_linear,
   xlab("Education in Years") + ylab("News Consumption in Minutes")
   
 ##
-gg_edu.1 +
+gg_edu.1 <- gg_edu.1 +
   geom_smooth()+
   ylim(0,100)
 
@@ -294,12 +276,17 @@ gg_edu.2 <- ggplot(data = ess9_de,
   xlab("Education in Years") + ylab("News Consumption in Minutes")
   
 ##
-gg_edu.2 +
+gg_edu.2 <- gg_edu.2 +
   geom_smooth()+
   ylim(0,100)
+
+plot_grid(gg_age.1, gg_age.2, gg_edu.1, gg_edu.2,
+          ncol = 2, nrow = 2)
 ```
 
-Interpretation: there is a small positive slope. This also confirms the hypothesis that with each additional educational year ones ability in understanding of current affairs is heightend and therefore one is more interested in news and consumes it more frequently. One of the reasons is the ability to understand it.
+Interpretation:\
+[**Age:**]{.underline} The relationship between age and news consumption is not at every point positively linear. It starts to grow from the age smallest age (15y) to approximitely 25 and then it stagnates till around the age 50 and then the news consumption grows with every year. This can be explained that news consumption is not that important during the time between the ages 25 to 50 because of family matters such as raising children or focusing on career. Afterwards or beforehand the obligations are lighter.\
+[**Education in years:**]{.underline} there is a small positive slope. This also confirms the hypothesis that with each additional educational year ones ability in understanding of current affairs is heightend and therefore one is more interested in news and consumes it more frequently. One of the reasons is the ability to understand it.
 
 ### Fitting Model
 
@@ -327,7 +314,7 @@ abline(lm_news.0,
        col = "red", lty = "dashed")
 ```
 
-Interpretation: age is a highly significant predictor. It is a positive relationship to the news consumption in minute. The p-Value is \<0.05. For every additional year a person nearly 1 minute (0.97) is added to the news consumption. This confirms the hypothesis that with every additional year, a person is more interested in politics/current affairs and is following the news. There is the common knowledge that the population is more likely to vote and that young people are more focused on other life topics (except politics).
+[**Interpretation**]{.underline}: age is a highly significant predictor. It is a positive relationship to the news consumption in minute. The p-Value is \<0.05. For every additional year a person nearly 1 minute (0.97) is added to the news consumption. This does not dismis the hypothesis that with every additional year, a person is following the news. There is the common knowledge that the older population is more likely to vote and that young people are more focused on other life topics.
 
 ```{r outlier will be eliminated (above 400min)}
 lm.news.outlier <- lm(nwspol.outlier ~ eduyrs.na, data = ess9_de, na.omit = TRUE)
