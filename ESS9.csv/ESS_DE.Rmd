@@ -150,8 +150,7 @@ ess9_de$interest.fac <- factor(ess9_de$polinteress, levels=1:4,
 ###order differently
 ess9_de$interest.fac <- ordered(ess9_de$interest.fac, 
                                 levels = c("none at all", "hardly", "quite", "very"))
-ess9_de$interest.fac  <- relevel(ess9_de$interest.fac,
-                                      ref = "none at all")
+
 #-----------------------------------------------------------------------------------------
 #clean confidence in own ability to participate (5er scale)
 ess9_de$ability <- ess9_de$cptppola
@@ -161,8 +160,7 @@ ess9_de$ability.fac <- factor(ess9_de$ability, levels=1:5, labels=c("not at all"
 ess9_de$ability.fac <- ordered(ess9_de$ability.fac, 
                                 levels = c("not at all", "a little", "quite", "very",
                                 "completely"))
-ess9_de$ability.fac  <- relevel(eess9_de$ability.fac,
-                                      ref = "not at all")
+
 summary(ess9_de$ability.fac)
 #-----------------------------------------------------------------------------------------
 #1 = yes / 2 = no / 3 = not eligble
@@ -820,40 +818,8 @@ g2 <- ggplot(data = ess9_binary.na,
               se = FALSE,
               method.args = list(family = "binomial")) 
 
-g3 <- ggplot(data = ess9_binary.na,
-       mapping = aes(y = postonline,
-                     x = interest.fac))+
-  geom_point()+
-  geom_smooth(method = "glm", 
-              se = FALSE,
-              method.args = list(family = "binomial")) 
-
-g4 <- ggplot(data = ess9_binary.na,
-       mapping = aes(y = postonline,
-                     x = ability.fac))+
-  geom_point()+
-  geom_smooth(method = "glm", 
-              se = FALSE,
-              method.args = list(family = "binomial")) 
-
-g5 <- ggplot(data = ess9_binary.na,
-       mapping = aes(y = postonline,
-                     x = boycott.fac))+
-  geom_point()+
-  geom_smooth(method = "glm", 
-              se = FALSE,
-              method.args = list(family = "binomial")) 
-
-g6 <- ggplot(data = ess9_binary.na,
-       mapping = aes(y = postonline,
-                     x = vote.fac))+
-  geom_point()+
-  geom_smooth(method = "glm", 
-              se = FALSE,
-              method.args = list(family = "binomial")) 
-
-plot_grid(g1, g2, g3, g4, g5, g6,
-          ncol = 2, nrow = 3)
+plot_grid(g1, g2,
+          ncol = 2, nrow = 1)
 ```
 
 ### Fitting the binary model (logistic regression)
@@ -870,20 +836,14 @@ summary(glm_pol.0)
 glm_pol.1 <- glm(postonline ~ age.na + eduyrs.na + interest.fac + boycott.fac + vote.fac, data = ess9_binary.na,
                  family = "binomial")
 summary(glm_pol.1)
-exp(coef(glm_pol.1)["age.na"])
-exp(coef(glm_pol.1)["eduyrs.na"])
 ```
 
 ```{r}
 exp(coef(glm_pol.1))
 ```
 
-Interpretation: By increasing the age by one year, the risk in odds will be increasing by approx. 1 time to post something political online.\
-The odds for posting online by having
-
-```{r}
-summary(ess9_de$interest.fac)
-```
+[**Interpretation**]{.underline}: By increasing the age by one year, the risk in odds will be increasing by approx. 1 time to post something political online.\
+The odds for posting online by having a low interest in politics is about 3.1 times higher than for persons that have no interest at all.
 
 ### Estimating the performance of a binary model
 
@@ -1294,6 +1254,9 @@ The error for both types of neutral network model is still high, the optimizatio
 
 ## 3.6 Support Vector Machine
 
+The goal in this chapter is to classify people on their political scale. Leftist on the left, center on the center and right-wing people on the right. The response variable *scale_cat* is in the survey categorized from 0 = left to 10 = right. For this model to work the variable was further categorized to left, center and right. \
+The objective is to see if we can classify the persons on their political scale according to socio-demographic predictor variable.
+
 ```{r, collapse=TRUE}
 ess9_de$scale_cat  <- cut(ess9_de$polscale.na,
               breaks=c(-1, 4.5, 7.5, 10),
@@ -1319,12 +1282,16 @@ d.ess9_supportvec %>%
   geom_point() 
 ```
 
+It is not possible to see a clear classifcation of groups by this plot.
+
 ```{r}
 d.ess9_supportvec %>%
   ggplot(aes(x = age.na, y = eduyrs.na, color = scale_cat)) +
   geom_point()
 
 ```
+
+There can bee seen a small grouping on the left side of the plot (young people and middle education level).
 
 ### Prepare the Data for Training
 
