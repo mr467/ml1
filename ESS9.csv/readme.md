@@ -16,11 +16,6 @@ This project has the goal to apply machine learning models to a real world data 
 
 -   Include credits Milica & Marco (Nuria till end of Oktober)
 
-
-### Attention
-- There has been some issues with the knitting even though we tried to limit our HTML output to the 30 pages (including the r-Chunk code include = FALSE, where it is necessary). However this did not work. We have an older version of the html file but without the conclusion and a lot of the interpretation. We hope this works to show you that we tried to include the right amount of pages but technology came in the way. 
-However our .Rmd has everything and is in the latest version. Here we had to omit the include = FALSE code so that there is no problem with parsing. 
-
 This is just a way to show your appreciation and also to help others get a first hand copy of the project.
 
 Source: <https://www.freecodecamp.org/news/how-to-write-a-good-readme-file/>
