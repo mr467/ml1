@@ -999,6 +999,7 @@ GAM.netusoft <- gam((as.numeric(netusoft)) ~ yrpy +
 summary(GAM.netusoft)
 plot(GAM.netusoft, residuals = TRUE, cex = 2)
 ```
+
 The number of education years has a "edf" value of 1.9 this means it isn't linear but has the lowest value of the three parameter and the model can be refitted and removing the smoothing factor.
 
 ```{r}
@@ -1011,6 +1012,7 @@ summary(GAM.netusoft2)
 plot(GAM.netusoft2, residuals = TRUE, cex = 2)
 
 ```
+
 The parameter age and news consumption can be compared for the two GAM models. It is visible that both are non-linear and only age changes in comparison of the two models.
 
 ## 3.5 Neural Network
