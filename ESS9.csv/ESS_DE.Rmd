@@ -674,7 +674,7 @@ str(ess9_prep)
 
 ```
 
-The plot shows the media consumption for male and female to gain a quick overview. Males have a higher mean and the variance for the first and third quantile is larger as well.
+The plot shows the media consumption for male and female to gain a quick overview. Males have a higher mean and the variance of values between the first and third quantile is larger as well in comparison.
 
 ```{r plotting of media consumaption and gender}
 # Use cleaned and factorized data for the Poisson model
@@ -716,7 +716,9 @@ glmP_news <- glm(nwspol ~ polintr + eisced + trstprl+
 summary(glmP_news)
 ```
 
-The summary shows the residual deviance as 1532064 on 16960 degrees of freedom. This indicates an overdispersion as the difference between these two numbers is large.
+The summary shows the residual deviance as 1532064 on 16960 degrees of freedom. This indicates an overdispersion as the difference between these two numbers is large. For an non-overdispersed result the should be similar or the same.
+
+To compare the model for the two gender, the coefficient can be calculated.
 
 ```{r Poisson model coef}
 coef(glmP_news)
@@ -724,7 +726,7 @@ coef(glmP_news)
 exp(coef(glmP_news)["gndr2"]) %>% round(digits = 4)
 ```
 
-Female do consume approx. 10% less media than male participants.
+Female do consume approx. 10% less media compared to male participants.
 
 ### 3.2.3 Simulation
 
