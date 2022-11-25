@@ -58,7 +58,7 @@ ess9_de <- subset(ess9, cntry == "DE", select =dweight:domain)
 
 # 1. Introduction
 
-The European Social Survey (ESS) is a large scale survey conducted in over 38 countries within Europe. Focusing on public attitudes and values and changes within time. This paper is evaluating the ninth version of the survey (ESS9) form 2018. The political landscape has been changed immensely after the start of the pandemic. Everyone has an opinion on everything remarkably political and does not shy away from posting it online. Furthermore, as a society we have upped the news consumption during the pandemic (see for Switzerland: <https://medien.srf.ch/-/ein-von-corona-gepragtes-jahr-srf-mit-positiver-nutzungsbilanz>). So the question that this analysis is looking to answer is: How was the political sentiment during the last European Social Survey before Corona?
+The European Social Survey (ESS) is a large scale survey conducted in over 38 countries within Europe. Focusing on public attitudes and values and changes within time. This paper is evaluating the ninth version of the survey (ESS9) form 2018. The political landscape has been changed immensely after the start of the pandemic. Everyone has an opinion on everything remarkably political and does not shy away from posting it online. Furthermore, as a society we have upped the news consumption during the pandemic (see for Switzerland: <https://medien.srf.ch/-/ein-von-corona-gepragtes-jahr-srf-mit-positiver-nutzungsbilanz>). So the question that this analysis is looking to answer is: How was the political sentiment/actions during the last European Social Survey before Corona and how can interest, sentiment around politics and socio-demographic attributes contribute to the prediction of the political actions.
 
 ## 1.1 Selection of parameters
 
@@ -66,7 +66,7 @@ The survey is really comprehensive and consists out of 572 variables. Some of th
 
 ## 1.2 Goal
 
-As already mentioned above the theme this paper is following is the of political sentiment. Moreover, the consumption of political news and online posting of current affairs is of important understanding considering the inhibition threshold is bigger than just talking to your family. If someone posts something online, then the person has to calculate the cost of the post for the future social interactions. The consumption of news is also connected to the thinking, a person could also consume another media content, that is much lighter and oftentimes more positive.
+As already mentioned above the theme this paper is following is the of political "actions". Moreover, the consumption of political news and online posting of current affairs is of important understanding considering the inhibition threshold is bigger than just talking to your family. If someone posts something online, then the person has to calculate the cost of the post for the future social interactions. The consumption of news is also connected to the thinking, a person could also consume another media content, that is much lighter and oftentimes more positive. Seemingly logical, interest in politic should have a positive relationship to these "actions". However, also the thoughts how the state of the government, satisfaction and owns ability for politics have an influence on the "actions". Next to these more politics covered predictors, there is also the socio-demographic aspect. E.g. with age, ones interest in politics rises. There also could be a gender gap and to not forget, education. The latter corresponds to political "actions" because with a higher education, one is more inclined to be able to follow current affairs because of the knowledge instilled in him during the higher education.
 
 This paper will be following the following structure: Firstly the cleaning of the data, as there are a lot of variables there will be only cleaning of the variable that matter for this analysis. In a next step the models will be presented. The start will be made with the linear regression, then the two GLM models "Poisson" and "Binomial". The third presented model is the GAM and the last two will be the "Neural Network" and Support Vector Machine. These models will be followed with a short conclusion.
 
@@ -187,7 +187,8 @@ summary(as.factor(ess9_de$trustparl))
 
 ## 3.1 Linear Model
 
-Question: What is an influence on the
+This chapter will be focused on the continous variable *nwspol.* The question in the survey was: *On a typical day, about how much time do you spend watching, reading or listening to news about politics and current affairs?\
+*
 
 ```{r all variables that i want to include, collapse=TRUE}
 #DV
