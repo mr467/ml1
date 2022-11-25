@@ -576,61 +576,31 @@ segments(x0 = new.data.news$age.na,
 
 ## 3.2 GLM Poisson
 
-The goal of this chapter is to apply a generalized linear model of the poisson type on the ESS9 data set. The poisson model is applied to count data, in this case the information of how many minutes the participants spend per day for consuming media, such as newspaper, TV new shows or online resources. In this chapter the model is used to simulate the data, based on the provided data from the survey. First the data is cleaned and prepared for using it. A subset of the data is used, containing variables which should help to model the news consumption of a person. These parameters are used: Depended variable:
+The goal of this chapter is to apply a generalized linear model of the poisson type on the ESS9 data set. The poisson model is applied to count data, in this case the information of how many minutes the participants spend per day for consuming media, such as newspaper, TV new shows or online resources.
 
--   How much politics are you watching ("nwspol") Independent variables:
+In this chapter the model is used to simulate the data, based on the survey data. Getting a simulation of the minutes according to a selected subset of variables from the study.
 
-The goal of this chapter is to apply a generalized linear model of the poisson type on the ESS9 data set. The poisson model is applied to count data, in this case the information of how many minutes the participants spend per day for consuming media, such as newspaper, TV new shows or online resources. In this chapter the model is used to simulate the data, based on the provided data from the survey. First the data is cleaned and prepared for using it. A subset of the data is used, containing variables which should help to model the news consumption of a person. These parameters are used: Depended variable:
+First the data is cleaned and prepared for using it. A subset of the data is used, containing social and demographic variables which should help to model the news consumption of a person. These parameters are used:
 
--   How much politics are you watching ("nwspol") Independent variables:
+Depended variable:
 
--   Interest in politics ("polintr)
+-   How much politics are you watching ("nwspol")
 
--   Trust into the current parlament ("trstprl")
+Independent variables:
 
--   Highest level of education ("eisced")
-
--   Years of education ("eduyrs")
-
--   Satisfaction with the general economical situation ("stfeco")
-
--   Satisfaction with the current government ("stfgov")
-
--   Gender ("gndr")
-
--   Age ("agea")
-
--   Level of person religion believe ("rlgdgr")
-
--   Time spent online ("netusoft")
-
--   Posibility for political participation ("psppsgva")
-
--   Yearly gross income (combination of two factors into a new one - "yrpy")
-
--   Interest in politics ("polintr)
-
--   Trust into the current parlament ("trstprl")
-
--   Highest level of education ("eisced")
-
--   Years of education ("eduyrs")
-
--   Satisfaction with the general economical situation ("stfeco")
-
--   Satisfaction with the current government ("stfgov")
-
--   Gender ("gndr")
-
--   Age ("agea")
-
--   Level of person religion believe ("rlgdgr")
-
--   Time spent online ("netusoft")
-
--   Posibility for political participation ("psppsgva")
-
--   Yearly gross income (combination of two factors into a new one - "yrpy")
+1.  Interest in politics ("polintr)
+2.  Trust into the current parlament ("trstprl")
+3.  Highest level of education ("eisced")
+4.  Years of education ("eduyrs")
+5.  Satisfaction with the general economical situation ("stfeco")
+6.  Satisfaction with the current government ("stfgov")
+7.  Satisfaction with the democratic system ("stfdem")
+8.  Gender ("gndr")
+9.  Age ("agea")
+10. Level of religiouse believes ("rlgdgr")
+11. Time spent online in 5 categorical values("netusoft")
+12. Possibility for political participation ("psppsgva")
+13. Yearly gross income (combination of two factors into a new one - "yrpy")
 
 ### 3.2.1 Data preparation
 
@@ -657,7 +627,6 @@ ess9_prep <- ess9 %>%
                                  psppsgva = c(7,8,9),
                                  grspnum = c(666666666,777777777,888888888,999999999),
                                  infqbst = c(6,7,8,9)
-                                 
                                  ))
 
 #testing if change has worked and how many NA we have - for four examples
@@ -667,16 +636,17 @@ sum(is.na(ess9_prep$eduyrs))
 sum(is.na(ess9_prep$stfgov))
 sum(is.na(ess9_prep$netusoft))
 
-# The variable "grspnum" is depended on the variable "infqbst." As "infqbst" sets the period of the payment and "grpsnum" is the payment amount for the defined period. To standardize it on a yearly gross payment it needs a nested ifelse statement. If "infqbst" is one, we multiple it by 52 weeks of the year, if it is a two we multiple it by 12, and if it something else we keep it as it is (3 is already yearly payment, and values above will be filterd in the next step. 
+# The variable "grspnum" is depended on the variable "infqbst." As "infqbst" sets the period of the payment and "grpsnum" is the payment amount for the defined period. To standardize it on a yearly gross payment it needs a nested ifelse statement.
 
 ess9_prep$yrpy <- ifelse(ess9_prep$infqbst %in% 1,
                                 ess9_prep$grspnum*52,  
                             ifelse(ess9_prep$infqbst %in% 2,
                                 ess9_prep$grspnum*12, 
                                 ess9_prep$grspnum))
+
 ```
 
-Subset of data for this task, as 14 parameters in total. The rows with NA are dropped, as the data set is large enough for droping theses values.
+Subset data for this task, to the defined 14 variables in total. The rows with NA are dropped, as the data set is large enough for dropping theses values.
 
 ```{r data subset and NA, include=TRUE}
 # defining subset for study and models. These factors will be used in the Poisson and Neural Network models below. 
@@ -704,11 +674,9 @@ str(ess9_prep)
 
 ```
 
-The plot shows the media consumption for male and female. Males have a higher mean and the variance of the first and thrid quantile are larger.
+The plot shows the media consumption for male and female to gain a quick overview. Males have a higher mean and the variance for the first and third quantile is larger as well.
 
-The plot shows the media consumption for male and female. Males have a higher mean and the variance of the first and third quantile are larger.
-
-```{r plotting of media consumaption}
+```{r plotting of media consumaption and gender}
 # Use cleaned and factorized data for the Poisson model
 ess9_poisson <- ess9_prep
 
@@ -717,28 +685,46 @@ ggplot(data = ess9_poisson, mapping = aes(y = nwspol,x = gndr)) +
   ggtitle("Media consumption in minutes compared to Gender (Zoomed In)")+
   ylab("media consumption in minutes") +
   xlab("Gender") +
+  coord_cartesian(ylim = quantile(ess9_poisson$nwspol, c(0.1, 0.9))) # large outliers are cropd out to indicate variance of male and female
+```
+
+The second plot indicates the frequency of internet usage and the media consumption. The mean of the two lower frequencies ("never" and "only occasionally") have higher values for media consumption.
+
+```{r plotting of media consumaption and frequency of internet usage, collapse=TRUE}
+
+ggplot(data = ess9_poisson, mapping = aes(y = nwspol,x = netusoft)) +
+  geom_boxplot() +
+  ggtitle("Media consumption in minutes compared to frequency of internet usage (Zoomed In)")+
+  ylab("media consumption in minutes") +
+  xlab("frequency of internet usage") +
   coord_cartesian(ylim = quantile(ess9_poisson$nwspol, c(0.1, 0.9))) # large outliers are cropt out to indicate variance of male and female
 
 ```
 
 ### 3.2.2 Fitting the poisson model
 
-Using the parameter specified above to model the consumption.
+Using the parameter specified above to model the consumption. Using the subset variables of the survey.
 
 ```{r Poisson model fitting}
 # fitting the model
-glmP_news <- glm(nwspol ~ polintr + eisced + trstprl+ eduyrs + netusoft + stfeco + stfgov +
+glmP_news <- glm(nwspol ~ polintr + eisced + trstprl+ 
+                   eduyrs + netusoft + stfeco + stfgov + 
                    stfdem + gndr + agea + rlgdgr +yrpy,
                  family = "poisson", ## we specify the distribution!
                  data = ess9_poisson)
 
 summary(glmP_news)
+```
 
+The summary shows the residual deviance as 1532064 on 16960 degrees of freedom. This indicates an overdispersion as the difference between these two numbers is large.
+
+
+```{r Poisson model coef}
 coef(glmP_news)
 
-exp(coef(glmP_news)["(Intercept)"])
-
+exp(coef(glmP_news)["gndr2"]) %>% round(digits = 4)
 ```
+Female do consume approx. 10% less media than male participants.
 
 ### 3.2.3 Simulation
 
@@ -765,11 +751,12 @@ ggplot(mapping = aes(y = sim.data.ess9.Poisson$sim_1,
 
 ```
 
-The simulated data look similar as the real data based of the survey. The variance is smaller for the simulated one. The higher mean for males are in both plots visible.
-
 The simulated data look similar as the real data based of the survey. The variance is smaller for the simulated one. The higher mean and the higher variance for the male group is indicated in the real data as well as in the simulated data.
 
 ### 3.2.4 GLM Quasi-Poisson
+
+In chapter 3.2.2 the data showed a overdispersion for the poisson model. This isn't unusual and can be handled by the quasipoisson model type. The value for the dispersion parameter of 206.3327 indicates a much faster increase of variance than linearly. 
+
 
 ```{r quasipoisson}
 glmQ_news <- glm(nwspol ~ polintr + eisced + trstprl+ eduyrs + netusoft + stfeco + stfgov +
@@ -786,7 +773,7 @@ glmQ_news_noGender <- update(glmQ_news, . ~ . - gndr)
 anova(glmQ_news, glmQ_news_noGender, test = "F")
 ```
 
-Yes, Gender plays a role for the quasi poisson model.
+Yes, Gender plays a role for the quasi poisson model. This can be assured with this test.
 
 ```{r quasipoisson - Anova for stfdem}
 
@@ -795,7 +782,9 @@ glmQ_news_noGender <- update(glmQ_news, . ~ . - stfdem)
 anova(glmQ_news, glmQ_news_noGender, test = "F")
 ```
 
-To compare it with the variable of "stfdem" about how satisfied the participants of the survey are about how the democracy in their country works. This variable doensn't play a role to predict the media consumption according to the quasipoisson model.
+To compare it with the variable of "stfdem" about how satisfied the participants of the survey are about how the democracy in their country works. This variable doesn't play a role to predict the media consumption according to the quasipoisson model.
+
+The results can be concluded that according to the models there is some evidence, that the factors Interest in politics, age, and gender are influencing the media consumption.
 
 ## 3.3 GLM Binomial
 
@@ -1010,12 +999,13 @@ plot(GAM.netusoft2, residuals = TRUE, cex = 2)
 
 Additional to "classic" linear models and GLM options, there are neural networks for analyzing and predicting data.
 
-### 3.5.1 Neural Network
 
 Within this chapter two types of neural network model are applied to two different questions.
 
 1.  Predicting the values for the continuous variable
-2.  Predicting the vallues for the categorical variable inidicating the 5 levels of \### 3.5.1 continious variable
+2.  Predicting the values for the categorical variable indicating the 5 levels of frequency of usage of internet 
+
+### 3.5.1 continious variable
 
 ```{r data import for neural network}
 
@@ -1059,12 +1049,6 @@ plot(ess9_nnet)
 
 #### Predict the test set
 
-```{r, include=FALSE}
-pred <- compute(ess9_nnet, test %>% select(-nwspol))
-pred$net.result
-```
-
-So what went wrong here? Obviously we also need to use the scaled data to make predictions and then scale back to real nwspol values
 
 ```{r predict, include=FALSE}
 pred_scaled <- compute(ess9_nnet, test_scaled %>% select(-nwspol))
@@ -1085,9 +1069,9 @@ sqrt(mean((test$nwspol - pred)^2))
 
 #### Redo with `caret` and Cross Validation
 
-```{r caret applied again, include=FALSE, message=FALSE, warning=FALSE}
+```{r caret applied again, collapse=TRUE, message=FALSE, warning=FALSE}
 set.seed(42)
-tuGrid <- expand.grid(.layer1=c(1:1), .layer2=c(0,2), .layer3=c(0))
+tuGrid <- expand.grid(.layer1=c(1:2), .layer2=c(0,2), .layer3=c(0))
 
 
 trCtrl <- trainControl(
@@ -1112,6 +1096,8 @@ models <- train(
 ```{r message=FALSE, warning=FALSE}
 plot(test$nwspol, pred, col='blue', pch=16, ylab = "predicted rating NN", xlab = "real rating")
 abline(0,1)
+
+
 ```
 
 ```{r}
@@ -1126,11 +1112,12 @@ plot(models$finalModel)
 
 ### 3.5.2 Categorical variable
 
+NN models can be used for categorical variables as well. In this chapter the goal is to find a classification of values to the categories. As variable the frequency of usage of the internet is used.
+
 ```{r}
 ess9_ann2<- ess9_prep_num
-
+#changing depended variable to factor
 ess9_ann2$netusoft <- as.factor(ess9_ann2$netusoft)
-
 
 str(ess9_ann2)
 ```
@@ -1156,9 +1143,7 @@ set.seed(123)
 indices <- createDataPartition(ess9_ann2$netusoft, p=.85, list = F)
 ```
 
-#### Why do we use the `caret` function
-
-Look at the distribution of our different prediction classes in the train and test datasets:
+The distribution of our different prediction classes in the train and test data sets can be compared. The data shows a concentration of 4 and 5 values. The participants of this survey are often and frequently using the internet.
 
 ```{r}
 ess9_ann2 %>%
@@ -1167,18 +1152,6 @@ ess9_ann2 %>%
   table()
 ```
 
-Now compare this to the "random" approach:
-
-```{r}
-ess9_ann2 %>%
-  mutate(train = runif(nrow(ess9_ann2)) < .85) %>%
-  select(netusoft, train) %>%
-  table()
-```
-
-So using the `createDataPartition` function makes sure that no class is over- or underrepresented relative to the total occurance in the two sets
-
-#### Create some easy Variables to access Data
 
 ```{r}
 train <- ess9_ann2 %>%
@@ -1193,7 +1166,7 @@ test_truth <- ess9_ann2 %>%
 
 #### Train the Neural Network
 
-Call the `neuralnet` function creating a network with two hidden layers containing 4 and 3 neurons (probably way too complex for our problem here).
+Call the `neuralnet` function creating a network with two hidden layer.
 
 ```{r}
 set.seed(21)
@@ -1208,20 +1181,21 @@ plot(ess9_ann_net)
 
 #### Make Predictions
 
-```{r Predictions, include=FALSE}
+```{r Predictions, collapse=FALSE}
 test_results <- neuralnet::compute(ess9_ann_net, test_in)
 test_results$net.result
 ```
 
 Find class (i.e. output neuron) with the highest probability and convert this back into a factor
 
-```{r find class, include=FALSE}
+```{r find class, collapse=FALSE}
 test_pred <- apply(test_results$net.result, 1, which.max)
 test_pred <- factor(levels(test_truth)[test_pred], levels = levels(test_truth))
 test_pred
 ```
 
 #### Evaluate the Results
+The confusion maztrix shows 
 
 ```{r conf matrix}
 conf_matrix <- confusionMatrix(test_truth, test_pred)
